@@ -217,5 +217,5 @@ def start():
     app.exec()  # loop starts here and only exits when application is quit or restarted
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pyside6-deploy main.py
     start()
