@@ -8,24 +8,24 @@ import process_manager_ui
 import settings_ui
 
 # Import Components and Visual Tools
-from qfluentwidgets import BodyLabel, PrimaryPushButton, PushButton, FluentTranslator
+from qfluentwidgets import BodyLabel, PrimaryPushButton, PushButton, ProgressBar
 from ui_comps import AlignFlag, SizePolicy, Icons, primitives, windows, dialogs
-from PySide6.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QGridLayout, QFrame, QFileDialog
+from PySide6.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QGridLayout, QFileDialog
 from PySide6.QtCore import QTimer
 from qfluentwidgets import NavigationItemPosition
 from core.asset_paths import MainIconPaths
 
 
 class builders:
-    class VisualConnectorLine(QFrame):
+    class VisualConnectorLine(ProgressBar):
         def __init__(self):
             super().__init__()
-            self.setMinimumSize(200, 8)
-            self.set_complete(False)
+            self.setMinimumHeight(6)
+            self.setMinimumWidth(200)
+            self.setCustomBarColor('#73e68c', '#73e68c')
 
         def set_complete(self, b: bool):
-            self.setStyleSheet('QWidget {border-radius: 4px;'
-                               f'background-color: #{'3f3f3f' if not b else '73e68c'};}}')
+            self.setValue(100 if b else 0)
 
     class PrimaryButton(PrimaryPushButton):
         def __init__(self, label: str, slots: tuple[callable] = None, disabled: bool = True):
@@ -94,7 +94,10 @@ class HomeTab(QWidget):
         grid.addWidget(primitives.ImageIcon(MainIconPaths.startCopy), 0, 4, alignment=AlignFlag.AlignCenter)
         self.start_copy_button = builders.PrimaryButton(tr('Start Copy'), slots=(self.on_start_copy_pressed,))
         grid.addWidget(self.start_copy_button, 2, 4, alignment=AlignFlag.AlignCenter)
-        grid.addWidget(primitives.SpacerItem(0, 64), 1, 2)
+
+        # spacers
+        grid.addWidget(primitives.SpacerItem(0, 32), 1, 2)  # vertical space between buttons and icons.
+        grid.addWidget(primitives.SpacerItem(0, 32), 3, 2)  # vertical space after buttons to shift ui up.
 
     def on_source_selection_window_closed(self, selected_file_count: int):
         if selected_file_count == 0:
