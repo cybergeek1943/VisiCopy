@@ -10,13 +10,16 @@ This venv must not be hosted on GitHub. Make git ignore the venv dir by putting 
 
 The .gitignore file should look something like this:
 ```text
-venv/
-test/
-output/
-deployment/
+/venv/
+/output/
+/deployment/
+/__pycache__/
+/.idea/
 *.json
 *.cfg
 *.set
+*.udat
+*.exe*.set
 *.udat
 *.exe
 ```

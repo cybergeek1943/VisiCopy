@@ -1,0 +1,10 @@
+/venv/
+/output/
+/deployment/
+/__pycache__/
+/.idea/
+*.json
+*.cfg
+*.set
+*.udat
+*.exe

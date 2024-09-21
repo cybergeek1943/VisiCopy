@@ -1,0 +1,3 @@
+auto-py-to-exe
+PySide6
+PySide6-Fluent-Widgets
