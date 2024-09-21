@@ -1,1 +1,1 @@
-Must export from lunacy as png and then convert to ico using good converting tool.
+Must export from lunacy as (sometimes large) png and then convert to ico using good converting tool.

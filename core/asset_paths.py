@@ -22,5 +22,5 @@ class ProcessStatusIconPaths:
     completeWithError: str = ':/assets/process_manager/complete_with_error.png'
 
 
-# pyside6-rcc assets.qrc -o assets_rc.py
-# pyside6-rcc lang.qrc -o lang_rc.py
+# pyside6-rcc assets.qrc -o ./core/assets_rc.py
+# pyside6-rcc lang.qrc -o ./core/lang_rc.py

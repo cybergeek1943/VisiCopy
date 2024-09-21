@@ -94,7 +94,10 @@ class HomeTab(QWidget):
         grid.addWidget(primitives.ImageIcon(MainIconPaths.startCopy), 0, 4, alignment=AlignFlag.AlignCenter)
         self.start_copy_button = builders.PrimaryButton(tr('Start Copy'), slots=(self.on_start_copy_pressed,))
         grid.addWidget(self.start_copy_button, 2, 4, alignment=AlignFlag.AlignCenter)
-        grid.addWidget(primitives.SpacerItem(0, 64), 1, 2)
+
+        # spacers
+        grid.addWidget(primitives.SpacerItem(0, 32), 1, 2)  # vertical space between buttons and icons.
+        grid.addWidget(primitives.SpacerItem(0, 32), 3, 2)  # vertical space after buttons to shift ui up.
 
     def on_source_selection_window_closed(self, selected_file_count: int):
         if selected_file_count == 0:

@@ -63,7 +63,7 @@ class EmptySelectionTab(QWidget):
         v_lay = QVBoxLayout()
         self.setLayout(v_lay)
 
-        v_lay.addWidget(primitives.ImageIcon(MainIconPaths.dragDrop), alignment=AlignFlag.AlignHCenter | AlignFlag.AlignBottom)
+        v_lay.addWidget(primitives.ImageIcon(MainIconPaths.dragDrop, 96), alignment=AlignFlag.AlignHCenter | AlignFlag.AlignBottom)
         _ = BodyLabel()
         _.setText('<center><h2>Drag and Drop files or folders here</h2>'
                   'or&nbsp;&nbsp;'

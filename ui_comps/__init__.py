@@ -46,7 +46,7 @@ class primitives:
             self.lightColor: QColor = QColor(*self.lightColor.getRgb()[:3], 100 if arg__1 else 255)
 
     class ImageIcon(ImageLabel):
-        def __init__(self, image_path, height: int = 96):
+        def __init__(self, image_path, height: int = 180):
             super().__init__()
             self.setImage(image_path)
             self.scaledToHeight(height)
