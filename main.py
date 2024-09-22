@@ -191,7 +191,7 @@ class MainWindow(windows.TabWindow):
 
     def closeEvent(self, event):
         app.exit()
-        event.ignore()  # so that dialog cancel can work
+        event.ignore()  # so that dialog cancel button can work
 
 
 class Application(QApplication):
