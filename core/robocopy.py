@@ -313,8 +313,8 @@ class CopyProcess(CopyProcess_NoPiping):  # TODO document these classes better
 
 
 if __name__ == "__main__":
-    source_dir: str = r"../test/src1/mon.log"
-    destination_dir: str = r"../test/dst1"
+    source_dir: str = r"../misc/src1/mon.log"
+    destination_dir: str = r"../misc/dst1"
     pr = CopyProcess(src_path=source_dir, dst_path=destination_dir, flags=['/r:3', '/w:1', '/s'], _include_src_base_dir=False)  # '/iorate:1'
     # pr.totalStatsUpdateHook.connect(lambda: print(pr.current_file, pr.current_file_size))
     pr.start()

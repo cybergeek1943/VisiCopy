@@ -170,7 +170,7 @@ class windows:
 
             # Title
             if tab_title:
-                title = TitleLabel(text=tr(tab_title))
+                title = TitleLabel(text=tab_title)
                 setFont(title, 24, QFont.Weight.Bold)
                 self.layout.addWidget(title)
 
@@ -236,25 +236,25 @@ class InfoPageWidget(BodyLabel):
     """This component displays info about Easy Copy"""
     def __init__(self):
         BodyLabel.__init__(self)
-        html: str = ("<p>Under the hood, Easy Copy currently utilizes Robocopy. In the future, support will be added for rsync and/or rclone."
-                     " In addition to the functionality that robocopy provides, Easy Copy introduces features such as multiprocessing & process management;"
-                     " overall progress (rather than just the progress of a single file); and many other features.</p>"
-                     "<p>I have developed Easy Copy as a free and open source software. I do not have any contributors yet; hence, this project takes "
-                     "a significant amount of time and dedication. You can help the development of this software through donations, code contributions, "
-                     "and sharing Easy Copy with others. Any support would be greatly appreciated.</p>"
-                     "<p>Thank you for using Easy Copy!</p>"
-                     ""
-                     "<h2>Support</h2>"
-                     "<a href='https://www.artixios.com/software/easy_copy.html'>Download Page</a>"
-                     "<br/><a href='https://www.artixios.com/software/easy_copy.html'>Documentation</a>"
-                     ""
-                     "<br/><h2>Legal</h2>"
-                     "License:  GPLv3 (Open Source)"
-                     "<br/>© 2024 - Easy Copy Trademark"
-                     ""
-                     "<br/><h2>Developer</h2>"
-                     "<a href='https://www.artixios.com/about.html#dev_section'>About Me</a>"
-                     "<br/><a href='https://pay.artixios.com/donate'>Donate Now</a>")
+        html: str = tr("""<p>Under the hood, Easy Copy currently utilizes Robocopy. In the future, support will be added for rsync and/or rclone."
+In addition to the functionality that robocopy provides, Easy Copy introduces features such as multiprocessing & process management;
+overall progress (rather than just the progress of a single file); and many other features.</p>
+<p>I have developed Easy Copy as a free and open source software. I do not have any contributors yet; hence, this project takes 
+a significant amount of time and dedication. You can help the development of this software through donations, code contributions, 
+and sharing Easy Copy with others. Any support would be greatly appreciated.</p>
+<p>Thank you for using Easy Copy!</p>
+
+<h2>Support</h2>
+<a href='https://www.artixios.com/software/easy_copy.html'>Download Page</a>
+<br/><a href='https://www.artixios.com/software/easy_copy.html'>Documentation</a>
+
+<br/><h2>Legal</h2>
+License:  GPLv3 (Open Source)
+<br/>© 2024 - Easy Copy Trademark
+
+<br/><h2>Developer</h2>
+<a href='https://www.artixios.com/about.html#dev_section'>About Me</a>
+<br/><a href='https://pay.artixios.com/donate'>Donate Now</a>""")
         self.setWordWrap(True)
         self.setText(html)
         self.setOpenExternalLinks(True)

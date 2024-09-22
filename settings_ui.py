@@ -72,7 +72,7 @@ class Card(SimpleCardWidget):
             elif elem_type == 'switch-num-entry':
                 e = SwitchNumEntry(toggled=elem['toggled'], label=tr(elem['label']), entry=elem['entry'], min_entry=elem['min_entry'], max_entry=elem['max_entry'], width_factor=elem['width_factor'], sub_pos=sub_pos, __variable__=cdict(elem))
             elif elem_type == 'switch-size-entry':
-                e = SwitchSizeEntry(toggled=elem['toggled'], label=tr(elem['label']), entry=elem['entry'], min_entry=elem['min_entry'], max_entry=elem['max_entry'], size_options=tuple(tr(s) for s in elem['size_options']), selected_option=elem['selected_option'], width_factor=elem['width_factor'], sub_pos=sub_pos, __variable__=cdict(elem))
+                e = SwitchSizeEntry(toggled=elem['toggled'], label=tr(elem['label']), entry=elem['entry'], min_entry=elem['min_entry'], max_entry=elem['max_entry'], size_options=elem['size_options'], selected_option=elem['selected_option'], width_factor=elem['width_factor'], sub_pos=sub_pos, __variable__=cdict(elem))
             elif elem_type == 'switch-date-entry':
                 e = SwitchDateEntry(toggled=elem['toggled'], label=tr(elem['label']), day=elem['day'], month=elem['month'], year=elem['year'], use_days=elem['use_days'], days=elem['days'], min_days=elem['min_days'], max_days=elem['max_days'], sub_pos=sub_pos, __variable__=cdict(elem))
             elif elem_type == 'switch-dropdown':
@@ -100,7 +100,7 @@ class MainWindow(windows.SubWindow):
         # Set Window Configuration
         self.navigationInterface.setReturnButtonVisible(False)
         self.setWindowTitle(tr("Settings"))
-        settings_data.changesDetectedHook.connect_(lambda: self.setWindowTitle(tr('Settings')) if settings_data.changes_detected == 0 else self.setWindowTitle(f'{tr('Settings')}  •  {settings_data.changes_detected} {tr('change') if settings_data.changes_detected == 1 else tr('changes')}'))
+        settings_data.changesDetectedHook.connect_(lambda: self.setWindowTitle(tr("Settings")) if settings_data.changes_detected == 0 else self.setWindowTitle(tr("Settings") + f'  •  {settings_data.changes_detected} ' + (tr('change') if settings_data.changes_detected == 1 else tr('changes'))))
 
         # Add to tabs the main settings from settings data
         self.navigationInterface.addSeparator()
@@ -120,7 +120,7 @@ class MainWindow(windows.SubWindow):
             self.tabs[tab_id].add_widget(Card(title=card_title, note=card_note, elements=card_elements, show_card_title=self.tabs[tab_id].__getattribute__('show_card_title')))
 
         # Add the additional user preferences from userdata
-        preferences: windows.TabComponent = windows.TabComponent('Preferences')
+        preferences: windows.TabComponent = windows.TabComponent(tr('Preferences'))
         preferences.setObjectName('preferences')
         self.tabs['preferences'] = preferences
         preferences.add_widget(cards.SettingWComboBox(Icons.LANGUAGE, tr('Language'), tr('Currently, four languages are supported. More will be added in future releases.'), ('English', 'Español (Spanish)', '简体中文 (Chinese)', 'हिंदी (Hindi)'), get_lang(), self.set_language))
@@ -136,7 +136,7 @@ class MainWindow(windows.SubWindow):
         self.addSubInterface(preferences, Icons.DEVELOPER_TOOLS, tr('Preferences'), NavigationItemPosition.BOTTOM)
 
         # Add Info tab
-        info: windows.TabComponent = windows.TabComponent('Info')
+        info: windows.TabComponent = windows.TabComponent(tr('Info'))
         info.setObjectName('info')
         info.add_widget(InfoPageWidget())
         self.addSubInterface(info, Icons.INFO, tr('Info'), NavigationItemPosition.BOTTOM)
@@ -189,7 +189,7 @@ class MainWindow(windows.SubWindow):
                 dialogs.info(self, tr('Error'), tr('This file could not be imported because it is corrupt!'), critical=True)
 
     def restart(self):
-        dialogs.info(self, 'Restart Required', 'Easy Copy will close automatically. Please reopen Easy Copy for changes to take effect.')
+        dialogs.info(self, tr('Restart Required'), tr('Easy Copy will close automatically. Please reopen Easy Copy for changes to take effect.'))
         # noinspection PyArgumentList
         app.exit(force_exit=True)
 

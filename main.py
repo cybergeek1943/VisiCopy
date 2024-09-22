@@ -138,8 +138,8 @@ class JobTab(QWidget):
 
         # -------- UI --------
         _ = BodyLabel()
-        _.setText(f'<h2>{tr("Job Manager")}</h2>'
-                  f'{tr("You may create and utilize job files to execute regularly required copy operations.")}<br/>')
+        _.setText(tr('<h2>Job Manager</h2>'
+                     'You may create and utilize job files to execute regularly required copy operations.<br/>'))
         v_lay.addWidget(_)
         buttons_lay = QHBoxLayout()
         buttons_lay.setAlignment(AlignFlag.AlignLeft)

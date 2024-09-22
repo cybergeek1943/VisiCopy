@@ -102,7 +102,7 @@ class components:
 
             # Title
             self.title = TitleLabel()
-            self.title.setText('Overall Progress')
+            self.title.setText(tr('Overall Progress'))
             setFont(self.title, 22, QFont.Weight.Bold)
             stacked_text.addWidget(self.title)
             stacked_text.addSpacing(8)
@@ -154,17 +154,17 @@ class components:
             self.progress_ring.setValue(int(p*100))
 
         def setEtaAndSpeed(self, eta: int | None, b: int | None):
-            self.eta_label.setText(f'ETA:  {format_seconds(eta) if eta else '----'}')
-            self.speed_label.setText(f'Speed:  {format_bytes(b, per_second=True) if b else '----'}')
+            self.eta_label.setText(tr('Eta') + f':  {format_seconds(eta) if eta else '----'}')
+            self.speed_label.setText(tr('Speed') + f':  {format_bytes(b, per_second=True) if b else '----'}')
 
         def setElapsedTime(self, time: float):
-            self.elapsed_time_label.setText(f'Elapsed Time:  {format_seconds(int(time))}')
+            self.elapsed_time_label.setText(tr('Elapsed Time') + f':  {format_seconds(int(time))}')
 
         def setBytesCopied(self, b: int):
-            self.bytes_copied_label.setText(f'Amount Copied:  {format_bytes(b)}')
+            self.bytes_copied_label.setText(tr('Amount Copied') + f':  {format_bytes(b)}')
 
         def setRunningProcesses(self, n: int):
-            self.running_processes_label.setText(f'Running Processes:  {n}')  # sometimes n is negative because of process deletion. Hence, the greater than zero check!
+            self.running_processes_label.setText(tr('Running Processes') + f':  {n}')  # sometimes n is negative because of process deletion. Hence, the greater than zero check!
 
         def __setDefaults(self):
             self.setProgressBar(0)
@@ -227,7 +227,7 @@ class components:
             self.finish_notes.hide()
             layout.addWidget(self.finish_notes)
             self.src_dst_label = BodyLabel()
-            self.src_dst_label.setText(f'Source:  {copy_process.src_path}\nDestination:  {copy_process.dst_path}')
+            self.src_dst_label.setText('{0}:  {1}\n{2}:  {3}'.format(tr('Source'), copy_process.src_path, tr('Destination'), copy_process.dst_path))
             layout.addWidget(self.src_dst_label)
 
             # Process Stats
@@ -245,17 +245,17 @@ class components:
             h_lay.setContentsMargins(8, 8, 8, 0)
             layout.addLayout(h_lay)
             self.view_process_errors = PushButton()
-            self.view_process_errors.setText('View Errors')
+            self.view_process_errors.setText(tr('View Errors'))
             self.view_process_errors.clicked.connect(self.on_view_errors_clicked)
             h_lay.addWidget(self.view_process_errors)
             h_lay.addSpacerItem(primitives.HorizontalExpandSpace())
             self.delete_process = PushButton()
-            self.delete_process.setText('Delete Process')
+            self.delete_process.setText(tr('Delete Process'))
             self.delete_process.setIcon(Icons.DELETE)
             self.delete_process.clicked.connect(self.on_delete_clicked)
             h_lay.addWidget(self.delete_process)
             self.stop_or_restart_process = PushButton()
-            self.stop_or_restart_process.setText('Stop Process')
+            self.stop_or_restart_process.setText(tr('Stop Process'))
             self.stop_or_restart_process.setIcon(Icons.PAUSE)
             self.stop_or_restart_process.clicked.connect(self.on_stop_clicked)
             self.stop_button_showing: bool = True  # used to switch between 'stop' and 'reset' buttons
@@ -291,7 +291,7 @@ class components:
             self.error_count_badge.hide()
 
             # Error Window
-            self.errors_window = ErrorsWindow(f'Errors  •  Process {process_index + 1}')
+            self.errors_window = ErrorsWindow(f'%s  •  %s {process_index + 1}' % (tr('Errors'), tr('Process')))
             QTimer.singleShot(100, lambda: (self.errors_window.resize(int(self.window().size().width() * 0.9), int(self.window().size().height() * 0.9)),
                                             self.errors_window.move(self.window().pos().x() + 32, self.window().pos().y() + 32)))  # we must use timer here because for some reason the window does not resize normally.
 
@@ -300,34 +300,37 @@ class components:
 
         # -------------------------------- Setters --------------------------------
         def setTitle(self, *args):
-            self.title.setText(f'Process {self.process_index}  •  {'  •  '.join(args)}')
+            self.title.setText(tr('Process') + f' {self.process_index}  •  {'  •  '.join(args)}')
 
         def setNote(self, *args):
             args: list = [s for s in args if s is not None]
             if not args:
                 self.finish_notes.hide()
                 return
-            self.finish_notes.setText(f'Note:  {args[0]}') if len(args) == 1 else self.finish_notes.setText(f'Note:\n• {'\n• '.join(args)}')
+            if len(args) == 1:
+                self.finish_notes.setText(tr('Note') + f':  {args[0]}')
+            else:
+                self.finish_notes.setText(tr('Notes') + f':\n• {'\n• '.join(args)}')
             self.finish_notes.show()
 
         def setCurrentFileProgress(self, percentage: float, current_file_name: str | None):
             """sets the """
             self.current_file_progress.setProgressPercentage(percentage)
-            self.current_file_progress.setLeftLabel(f'Current File {self.current_file_progress.progress_percentage}%:  {current_file_name}' if current_file_name else f'Current File:  ----')
+            if current_file_name:
+                self.current_file_progress.setLeftLabel(tr('Current File') + f' {self.current_file_progress.progress_percentage}%:  {current_file_name}')
+            else:
+                self.current_file_progress.setLeftLabel(tr('Current File') + f':  ----')
 
         def setProcessProgress(self, percentage: float, amount_copied: int):
             """Sets the overall process progress percentage; progress bar; and amount copied in bytes."""
-            if not self.pr.source_files_count:
-                self.process_progress.setLeftLabel(f'Amount Copied:  {format_bytes(amount_copied)}\nProcess Progress:  {'Calculating'}%')
-                return
             self.process_progress.setProgressPercentage(percentage)
-            self.process_progress.setLeftLabel(f'Amount Copied:  {format_bytes(amount_copied)}\nProcess Progress:  {self.process_progress.progress_percentage}%')
+            self.process_progress.setLeftLabel('{0}:  {1}\n{2}:  {3}%'.format(tr('Amount Copied'), format_bytes(amount_copied), tr('Process Progress'), self.process_progress.progress_percentage if self.pr.source_files_count else tr('calculating')))
 
         def setCurrentFileSize(self, size: int | None):
-            self.current_file_progress.setRightLabel(f'Current File Size:  {format_bytes(size) if size else '----'}')
+            self.current_file_progress.setRightLabel(tr('Current File Size') + f':  {format_bytes(size) if size else '----'}')
 
         def setEtaAndSpeed(self, eta: int | None, speed: int | None):
-            self.process_progress.setRightLabel(f'ETA:  {format_seconds(eta) if eta else '----'}\nSpeed:  {format_bytes(speed, per_second=True) if speed else '----'}')
+            self.process_progress.setRightLabel('{0}:  {1}\n{2}:  {3}'.format(tr('Eta'), format_seconds(eta) if eta else '----', tr('Speed'), format_bytes(speed, per_second=True) if speed else '----'))
 
         def setErrorCountBadge(self, count: int):
             if count == 0:
@@ -342,7 +345,7 @@ class components:
                 return
             self.stop_or_restart_process.clicked.disconnect(self.on_stop_clicked)
             self.stop_or_restart_process.clicked.connect(self.on_restart_clicked)
-            self.stop_or_restart_process.setText('Restart Process')
+            self.stop_or_restart_process.setText(tr('Restart Process'))
             self.stop_or_restart_process.setIcon(Icons.SYNC)
             self.restart_button_showing = True
             self.stop_button_showing = False
@@ -352,7 +355,7 @@ class components:
                 return
             self.stop_or_restart_process.clicked.disconnect(self.on_restart_clicked)
             self.stop_or_restart_process.clicked.connect(self.on_stop_clicked)
-            self.stop_or_restart_process.setText('Stop Process')
+            self.stop_or_restart_process.setText(tr('Stop Process'))
             self.stop_or_restart_process.setIcon(Icons.PAUSE)
             self.stop_button_showing = True
             self.restart_button_showing = False
@@ -366,14 +369,17 @@ class components:
         # -------------------------------- Strings --------------------------------
         @property
         def files_copied_title(self) -> str:
-            return f'{self.pr.total_files_copied if self.pr.total_files_copied > 0 else 0}/{self.pr.source_files_count if self.pr.source_files_count else 'Calculating'} Files Copied'
+            return (f'{self.pr.total_files_copied}/{self.pr.source_files_count}' if self.pr.source_files_count else tr('calculating')) + ' ' + tr('Files Copied')
 
         @property
-        def failed_copied_note(self) -> str | None:
+        def failed_copies_note(self) -> str | None:
             not_copied_file_count: int = self.pr.source_files_count - self.pr.total_files_copied
             if not_copied_file_count < 0:
                 return None
-            return f'{not_copied_file_count} {'file was' if not_copied_file_count == 1 else 'files were'} not copied due to Selection Filters, Existence in Destination{', Errors, or Early Termination.' if self.pr.unnatural_termination_occurred else ', or Errors.'}'
+            if not_copied_file_count == 1:
+                return tr('{0} file was not copied due to Selection Filters, Existence in Destination, Errors, or Early Termination.').format(not_copied_file_count)
+            else:
+                return tr('{0} files were not copied due to Selection Filters, Existence in Destination, Errors, or Early Termination.').format(not_copied_file_count)
 
         # -------------------------------- Progress Update Slots --------------------------------
         def start_timers(self):
@@ -410,7 +416,7 @@ class components:
             self.showStopProcessButton()
 
         def on_pending_started(self):
-            self.setTitle('Pending')
+            self.setTitle(tr('Pending'))
             self.finish_notes.hide()
             self.status_icon.set_Pending()
             self.showStopProcessButton()
@@ -420,18 +426,18 @@ class components:
             self.stop_timers()
             if self.pr.process_deleted:
                 return
-            self.setNote(self.failed_copied_note if self.pr.total_files_copied < self.pr.source_files_count else None)
+            self.setNote(self.failed_copies_note if self.pr.total_files_copied < self.pr.source_files_count else None)
             if self.pr.unnatural_termination_occurred:
                 self.status_icon.set_StoppedMidway()
-                self.setTitle('Stopped Midway', self.files_copied_title)
+                self.setTitle(tr('Stopped Midway'), self.files_copied_title)
                 self.setEtaAndSpeed(None, None)
             elif self.pr.error_count != 0:
                 self.status_icon.set_CompleteWithError()
-                self.setTitle('Finished with Errors', self.files_copied_title)
+                self.setTitle(tr('Finished with Errors'), self.files_copied_title)
                 self.__set_progress_bars_defaults()
             else:
                 self.status_icon.set_Complete()
-                self.setTitle('Finished', self.files_copied_title)
+                self.setTitle(tr('Finished'), self.files_copied_title)
                 self.__set_progress_bars_defaults()
             self.status_icon.show()
             self.showRestartProcessButton()
@@ -440,10 +446,10 @@ class components:
             if not self.pr.continuous_sync_running:
                 return
             self.stop_timers()
-            self.setTitle('Finished', 'Continuous Sync Enabled')
+            self.setTitle(tr('Finished'), tr('Continuous Sync Enabled'))
             self.setNote(f'{self.files_copied_title.lower()}.',
-                         self.failed_copied_note if self.pr.total_files_copied < self.pr.source_files_count else None,
-                         f'The destination will be updated every {self.pr.sync_every_n_min} minutes only when {self.pr.sync_every_n_change} changes are detected in the source.')
+                         self.failed_copies_note if self.pr.total_files_copied < self.pr.source_files_count else None,
+                         tr('The destination will be updated every {0} minutes only when {1} changes are detected in the source.').format(self.pr.sync_every_n_min, self.pr.sync_every_n_change))
             self.status_icon.set_Monitoring()
             self.status_icon.show()
             self.__set_progress_bars_defaults()
@@ -453,7 +459,7 @@ class components:
             self.errors_window.addError(self.pr.errors[-1][0], self.pr.errors[-1][1], self.pr.current_file, self.pr.current_file_size)
 
         def on_process_deleted(self):
-            self.setTitle('Deleted')
+            self.setTitle(tr('Deleted'))
             # Delete UI elements
             self.finish_notes.deleteLater()
             self.status_icon.deleteLater()
@@ -467,13 +473,13 @@ class components:
 
         # -------------------------------- Button Slots --------------------------------
         def on_delete_clicked(self):
-            self.pr.delete() if dialogs.question(main_window, 'Delete this Process?', 'Deleting this process will terminate it!\nAre you sure you want to continue?') == dialogs.response.Yes else None
+            self.pr.delete() if dialogs.question(main_window, tr('Delete this Process?'), tr('Deleting this process will terminate it!\nAre you sure you want to continue?')) == dialogs.response.Yes else None
 
         def on_stop_clicked(self):
-            self.pr.terminate() if dialogs.question(main_window, 'Stop this Process?', 'Stopping this process will temporarily terminate it!\nAre you sure you want to continue?') == dialogs.response.Yes else None
+            self.pr.terminate() if dialogs.question(main_window, tr('Stop this Process?'), tr('Stopping this process will temporarily terminate it!\nAre you sure you want to continue?')) == dialogs.response.Yes else None
 
         def on_restart_clicked(self):
-            if dialogs.question(main_window, 'Restart this Process?', 'Restarting this process will continue the copying of files.\nAre you sure you want to continue?') == dialogs.response.Yes:
+            if dialogs.question(main_window, tr('Restart this Process?'), tr('Restarting this process will continue the copying of files.\nAre you sure you want to continue?')) == dialogs.response.Yes:
                 self.pr.startPending()
 
         def on_view_errors_clicked(self):
@@ -493,7 +499,7 @@ class tabs:
 
             # Title
             if tab_title:
-                title = TitleLabel(text=tr(tab_title))
+                title = TitleLabel(text=tab_title)
                 setFont(title, 24, QFont.Weight.Bold)
                 self.layout.addWidget(title)
 
@@ -511,7 +517,7 @@ class tabs:
             self.total_error_count: int = 0
 
             # Error Window
-            self.all_errors_window = ErrorsWindow(f'All Errors')
+            self.all_errors_window = ErrorsWindow(tr('All Errors'))
             QTimer.singleShot(100, lambda: (self.all_errors_window.resize(int(self.window().size().width() * 0.9), int(self.window().size().height() * 0.9)),
                                             self.all_errors_window.move(self.window().pos().x() + 32, self.window().pos().y() + 32)))  # we must use timer here because for some reason the window does not resize normally.
             for pr in process_manager.processes:
@@ -531,37 +537,37 @@ class tabs:
 
             self.view_all_errors = PushButton()
             self.view_all_errors.clicked.connect(self.all_errors_window.show)
-            self.view_all_errors.setText('View Errors:  0')
+            self.view_all_errors.setText(tr('View Errors') + f':  0')
             self.view_all_errors.setSizePolicy(SizePolicy.Fixed, SizePolicy.Fixed)
             buttons.addWidget(self.view_all_errors, alignment=AlignFlag.AlignLeft)
             buttons.addSpacerItem(primitives.HorizontalExpandSpace())
 
             restart_processes = PushButton()
             restart_processes.clicked.connect(self.on_restart_all_processes_clicked)
-            restart_processes.setText('Restart All Processes')
+            restart_processes.setText(tr('Restart All Processes'))
             restart_processes.setSizePolicy(SizePolicy.Fixed, SizePolicy.Fixed)
             buttons.addWidget(restart_processes)
 
             stop_all_processes = PushButton()
             stop_all_processes.clicked.connect(self.on_stop_all_processes_clicked)
-            stop_all_processes.setText('Stop All Processes')
+            stop_all_processes.setText(tr('Stop All Processes'))
             stop_all_processes.setSizePolicy(SizePolicy.Fixed, SizePolicy.Fixed)
             buttons.addWidget(stop_all_processes)
 
         # Slots
         def on_error_occurred(self, pr: CopyProcess):
             self.total_error_count += 1
-            self.view_all_errors.setText(f'View Errors:  {self.total_error_count}')
+            self.view_all_errors.setText(tr('View Errors') + f':  {self.total_error_count}')
             self.all_errors_window.addError(pr.errors[-1][0], pr.errors[-1][1], pr.current_file, pr.current_file_size)
 
         # Buttons
         @staticmethod
         def on_restart_all_processes_clicked():
-            process_manager.restart_all_processes() if dialogs.question(main_window, 'Restart All Processes?', 'This will restart any processes that are not currently running.\nAre you sure you want to continue?') == dialogs.response.Yes else None
+            process_manager.restart_all_processes() if dialogs.question(main_window, tr('Restart All Processes?'), tr('This will restart any processes that are not currently running.\nAre you sure you want to continue?')) == dialogs.response.Yes else None
 
         @staticmethod
         def on_stop_all_processes_clicked():
-            process_manager.stop_all_processes() if dialogs.question(main_window, 'Stop all Processes?', 'This will stop all currently running processes!\nAre you sure you want to continue?') == dialogs.response.Yes else None
+            process_manager.stop_all_processes() if dialogs.question(main_window, tr('Stop all Processes?'), tr('This will stop all currently running processes!\nAre you sure you want to continue?')) == dialogs.response.Yes else None
 
 
 class MainWindow(windows.TabWindow):
@@ -577,30 +583,30 @@ class MainWindow(windows.TabWindow):
         for i, p in enumerate(process_manager.processes):
             process_tab.add_widget(components.ProcessCard(i, p))
         process_tab.setObjectName('processes')
-        self.addSubInterface(process_tab, Icons.APPLICATION, 'Processes')
+        self.addSubInterface(process_tab, Icons.APPLICATION, tr('Processes'))
 
         # Sources
-        src_tab = tabs.GenericTab('Sources')
+        src_tab = tabs.GenericTab(tr('Sources'))
         src_tab.setObjectName('src')
-        self.addSubInterface(src_tab, Icons.FOLDER, 'Sources')
+        self.addSubInterface(src_tab, Icons.FOLDER, tr('Sources'))
         for src_path in process_manager.source_sorted_processes:
-            src_tab.add_widget(cards.SettingWPushButtons(Icons.FOLDER, f'{os_utils.getPathTarget(src_path)}', src_path, ('Open in Explorer',), (Binder(os_utils.showDirInExplorer, src_path),)))
+            src_tab.add_widget(cards.SettingWPushButtons(Icons.FOLDER, f'{os_utils.getPathTarget(src_path)}', src_path, (tr('Open in Explorer'),), (Binder(os_utils.showDirInExplorer, src_path),)))
 
         # Destination
-        dst_tab = tabs.GenericTab('Destinations')
+        dst_tab = tabs.GenericTab(tr('Destinations'))
         dst_tab.setObjectName('dst')
-        self.addSubInterface(dst_tab, Icons.FLAG, 'Destinations')
+        self.addSubInterface(dst_tab, Icons.FLAG, tr('Destinations'))
         for dst_path in process_manager.destination_sorted_processes:
-            dst_tab.add_widget(cards.SettingWPushButtons(Icons.FOLDER, f'{os_utils.getPathTarget(dst_path)}', dst_path, ('Open in Explorer',), (Binder(os_utils.showDirInExplorer, dst_path),)))
+            dst_tab.add_widget(cards.SettingWPushButtons(Icons.FOLDER, f'{os_utils.getPathTarget(dst_path)}', dst_path, (tr('Open in Explorer'),), (Binder(os_utils.showDirInExplorer, dst_path),)))
 
         # Information
-        info = tabs.GenericTab('Information')
+        info = tabs.GenericTab(tr('Information'))
         info.setObjectName('info')
         info.add_widget(InfoPageWidget())
-        self.addSubInterface(info, Icons.INFO, 'Info', position=NavigationItemPosition.BOTTOM)
+        self.addSubInterface(info, Icons.INFO, tr('Info'), position=NavigationItemPosition.BOTTOM)
 
     def closeEvent(self, event):
-        if dialogs.question(self, 'Close Process Manager?', 'Exiting the Process Manager will terminate all the currently running processes!\nAre you sure you want to continue?') != dialogs.response.Yes:
+        if dialogs.question(self, tr('Close Process Manager?'), tr('Exiting the Process Manager will terminate all the currently running processes!\nAre you sure you want to continue?')) != dialogs.response.Yes:
             event.ignore()
             return
         super().closeEvent(event)  # must call here so that window pos and size is saved to preferences
@@ -617,18 +623,18 @@ class ErrorsWindow(windows.SubWindow):
             v_lay = QVBoxLayout()
             self.setLayout(v_lay)
             details_label = BodyLabel()
-            details_label.setText(f'Details:  {details}')
+            details_label.setText(tr('Details') + f':  {details}')
             details_label.setTextColor(light=error_color, dark=error_color)
             details_label.setWordWrap(True)
             v_lay.addWidget(details_label)
             message_label = BodyLabel()
-            message_label.setText(f'Message:  {message}')
+            message_label.setText(tr('Message') + f':  {message}')
             message_label.setTextColor(light=error_color, dark=error_color)
             message_label.setWordWrap(True)
             v_lay.addWidget(message_label)
             clipboard_button = PushButton()
             clipboard_button.setIcon(Icons.PASTE)
-            clipboard_button.setText('Copy to Clipboard')
+            clipboard_button.setText(tr('Copy to Clipboard'))
             clipboard_button.setSizePolicy(SizePolicy.Fixed, SizePolicy.Fixed)
             clipboard_button.clicked.connect(lambda: os_utils.copyToClipboard(f'{details_label.text()}\n{message_label.text()}', app))
             v_lay.addWidget(clipboard_button)
@@ -644,18 +650,18 @@ class ErrorsWindow(windows.SubWindow):
 
         # -------------------------------- Tabs --------------------------------
         # Errors
-        self.errors_tab = tabs.GenericTab('Errors')
+        self.errors_tab = tabs.GenericTab(tr('Errors'))
         self.errors_tab.setObjectName('errors')
-        self.addSubInterface(self.errors_tab, Icons.TAG, 'Errors')
+        self.addSubInterface(self.errors_tab, Icons.TAG, tr('Errors'))
 
         # Affected Files
-        self.affected_files_tab = tabs.GenericTab('Affected Files')
+        self.affected_files_tab = tabs.GenericTab(tr('Affected Files'))
         self.affected_files_tab.setObjectName('affected_files')
-        self.addSubInterface(self.affected_files_tab, Icons.DOCUMENT, 'Affected Files')
+        self.addSubInterface(self.affected_files_tab, Icons.DOCUMENT, tr('Affected Files'))
 
         # No Errors Label
         self.no_errors_label = TitleLabel(self.stackedWidget)
-        self.no_errors_label.setText('No Errors have Occurred')
+        self.no_errors_label.setText(tr('No Errors have Occurred'))
         setFont(self.no_errors_label, 20)
         self.no_errors_label.setTextColor('grey', 'grey')
         self.no_errors_label.adjustSize()
@@ -675,7 +681,7 @@ class ErrorsWindow(windows.SubWindow):
         self.errors_tab.add_widget(ErrorsWindow.ErrorCard(details, message))
         if affected_file in self.affected_files:
             return
-        self.affected_files_tab.add_widget(cards.SettingWPushButtons(Icons.DOCUMENT, f'{os_utils.getPathTarget(affected_file)}  •  {format_bytes(affected_file_size)}', affected_file, ('Open in Explorer',), (lambda: os_utils.selectFileInExplorer(affected_file),)))
+        self.affected_files_tab.add_widget(cards.SettingWPushButtons(Icons.DOCUMENT, f'{os_utils.getPathTarget(affected_file)}  •  {format_bytes(affected_file_size)}', affected_file, (tr('Open in Explorer'),), (lambda: os_utils.selectFileInExplorer(affected_file),)))
         self.affected_files.add(affected_file)
 
     def clearAllErrors(self):

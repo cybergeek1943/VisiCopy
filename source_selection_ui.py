@@ -21,8 +21,8 @@ class SelectedFile(SelectedPath):
         self.include_dir_checkbox = CheckBox()
         self.include_dir_checkbox.toggled.connect(lambda b: self.__setattr__('include_base_dir', b))
         self.include_dir_checkbox.setChecked(False)
-        self.include_dir_checkbox.setText('Include Parent Folder')
-        self.include_dir_checkbox.setToolTip('Create the parent folder of this file in the destination and copy this file into it.')
+        self.include_dir_checkbox.setText(tr('Include Parent Folder'))
+        self.include_dir_checkbox.setToolTip(tr('Create the parent folder of this file in the destination and copy this file into it.'))
         self.include_dir_checkbox.setToolTipDuration(10000)
         self.include_dir_checkbox.setSizePolicy(SizePolicy.Fixed, SizePolicy.Expanding)
         self.hBoxLayout.addWidget(self.include_dir_checkbox)
@@ -45,12 +45,12 @@ class SelectedFolder(SelectedFile):
         super().__init__(path)
         self.iconLabel.setIcon(Icons.FOLDER)
         self.include_dir_checkbox.setChecked(True)
-        self.include_dir_checkbox.setText('Include Folder')
-        self.include_dir_checkbox.setToolTip("Create this folder in the destination and copy this folder's contents into it.\nOtherwise, only this folder's contents will be copied to the destination.")
+        self.include_dir_checkbox.setText(tr('Include Folder'))
+        self.include_dir_checkbox.setToolTip(tr("Create this folder in the destination and copy this folder's contents into it.\nOtherwise, only this folder's contents will be copied to the destination."))
         if selected_files:
-            self.titleLabel.setText(f'{self.titleLabel.text()}  •  {len(selected_files)}/{os_utils.fileCounter(path, recursive=False)} Files Selected')
+            self.titleLabel.setText(f'{self.titleLabel.text()}  •  {len(selected_files)}/{os_utils.fileCounter(path, recursive=False)} ' + tr("Files Selected"))
             self.include_dir_checkbox.setChecked(False)
-            self.include_dir_checkbox.setToolTip("Create this folder in the destination and copy this folder's selected contents into it.\nOtherwise, only this folder's selected contents will be copied to the destination.")
+            self.include_dir_checkbox.setToolTip(tr("Create this folder in the destination and copy this folder's selected contents into it.\nOtherwise, only this folder's selected contents will be copied to the destination."))
 
         # Internal State
         self.selected_files: list[str] | None = selected_files
@@ -65,11 +65,12 @@ class EmptySelectionTab(QWidget):
 
         v_lay.addWidget(primitives.ImageIcon(MainIconPaths.dragDrop, 96), alignment=AlignFlag.AlignHCenter | AlignFlag.AlignBottom)
         _ = BodyLabel()
-        _.setText('<center><h2>Drag and Drop files or folders here</h2>'
-                  'or&nbsp;&nbsp;'
-                  '<a style="text-decoration: none" href="folder">Select Folder</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
-                  '<a style="text-decoration: none" href="file">Select File(s)</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
-                  '<a style="text-decoration: none" href="path">Custom Path</a></center>')
+        _.setText(('<center><h2>{0}</h2>'
+                   '{1}&nbsp;&nbsp;'
+                   '<a style="text-decoration: none" href="folder">{2}</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
+                   '<a style="text-decoration: none" href="file">{3}</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
+                   '<a style="text-decoration: none" href="path">{4}</a></center>').format(tr("Drag and Drop files or folders here"), tr('or'),
+                                                                                           tr("Select Folder"), tr("Select File(s)"), tr("Custom Path")))
         v_lay.addWidget(_, alignment=AlignFlag.AlignHCenter | AlignFlag.AlignTop)
         self.addItemsLinksClicked = _.linkActivated
 
@@ -84,23 +85,24 @@ class SelectionManagerTab(windows.TabComponent):
         self.layout.addLayout(h_lay)
 
         _ = BodyLabel()
-        _.setText('<center style="line-height: 0.5;"><h4 style="color: gray;">Drag & Drop files or folders to add more</h4>'
-                  'or&nbsp;&nbsp;'
-                  '<a style="text-decoration: none" href="folder">Add Folder</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
-                  '<a style="text-decoration: none" href="file">Add File(s)</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
-                  '<a style="text-decoration: none" href="path">Add Custom Path</a></center>')
+        _.setText(('<center style="line-height: 0.5;"><h4 style="color: gray;">{0}</h4>'
+                   '{1}&nbsp;&nbsp;'
+                   '<a style="text-decoration: none" href="folder">{2}</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
+                   '<a style="text-decoration: none" href="file">{3}</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
+                   '<a style="text-decoration: none" href="path">{4}</a></center>').format(tr("Drag & Drop files or folders to add more"), tr('or'),
+                                                                                           tr("Add Folder"), tr("Add File(s)"), tr("Add Custom Path")))
         self.addItemsLinksClicked = _.linkActivated
         h_lay.addItem(primitives.HorizontalExpandSpace())
         h_lay.addWidget(_)
         h_lay.addItem(primitives.HorizontalExpandSpace())
 
         _ = PushButton()
-        _.setText('Clear Selection')
+        _.setText(tr('Clear Selection'))
         _.setSizePolicy(SizePolicy.Fixed, SizePolicy.Fixed)
         self.clearButtonClicked = _.clicked
         h_lay.addWidget(_)
         _ = PrimaryPushButton()
-        _.setText('Confirm')
+        _.setText(tr('Confirm'))
         _.setSizePolicy(SizePolicy.Fixed, SizePolicy.Fixed)
         self.confirmButtonClicked = _.clicked
         h_lay.addWidget(_)
@@ -164,12 +166,12 @@ class MainWindow(windows.SubWindow):
         self.add_folder() if href == 'folder' else self.add_file_s() if href == 'file' else self.switchTo(self.custom_path_entry_tab) if href == 'path' else None
 
     def add_folder(self):
-        if p := QFileDialog.getExistingDirectory(self, 'Select Folder', user_docs_path):
+        if p := QFileDialog.getExistingDirectory(self, tr('Select Folder'), user_docs_path):
             self.selection_manager_tab.add_path(p.replace('/', '\\'))
             self.switchTo(self.selection_manager_tab)
 
     def add_file_s(self):
-        if (paths := QFileDialog.getOpenFileNames(self, 'Select File(s)', user_docs_path))[0].__len__() != 0:
+        if (paths := QFileDialog.getOpenFileNames(self, tr('Select File(s)'), user_docs_path))[0].__len__() != 0:
             self.selection_manager_tab.add_paths([p.replace('/', '\\') for p in paths[0]])
             self.switchTo(self.selection_manager_tab)
 

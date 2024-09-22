@@ -19,22 +19,23 @@ class SelectionManagerTab(windows.TabComponent):
         self.layout.addLayout(h_lay)
 
         _ = BodyLabel()
-        _.setText('<center style="line-height: 0.5;"><h4 style="color: gray;">Drag & Drop Folders</h4>'
-                  'or&nbsp;&nbsp;'
-                  '<a style="text-decoration: none" href="folder">Add Folder</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
-                  '<a style="text-decoration: none" href="path">Add Custom Path</a></center>')
+        _.setText(('<center style="line-height: 0.5;"><h4 style="color: gray;">{0}</h4>'
+                   '{1}&nbsp;&nbsp;'
+                   '<a style="text-decoration: none" href="folder">{2}</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
+                   '<a style="text-decoration: none" href="path">{3}</a></center>').format(tr("Drag & Drop Folders"), tr('or'),
+                                                                                           tr("Add Folder"), tr("Add Custom Path")))
         self.addItemsLinksClicked = _.linkActivated
         h_lay.addItem(primitives.HorizontalExpandSpace())
         h_lay.addWidget(_)
         h_lay.addItem(primitives.HorizontalExpandSpace())
 
         _ = PushButton()
-        _.setText('Clear Selection')
+        _.setText(tr('Clear Selection'))
         _.setSizePolicy(SizePolicy.Fixed, SizePolicy.Fixed)
         self.clearButtonClicked = _.clicked
         h_lay.addWidget(_)
         _ = PrimaryPushButton()
-        _.setText('Confirm')
+        _.setText(tr('Confirm'))
         _.setSizePolicy(SizePolicy.Fixed, SizePolicy.Fixed)
         self.confirmButtonClicked = _.clicked
         h_lay.addWidget(_)
@@ -74,7 +75,7 @@ class MainWindow(windows.SubWindow):
         self.selection_manager_tab.clear_widgets()
 
     def add_folder(self):
-        if p := QFileDialog.getExistingDirectory(self, 'Select Folder', user_docs_path):
+        if p := QFileDialog.getExistingDirectory(self, tr('Select Folder'), user_docs_path):
             self.selection_manager_tab.add_path(p.replace('/', '\\'))
             self.switchTo(self.selection_manager_tab)
 

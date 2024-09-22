@@ -97,6 +97,7 @@ def switchDropdown(toggled: bool,
     return {'type': 'switch-dropdown', 'toggled': toggled, 'options': options, 'selected_option': selected_option, 'disabled': disabled, **kwargs}
 
 
+tr: callable = lambda _: _  # dummy callable used to register strings for translation
 """ Parser args for these elements (added using **kwargs). The parser assumes that all elements (elements that own settings to their name) have a "toggle" value key.
 `disabled_default`={toggled: True|False, entry: Any, <{kwargs}...>}  use this to tell the parser what the element should evaluated as when it is disabled
 `override`=[(True|False, <id>), ...]  use this to override other elements in parser... `True|False` specifies the value of self element when the `<id>` should disabled/removed. This is put into effect when toggled is true. (this does not effect `custom` elements) (only works for switches and checkboxes with no entry or sub-options due to the way the parser is written)
@@ -118,209 +119,209 @@ def switchDropdown(toggled: bool,
 __default_settings: list = [
     {
         'tab_id': 'subfolders',
-        'title': 'Subfolders',
+        'title': tr('Subfolders'),
         'note': None,
         'elements': [
             # related
-            switch('Copy all subfolders', toggled=True, expose=True, id='recursive'),
-            switchNumEntry('Only n levels deep', toggled=False, entry=10, sub_pos=1, id='n_levels'),
-            switch('Copy empty folders', toggled=True, sub_pos=1, id='copy_empty_folders'),
+            switch(tr('Copy all subfolders'), toggled=True, expose=True, id='recursive'),
+            switchNumEntry(tr('Only n levels deep'), toggled=False, entry=10, sub_pos=1, id='n_levels'),
+            switch(tr('Copy empty folders'), toggled=True, sub_pos=1, id='copy_empty_folders'),
 
             # related
-            switch('Only copy the folder-tree structure', toggled=False, id='only_structure'),
-            switch('Create zero-size files with same names as in source', toggled=False, sub_pos=1, id='create_zero_length', override=[(True, 'only_structure')]),
+            switch(tr('Only copy the folder-tree structure'), toggled=False, id='only_structure'),
+            switch(tr('Create zero-size files with same names as in source'), toggled=False, sub_pos=1, id='create_zero_length', override=[(True, 'only_structure')]),
         ]
     },
     {
         'tab_id': 'performance',
-        'title': 'Performance',
-        'note': 'Note that when multiprocessing is enabled, multiple copy processes are created in the following circumstances:'
-                '\n• When there are multiple sources'
-                '\n• When there are multiple destinations selected',
+        'title': tr('Performance'),
+        'note': tr('Note that when multiprocessing is enabled, multiple copy processes are created in the following circumstances:'
+                   '\n• When there are multiple sources'
+                   '\n• When there are multiple destinations selected'),
         'elements': [
-            switch('Use unbuffered I/O (recommended for larger files)', toggled=True, id='use_unbuffered'),
-            switchNumEntry('Multi-Threading per-process (use 1-128 threads)', toggled=True, entry=8, min_entry=1, max_entry=128, id='multi-thread'),
-            switchNumEntry('Multiprocessing - max number of processes to run simultaneously when copying from multiple sources or copying to multiple destinations (1-32)', toggled=True, entry=8, min_entry=1, max_entry=32, id='multiprocess', custom=True),
-            checkBox('Prioritize multiple destinations (de-prioritizes multiple sources)', toggled=True, sub_pos=1, id='prioritize_dst', custom=True),
-            checkBox('Allow next pending process to run when a currently running process is finished and in Continuous Monitoring/Sync Mode', toggled=True, sub_pos=1, id='allow_new_multi_processes_in_sync_mode', custom=True),
+            switch(tr('Use unbuffered I/O (recommended for larger files)'), toggled=True, id='use_unbuffered'),
+            switchNumEntry(tr('Multi-Threading per-process (use 1-128 threads)'), toggled=True, entry=8, min_entry=1, max_entry=128, id='multi-thread'),
+            switchNumEntry(tr('Multiprocessing - max number of processes to run simultaneously when copying from multiple sources or copying to multiple destinations (1-32)'), toggled=True, entry=8, min_entry=1, max_entry=32, id='multiprocess', custom=True),
+            checkBox(tr('Prioritize multiple destinations (de-prioritizes multiple sources)'), toggled=True, sub_pos=1, id='prioritize_dst', custom=True),
+            checkBox(tr('Allow next pending process to run when a currently running process is finished and in Continuous Monitoring/Sync Mode'), toggled=True, sub_pos=1, id='allow_new_multi_processes_in_sync_mode', custom=True),
             spacer(divider=True),
 
-            switchSizeEntry('Apply the following throttle settings for files greater than', toggled=False, entry=1, id='throttle_threshold'),
-            switchSizeEntry('Throttle the I/O rate to n amount per second', toggled=False, selected_option=2, sub_pos=1, id='throttle_rate'),
-            switchSizeEntry('Max I/O size per read/write cycle', toggled=False, selected_option=2, sub_pos=1, id='throttle_cycle'),
+            switchSizeEntry(tr('Apply the following throttle settings for files greater than'), toggled=False, entry=1, id='throttle_threshold'),
+            switchSizeEntry(tr('Throttle the I/O rate to n amount per second'), toggled=False, selected_option=2, sub_pos=1, id='throttle_rate'),
+            switchSizeEntry(tr('Max I/O size per read/write cycle'), toggled=False, selected_option=2, sub_pos=1, id='throttle_cycle'),
             spacer(divider=True),
 
-            switch('Use SMB compression for copies over network (can improve speed significantly)', toggled=False, id='network_compression'),
-            switch('Optimize the sparse state of files (useful for large files with lots of empty data. e.g. large database files with lots of empty space get optimized for storage)', toggled=True, id='retain_sparse_state', inverse=True),
-            switchNumEntry('Specify the IPG (inter-packet gap) in milliseconds to free up bandwidth on slow lines (can effect performance; research best IPG for your network)', toggled=False, entry=0.096, id='inter_packet_gap'),
+            switch(tr('Use SMB compression for copies over network (can improve speed significantly)'), toggled=False, id='network_compression'),
+            switch(tr('Optimize the sparse state of files (useful for large files with lots of empty data. e.g. large database files with lots of empty space get optimized for storage)'), toggled=True, id='retain_sparse_state', inverse=True),
+            switchNumEntry(tr('Specify the IPG (inter-packet gap) in milliseconds to free up bandwidth on slow lines (can effect performance; research best IPG for your network)'), toggled=False, entry=0.096, id='inter_packet_gap'),
         ]
     },
     {
-        'tab_title': 'Filters',
+        'tab_title': tr('Filters'),
         'tab_id': 'filters',
-        'title': 'Basic Filters',
+        'title': tr('Basic Filters'),
         'note': None,
         'elements': [
-            switchSizeEntry('Exclude files larger than', toggled=False, id='max_size'),
-            switchSizeEntry('Exclude files smaller than', toggled=False, id='min_size'),
+            switchSizeEntry(tr('Exclude files larger than'), toggled=False, id='max_size'),
+            switchSizeEntry(tr('Exclude files smaller than'), toggled=False, id='min_size'),
             spacer(divider=True),
 
-            switchDateEntry('Maximum file age - exclude files older than', toggled=False, id='max_age'),
-            switchDateEntry('Minimum file age - exclude files newer than', toggled=False, id='min_age'),
-            switchDateEntry('Maximum last access date - exclude files unused since', toggled=False, id='max_last_access'),
-            switchDateEntry('Minimum last access date - exclude files used since', toggled=False, id='min_last_access'),
+            switchDateEntry(tr('Maximum file age - exclude files older than'), toggled=False, id='max_age'),
+            switchDateEntry(tr('Minimum file age - exclude files newer than'), toggled=False, id='min_age'),
+            switchDateEntry(tr('Maximum last access date - exclude files unused since'), toggled=False, id='max_last_access'),
+            switchDateEntry(tr('Minimum last access date - exclude files used since'), toggled=False, id='min_last_access'),
             spacer(divider=True),
 
-            switchStrEntry('Only copy files matching the given names/wildcards (separated by a space)', toggled=False, placeholder='e.g.,   *.txt   "file name.*"', width_factor=3, id='only_specified_files', custom=True),  # could use non-custom /if:files here... but then specified file selection may be grouped with extra unexpected files from that src directory
-            switchStrEntry("Exclude files matching the given names/wildcards/paths (separated by a space)", toggled=False, placeholder='e.g.,   *.mp4   "file name.*"   "path"', width_factor=3, id='exclude_files'),
-            switchStrEntry("Exclude folders matching the given names/wildcards/paths (separated by a space)", toggled=False, placeholder='e.g.,   *.mp4   "file name.*"   "path"', width_factor=3, id='exclude_folders'),
+            switchStrEntry(tr('Only copy files matching the given names/wildcards (separated by a space)'), toggled=False, placeholder=tr('e.g.,   *.txt   "file name.*"'), width_factor=3, id='only_specified_files', custom=True),  # could use non-custom /if:files here... but then specified file selection may be grouped with extra unexpected files from that src directory
+            switchStrEntry(tr("Exclude files matching the given names/wildcards/paths (separated by a space)"), toggled=False, placeholder=tr('e.g.,   *.mp4   "file name.*"   "path"'), width_factor=3, id='exclude_files'),
+            switchStrEntry(tr("Exclude folders matching the given names/wildcards/paths (separated by a space)"), toggled=False, placeholder=tr('e.g.,   *.mp4   "file name.*"   "path"'), width_factor=3, id='exclude_folders'),
         ]
     },
     {
         'tab_id': 'filters',
-        'title': 'Attribute Filters',
+        'title': tr('Attribute Filters'),
         'note': None,
         'elements': [
             # related
-            switch('Copy only files with the Archive attribute', toggled=False, id='only_archived'),
-            switch('Remove the Archive attribute from files in source after copy', toggled=False, sub_pos=1, id='remove_archive_attrib'),
+            switch(tr('Copy only files with the Archive attribute'), toggled=False, id='only_archived'),
+            switch(tr('Remove the Archive attribute from files in source after copy'), toggled=False, sub_pos=1, id='remove_archive_attrib'),
             spacer(),
 
-            switchDropdown(toggled=False, options=("Don't copy files with the following attributes", 'Only copy files with the following attributes'), id=('exclude_files_with_attrib', 'include_files_with_attrib')),
-            checkBox('Read Only', toggled=False, sub_pos=1, id='read_only'),
-            checkBox('Archive', toggled=False, sub_pos=1, id='archive'),
-            checkBox('System', toggled=False, sub_pos=1, id='system'),
-            checkBox('Hidden', toggled=False, sub_pos=1, id='hidden'),
-            checkBox('Compressed', toggled=False, sub_pos=1, id='compressed'),
-            checkBox('Not Content Indexed', toggled=False, sub_pos=1, id='not_content_indexed'),
-            checkBox('Encrypted', toggled=False, sub_pos=1, id='encrypted'),
-            checkBox('Temporary', toggled=False, sub_pos=1, id='temporary'),
-            checkBox('Offline', toggled=False, sub_pos=1, id='offline')
+            switchDropdown(toggled=False, options=(tr("Don't copy files with the following attributes"), tr('Only copy files with the following attributes')), id=('exclude_files_with_attrib', 'include_files_with_attrib')),
+            checkBox(tr('Read Only'), toggled=False, sub_pos=1, id='read_only'),
+            checkBox(tr('Archive'), toggled=False, sub_pos=1, id='archive'),
+            checkBox(tr('System'), toggled=False, sub_pos=1, id='system'),
+            checkBox(tr('Hidden'), toggled=False, sub_pos=1, id='hidden'),
+            checkBox(tr('Compressed'), toggled=False, sub_pos=1, id='compressed'),
+            checkBox(tr('Not Content Indexed'), toggled=False, sub_pos=1, id='not_content_indexed'),
+            checkBox(tr('Encrypted'), toggled=False, sub_pos=1, id='encrypted'),
+            checkBox(tr('Temporary'), toggled=False, sub_pos=1, id='temporary'),
+            checkBox(tr('Offline'), toggled=False, sub_pos=1, id='offline')
         ]
     },
     {
         'tab_id': 'filters',
-        'title': 'Source/Destination Relation Filters',
-        'note': 'Note:'
-                '\n• These settings are for the relations between files that already exists in the source and/or destination.'
-                '\n• By default, a file in both the source and destination is compared using the Name, Size, and Timestamps.'
-                '\n• A file from source that already exists in destination is not copied by default.'
-                '\n• If a file already exists in the destination but is still copied from source anyway, it will overwrite the file in the destination.'
-                '\n• The term "source pool" means the collection of files from source that will be copied to destination.',
+        'title': tr('Source/Destination Relation Filters'),
+        'note': tr('Note:'
+                   '\n• These settings are for the relations between files that already exists in the source and/or destination.'
+                   '\n• By default, a file in both the source and destination is compared using the Name, Size, and Timestamps.'
+                   '\n• A file from source that already exists in destination is not copied by default.'
+                   '\n• If a file already exists in the destination but is still copied from source anyway, it will overwrite the file in the destination.'
+                   '\n• The term "source pool" means the collection of files from source that will be copied to destination.'),
         'elements': [
             # Related - because the sub settings deal with still excluding files
-            switch('Include files that already exist in destination to source pool (disables the comparison of size and timestamps in source and destination)', toggled=False, id='include_existing'),
-            switch('Exclude files from source pool that are newer than the files already existing in destination (uses "modified" timestamp to compare)', toggled=False, sub_pos=1, id='exclude_newer'),
-            switch('Exclude files from source pool that are older than the files already existing in destination (uses "modified" timestamp to compare)', toggled=False, sub_pos=1, id='exclude_older'),
-            switch('Exclude files from source pool that have the same timestamps but different sizes than the files already existing in destination', toggled=False, sub_pos=1, id='exclude_changed'),
+            switch(tr('Include files that already exist in destination to source pool (disables the comparison of size and timestamps in source and destination)'), toggled=False, id='include_existing'),
+            switch(tr('Exclude files from source pool that are newer than the files already existing in destination (uses "modified" timestamp to compare)'), toggled=False, sub_pos=1, id='exclude_newer'),
+            switch(tr('Exclude files from source pool that are older than the files already existing in destination (uses "modified" timestamp to compare)'), toggled=False, sub_pos=1, id='exclude_older'),
+            switch(tr('Exclude files from source pool that have the same timestamps but different sizes than the files already existing in destination'), toggled=False, sub_pos=1, id='exclude_changed'),
             spacer(divider=True),
 
-            switch('Exclude "lonely" files that do not exist in destination from source pool - prevents new items in destination', toggled=False, id='exclude_lonely'),
-            switch('Include "tweaked" files to source pool - if any attribute of file in source is different, than overwrite file in destination', toggled=False, id='include_tweaked'),
+            switch(tr('Exclude "lonely" files that do not exist in destination from source pool - prevents new items in destination'), toggled=False, id='exclude_lonely'),
+            switch(tr('Include "tweaked" files to source pool - if any attribute of file in source is different, than overwrite file in destination'), toggled=False, id='include_tweaked'),
         ]
     },
     {
         'tab_id': 'syncing',
-        'title': 'Syncing & Continuous Monitoring',
+        'title': tr('Syncing & Continuous Monitoring'),
         'note': None,
         'elements': [
-            switch('Keep the destination as a mirror of source - will delete items in destination that are no longer in source', toggled=False, id='mirror_src_to_dst'),
+            switch(tr('Keep the destination as a mirror of source - will delete items in destination that are no longer in source'), toggled=False, id='mirror_src_to_dst'),
 
-            switchNumEntry('Monitor source and update destination after n changes happen', toggled=False, entry=1, expose=True, id='sync_every_n_change'),
-            switchNumEntry('Wait in intervals of n minutes before updating destination', toggled=False, entry=1, expose=True, id='sync_every_n_min', sub_pos=1),
+            switchNumEntry(tr('Monitor source and update destination after n changes happen'), toggled=False, entry=1, expose=True, id='sync_every_n_change'),
+            switchNumEntry(tr('Wait in intervals of n minutes before updating destination'), toggled=False, entry=1, expose=True, id='sync_every_n_min', sub_pos=1),
 
-            switch('Revaluate security attributes on files already in destination and fix them if they have changed in source. (happens per pass)', toggled=False, id='revaluate_security_attributes'),
-            switch('Revaluate timestamps on files already in destination and fix them if they have changed in source. (happens per pass)', toggled=False, id='revaluate_timestamps'),
+            switch(tr('Revaluate security attributes on files already in destination and fix them if they have changed in source. (happens per pass)'), toggled=False, id='revaluate_security_attributes'),
+            switch(tr('Revaluate timestamps on files already in destination and fix them if they have changed in source. (happens per pass)'), toggled=False, id='revaluate_timestamps'),
         ]
     },
     {
         'tab_id': 'copy_options',
-        'title': 'Copy Options',
+        'title': tr('Copy Options'),
         'note': None,
         'elements': [
-            switch('Move files from source - deletes files from source after copy is complete', toggled=False, id='move_files'),
-            switch('Copy the symbolic link (.lnk) target instead of the (.lnk) file itself', toggled=False, id='copy_symbolic_link', inverse=True),
-            switchNumEntry('Number of retries per failed copy of a file', toggled=True, entry=10, expose=True, id='retry_limit'),
-            switchNumEntry('Number of seconds to wait before retrying', toggled=True, entry=5, sub_pos=1, expose=True, id='retry_wait'),
+            switch(tr('Move files from source - deletes files from source after copy is complete'), toggled=False, id='move_files'),
+            switch(tr('Copy the symbolic link (.lnk) target instead of the (.lnk) file itself'), toggled=False, id='copy_symbolic_link', inverse=True),
+            switchNumEntry(tr('Number of retries per failed copy of a file'), toggled=True, entry=10, expose=True, id='retry_limit'),
+            switchNumEntry(tr('Number of seconds to wait before retrying'), toggled=True, entry=5, sub_pos=1, expose=True, id='retry_wait'),
             spacer(divider=True),
 
             # related
-            constant("Copy the following file properties:", id='copy_file_properties'),
-            checkBox('File Data', toggled=True, sub_pos=1, id='data'),
-            checkBox('Attributes', toggled=True, sub_pos=1, id='attributes'),
-            checkBox('Timestamps', toggled=True, sub_pos=1, id='timestamps'),
-            checkBox('Owner Information', toggled=False, sub_pos=1, id='owner_info'),
-            checkBox('Auditing Information', toggled=False, sub_pos=1, id='audit_info'),
-            checkBox('NTFS access control list (ACL)', toggled=False, sub_pos=1, id='ntfs_acl'),
-            checkBox('Skip alt data streams', toggled=False, sub_pos=1, id='skip_alt_data_streams'),
+            constant(tr("Copy the following file properties:"), id='copy_file_properties'),
+            checkBox(tr('File Data'), toggled=True, sub_pos=1, id='data'),
+            checkBox(tr('Attributes'), toggled=True, sub_pos=1, id='attributes'),
+            checkBox(tr('Timestamps'), toggled=True, sub_pos=1, id='timestamps'),
+            checkBox(tr('Owner Information'), toggled=False, sub_pos=1, id='owner_info'),
+            checkBox(tr('Auditing Information'), toggled=False, sub_pos=1, id='audit_info'),
+            checkBox(tr('NTFS access control list (ACL)'), toggled=False, sub_pos=1, id='ntfs_acl'),
+            checkBox(tr('Skip alt data streams'), toggled=False, sub_pos=1, id='skip_alt_data_streams'),
             spacer(),
 
             # related
-            constant("Copy the following folder properties:", id='copy_folder_properties'),
-            checkBox('Folder Data', toggled=True, sub_pos=1, id='data'),
-            checkBox('Attributes', toggled=True, sub_pos=1, id='attributes'),
-            checkBox('Timestamps', toggled=True, sub_pos=1, id='timestamps'),
-            checkBox('Extended Attributes', toggled=False, sub_pos=1, id='owner_info'),
-            checkBox('Skip alt data streams', toggled=False, sub_pos=1, id='skip_alt_data_streams'),
+            constant(tr("Copy the following folder properties:"), id='copy_folder_properties'),
+            checkBox(tr('Folder Data'), toggled=True, sub_pos=1, id='data'),
+            checkBox(tr('Attributes'), toggled=True, sub_pos=1, id='attributes'),
+            checkBox(tr('Timestamps'), toggled=True, sub_pos=1, id='timestamps'),
+            checkBox(tr('Extended Attributes'), toggled=False, sub_pos=1, id='owner_info'),
+            checkBox(tr('Skip alt data streams'), toggled=False, sub_pos=1, id='skip_alt_data_streams'),
             spacer(divider=True),
 
             # related
-            switch('Add the following attributes to items copied to destination:', toggled=False, id='add_attr'),
-            checkBox('Read Only', toggled=False, sub_pos=1, id='read_only'),
-            checkBox('Archive', toggled=False, sub_pos=1, id='archive'),
-            checkBox('System', toggled=False, sub_pos=1, id='system'),
-            checkBox('Hidden', toggled=False, sub_pos=1, id='hidden'),
-            checkBox('Compressed', toggled=False, sub_pos=1, id='compressed'),
-            checkBox('Not Content Indexed', toggled=False, sub_pos=1, id='not_content_indexed'),
-            checkBox('Encrypted', toggled=False, sub_pos=1, id='encrypted'),
-            checkBox('Temporary', toggled=False, sub_pos=1, id='temporary'),
+            switch(tr('Add the following attributes to items copied to destination:'), toggled=False, id='add_attr'),
+            checkBox(tr('Read Only'), toggled=False, sub_pos=1, id='read_only'),
+            checkBox(tr('Archive'), toggled=False, sub_pos=1, id='archive'),
+            checkBox(tr('System'), toggled=False, sub_pos=1, id='system'),
+            checkBox(tr('Hidden'), toggled=False, sub_pos=1, id='hidden'),
+            checkBox(tr('Compressed'), toggled=False, sub_pos=1, id='compressed'),
+            checkBox(tr('Not Content Indexed'), toggled=False, sub_pos=1, id='not_content_indexed'),
+            checkBox(tr('Encrypted'), toggled=False, sub_pos=1, id='encrypted'),
+            checkBox(tr('Temporary'), toggled=False, sub_pos=1, id='temporary'),
             spacer(),
 
             # related
-            switch('Remove the following attributes on items copied to destination:', toggled=False, id='remove_attr'),
-            checkBox('Read Only', toggled=False, sub_pos=1, id='read_only'),
-            checkBox('Archive', toggled=False, sub_pos=1, id='archive'),
-            checkBox('System', toggled=False, sub_pos=1, id='system'),
-            checkBox('Hidden', toggled=False, sub_pos=1, id='hidden'),
-            checkBox('Compressed', toggled=False, sub_pos=1, id='compressed'),
-            checkBox('Not Content Indexed', toggled=False, sub_pos=1, id='not_content_indexed'),
-            checkBox('Encrypted', toggled=False, sub_pos=1, id='encrypted'),
-            checkBox('Temporary', toggled=False, sub_pos=1, id='temporary'),
+            switch(tr('Remove the following attributes on items copied to destination:'), toggled=False, id='remove_attr'),
+            checkBox(tr('Read Only'), toggled=False, sub_pos=1, id='read_only'),
+            checkBox(tr('Archive'), toggled=False, sub_pos=1, id='archive'),
+            checkBox(tr('System'), toggled=False, sub_pos=1, id='system'),
+            checkBox(tr('Hidden'), toggled=False, sub_pos=1, id='hidden'),
+            checkBox(tr('Compressed'), toggled=False, sub_pos=1, id='compressed'),
+            checkBox(tr('Not Content Indexed'), toggled=False, sub_pos=1, id='not_content_indexed'),
+            checkBox(tr('Encrypted'), toggled=False, sub_pos=1, id='encrypted'),
+            checkBox(tr('Temporary'), toggled=False, sub_pos=1, id='temporary'),
             spacer(divider=True),
 
-            switch('Assume FAT File Times (2-second date/time granularity) - use this when copying files to a linux NAS or other non-windows file system', toggled=False, id='assume_fat_file_times'),
-            switch('Copy any encrypted files using EFS RAW mode (can disable multi-threading)', toggled=False, id='efs_raw_mode'),
-            switch('Create destination files using 8.3 FAT file names only (legacy)', toggled=False, id='legacy_name_mode'),
+            switch(tr('Assume FAT File Times (2-second date/time granularity) - use this when copying files to a linux NAS or other non-windows file system'), toggled=False, id='assume_fat_file_times'),
+            switch(tr('Copy any encrypted files using EFS RAW mode (can disable multi-threading)'), toggled=False, id='efs_raw_mode'),
+            switch(tr('Create destination files using 8.3 FAT file names only (legacy)'), toggled=False, id='legacy_name_mode'),
         ]
     },
     {
         'tab_id': 'logging',
-        'title': 'Logging & Progress Status',
+        'title': tr('Logging & Progress Status'),
         'note': None,
         'elements': [
             # related
-            constant("When using the process manager GUI:", custom=True),
-            switch('Show full path of each file being copied', toggled=False, id='gui_show_full_file_path', custom=True, sub_pos=1),
-            switchNumEntry('Calculate Speed and ETA every n seconds', toggled=True, entry=8, id='speed_eta_seconds_interval', custom=True, sub_pos=1),
-            switchNumEntry('Use n progress-checkpoint samples for calculating the ETA', toggled=True, entry=32, id='eta_progress_checkpoints', custom=True, sub_pos=1),
+            constant(tr('When using the process manager GUI:'), custom=True),
+            switch(tr('Show full path of each file being copied'), toggled=False, id='gui_show_full_file_path', custom=True, sub_pos=1),
+            switchNumEntry(tr('Calculate Speed and ETA every n seconds'), toggled=True, entry=8, id='speed_eta_seconds_interval', custom=True, sub_pos=1),
+            switchNumEntry(tr('Use n progress-checkpoint samples for calculating the ETA'), toggled=True, entry=32, id='eta_progress_checkpoints', custom=True, sub_pos=1),
             spacer(),
 
-            switchStrEntry('Save Log file to path', toggled=False, placeholder=r'path\to\folder\file_name.log', width_factor=3, id='log_path'),
+            switchStrEntry(tr('Save Log file to path'), toggled=False, placeholder=tr(r'path\to\folder\file_name.log'), width_factor=3, id='log_path'),
             spacer(),
 
             # related
-            switch("Don't use the process manager GUI (spawn consoles instead)", toggled=False, id='show_console', custom=True),
-            checkBox("Don't show copy status in console (only show in log file)", toggled=False, sub_pos=1, id='console_and_log', inverse=True),
-            checkBox('Show full file paths', toggled=False, sub_pos=1, id='show_paths'),
-            checkBox('Show file timestamps', toggled=False, sub_pos=1, id='show_timestamps'),
-            checkBox('Show file sizes', toggled=True, sub_pos=1, id='show_file_size', inverse=True),
-            checkBox('Use bytes only', toggled=False, sub_pos=2, id='use_bytes_for_file_size'),
-            checkBox('Show per-file progress', toggled=False, sub_pos=1, id='show_file_progress', inverse=True),
-            checkBox('Show per-file ETA', toggled=False, sub_pos=1, id='show_file_eta'),
-            checkBox('Enable verbose mode (show skipped files in output)', toggled=False, sub_pos=1, id='verbose'),
-            checkBox('Show all extra files, not just the ones selected', toggled=False, sub_pos=1, id='show_extras'),
-            checkBox("Only list the files, don't copy anything. (useful for testing selections)", toggled=False, sub_pos=1, id='list_only'),
-            checkBox('Use unicode encoding', toggled=False, sub_pos=1, id='use_unicode'),
+            switch(tr("Don't use the process manager GUI (spawn consoles instead)"), toggled=False, id='show_console', custom=True),
+            checkBox(tr("Don't show copy status in console (only show in log file)"), toggled=False, sub_pos=1, id='console_and_log', inverse=True),
+            checkBox(tr('Show full file paths'), toggled=False, sub_pos=1, id='show_paths'),
+            checkBox(tr('Show file timestamps'), toggled=False, sub_pos=1, id='show_timestamps'),
+            checkBox(tr('Show file sizes'), toggled=True, sub_pos=1, id='show_file_size', inverse=True),
+            checkBox(tr('Use bytes only'), toggled=False, sub_pos=2, id='use_bytes_for_file_size'),
+            checkBox(tr('Show per-file progress'), toggled=False, sub_pos=1, id='show_file_progress', inverse=True),
+            checkBox(tr('Show per-file ETA'), toggled=False, sub_pos=1, id='show_file_eta'),
+            checkBox(tr('Enable verbose mode (show skipped files in output)'), toggled=False, sub_pos=1, id='verbose'),
+            checkBox(tr('Show all extra files, not just the ones selected'), toggled=False, sub_pos=1, id='show_extras'),
+            checkBox(tr("Only list the files, don't copy anything. (useful for testing selections)"), toggled=False, sub_pos=1, id='list_only'),
+            checkBox(tr('Use unicode encoding'), toggled=False, sub_pos=1, id='use_unicode'),
         ]
     }
 ]

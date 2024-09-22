@@ -23,4 +23,4 @@ class ProcessStatusIconPaths:
 
 
 # pyside6-rcc assets.qrc -o ./core/assets_rc.py
-# pyside6-rcc lang.qrc -o ./core/lang_rc.py
+
