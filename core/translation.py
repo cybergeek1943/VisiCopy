@@ -80,7 +80,7 @@ else:
 
 
 # todo NOTE: .ts files must not contain anything in their "<name></name>"  for `tr()` to work because "<name>" holds the context
-# pyside6-lupdate ".\core\translation.py" -ts ".\i18n\es.ts" -tr-function-alias tr=tr
+# use translation_command_gen.py to generate lupdate command and run it for each language
 # pyside6-lrelease ".\i18n\zh.ts" -qm ".\i18n\zh.qm"
 # pyside6-rcc lang.qrc -o ./core/lang_rc.py
 # use translation_command_gen.py to make a lupdate command for all ui files.

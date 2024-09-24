@@ -79,8 +79,8 @@
     </message>
     <message>
         <location filename="../main.py" line="176"/>
-        <source>Easy Copy</source>
-        <translation>轻松复印</translation>
+        <source>VisiCopy</source>
+        <translation>可视拷贝</translation>
     </message>
     <message>
         <location filename="../main.py" line="184"/>
@@ -176,11 +176,6 @@ Do you want to save these changes for future use?</source>
     </message>
     <message>
         <location filename="../settings_ui.py" line="128"/>
-        <source>You may use import/export to move Easy Copy settings between computers.</source>
-        <translation>您可以使用导入/导出在计算机之间移动轻松复制设置。</translation>
-    </message>
-    <message>
-        <location filename="../settings_ui.py" line="128"/>
         <location filename="../settings_ui.py" line="129"/>
         <source>Import</source>
         <translation>进口</translation>
@@ -190,6 +185,11 @@ Do you want to save these changes for future use?</source>
         <location filename="../settings_ui.py" line="129"/>
         <source>Export</source>
         <translation>出口</translation>
+    </message>
+    <message>
+        <location filename="../settings_ui.py" line="128"/>
+        <source>You may use import/export to move VisiCopy settings between computers.</source>
+        <translation>您可以使用导入/导出在计算机之间移动 VisiCopy 设置在。</translation>
     </message>
     <message>
         <location filename="../settings_ui.py" line="129"/>
@@ -317,8 +317,8 @@ Are you sure you want to continue?</source>
     </message>
     <message>
         <location filename="../settings_ui.py" line="192"/>
-        <source>Easy Copy will close automatically. Please reopen Easy Copy for changes to take effect.</source>
-        <translation>Easy Copy 将自动关闭。请重新打开 Easy Copy 以使更改生效。</translation>
+        <source>VisiCopy will close automatically. Please reopen VisiCopy for changes to take effect.</source>
+        <translation>VisiCopy 将自动关闭。请重新打开 VisiCopy 以使更改生效。</translation>
     </message>
     <message>
         <location filename="../source_selection_ui.py" line="24"/>
@@ -741,40 +741,40 @@ Are you sure you want to continue?</source>
     </message>
     <message>
         <location filename="../ui_comps/__init__.py" line="258"/>
-        <source>&lt;p&gt;Under the hood, Easy Copy currently utilizes Robocopy. In the future, support will be added for rsync and/or rclone.&quot;
-In addition to the functionality that robocopy provides, Easy Copy introduces features such as multiprocessing &amp; process management;
+        <source>v1.0.0-beta&lt;p&gt;Under the hood, VisiCopy currently utilizes robocopy. In the future, support will be added for rsync and/or rclone.&quot;
+In addition to the functionality that robocopy provides, VisiCopy introduces features such as multiprocessing &amp; process management;
 overall progress (rather than just the progress of a single file); and many other features.&lt;/p&gt;
-&lt;p&gt;I have developed Easy Copy as a free and open source software. I do not have any contributors yet; hence, this project takes 
+&lt;p&gt;I have developed VisiCopy as a free and open source software. I do not have any contributors yet; hence, this project takes 
 a significant amount of time and dedication. You can help the development of this software through donations, code contributions, 
-and sharing Easy Copy with others. Any support would be greatly appreciated.&lt;/p&gt;
-&lt;p&gt;Thank you for using Easy Copy!&lt;/p&gt;
+and sharing VisiCopy with others. Any support would be greatly appreciated.&lt;/p&gt;
+&lt;p&gt;Thank you for using VisiCopy!&lt;/p&gt;
 
 &lt;h2&gt;Support&lt;/h2&gt;
-&lt;a href=&apos;https://www.artixios.com/software/easy_copy.html&apos;&gt;Download Page&lt;/a&gt;
-&lt;br/&gt;&lt;a href=&apos;https://www.artixios.com/software/easy_copy.html&apos;&gt;Documentation&lt;/a&gt;
+&lt;a href=&apos;https://www.artixios.com/software/visicopy.html&apos;&gt;Download Page&lt;/a&gt;
+&lt;br/&gt;&lt;a href=&apos;https://www.artixios.com/software/visicopy.html&apos;&gt;Documentation&lt;/a&gt;
 
 &lt;br/&gt;&lt;h2&gt;Legal&lt;/h2&gt;
 License:  GPLv3 (Open Source)
-&lt;br/&gt;© 2024 - Easy Copy Trademark
+&lt;br/&gt;© 2024 - VisiCopy Trademark
 
-&lt;br/&gt;&lt;h2&gt;Developer&lt;/h2&gt;
+&lt;br/&gt;&lt;h2&gt;Developer (Isaac M. Wolford)&lt;/h2&gt;
 &lt;a href=&apos;https://www.artixios.com/about.html#dev_section&apos;&gt;About Me&lt;/a&gt;
 &lt;br/&gt;&lt;a href=&apos;https://pay.artixios.com/donate&apos;&gt;Donate Now&lt;/a&gt;</source>
-        <translation>&lt;p&gt;在底层，Easy Copy 目前使用的是 Robocopy。将来，将添加对 rsync 和/或 rclone 的支持。”
-除了 robocopy 提供的功能外，Easy Copy 还引入了诸如多处理和进程管理等功能；
+        <translation>v1.0.0-beta&lt;p&gt;在底层，VisiCopy 目前使用 robocopy。将来，将添加对 rsync 和/或 rclone 的支持。”
+除了 robocopy 提供的功能外，VisiCopy 还引入了多处理和进程管理等功能；
 整体进度（而不仅仅是单个文件的进度）；以及许多其他功能。&lt;/p&gt;
-&lt;p&gt;我已经将 Easy Copy 开发为免费开源软件。我目前还没有任何贡献者；因此，这个项目需要大量的时间和奉献精神。您可以通过捐赠、代码贡献和与他人共享 Easy Copy 来帮助开发此软件。任何支持都将不胜感激。&lt;/p&gt;
-&lt;p&gt;感谢您使用 Easy Copy！&lt;/p&gt;
+&lt;p&gt;我已经将 VisiCopy 开发为免费开源软件。我还没有贡献者；因此，这个项目需要大量的时间和奉献精神。您可以通过捐赠、代码贡献和与他人共享 VisiCopy 来帮助开发此软件。任何支持都将不胜感激。&lt;/p&gt;
+&lt;p&gt;感谢您使用 VisiCopy！&lt;/p&gt;
 
 &lt;h2&gt;支持&lt;/h2&gt;
-&lt;a href=&apos;https://www.artixios.com/software/easy_copy.html&apos;&gt;下载页面&lt;/a&gt;
-&lt;br/&gt;&lt;a href=&apos;https://www.artixios.com/software/easy_copy.html&apos;&gt;文档&lt;/a&gt;
+&lt;a href=&apos;https://www.artixios.com/software/visicopy.html&apos;&gt;下载页面&lt;/a&gt;
+&lt;br/&gt;&lt;a href=&apos;https://www.artixios.com/software/visicopy.html&apos;&gt;文档&lt;/a&gt;
 
 &lt;br/&gt;&lt;h2&gt;法律&lt;/h2&gt;
 许可证：GPLv3（开源）
-&lt;br/&gt;© 2024 - Easy Copy 商标
+&lt;br/&gt;© 2024 - VisiCopy 商标
 
-&lt;br/&gt;&lt;h2&gt;开发人员&lt;/h2&gt;
+&lt;br/&gt;&lt;h2&gt;开发者（Isaac M. Wolford）&lt;/h2&gt;
 &lt;a href=&apos;https://www.artixios.com/about.html#dev_section&apos;&gt;关于我&lt;/a&gt;
 &lt;br/&gt;&lt;a href=&apos;https://pay.artixios.com/donate&apos;&gt;立即捐赠&lt;/a&gt;</translation>
     </message>

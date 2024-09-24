@@ -79,8 +79,8 @@
     </message>
     <message>
         <location filename="../main.py" line="176"/>
-        <source>Easy Copy</source>
-        <translation>Copia fácil</translation>
+        <source>VisiCopy</source>
+        <translation>VisiCopy</translation>
     </message>
     <message>
         <location filename="../main.py" line="184"/>
@@ -176,11 +176,6 @@ Do you want to save these changes for future use?</source>
     </message>
     <message>
         <location filename="../settings_ui.py" line="128"/>
-        <source>You may use import/export to move Easy Copy settings between computers.</source>
-        <translation>Puede utilizar la importación/exportación para mover la configuración de Easy Copy entre computadoras.</translation>
-    </message>
-    <message>
-        <location filename="../settings_ui.py" line="128"/>
         <location filename="../settings_ui.py" line="129"/>
         <source>Import</source>
         <translation>Importar</translation>
@@ -190,6 +185,11 @@ Do you want to save these changes for future use?</source>
         <location filename="../settings_ui.py" line="129"/>
         <source>Export</source>
         <translation>Exportar</translation>
+    </message>
+    <message>
+        <location filename="../settings_ui.py" line="128"/>
+        <source>You may use import/export to move VisiCopy settings between computers.</source>
+        <translation>Puede utilizar la importación/exportación para mover la configuración de VisiCopy entre computadoras.</translation>
     </message>
     <message>
         <location filename="../settings_ui.py" line="129"/>
@@ -317,8 +317,8 @@ Are you sure you want to continue?</source>
     </message>
     <message>
         <location filename="../settings_ui.py" line="192"/>
-        <source>Easy Copy will close automatically. Please reopen Easy Copy for changes to take effect.</source>
-        <translation>Easy Copy se cerrará automáticamente. Vuelva a abrir Easy Copy para que los cambios surtan efecto.</translation>
+        <source>VisiCopy will close automatically. Please reopen VisiCopy for changes to take effect.</source>
+        <translation>VisiCopy se cerrará automáticamente. Vuelva a abrir VisiCopy para que los cambios surtan efecto.</translation>
     </message>
     <message>
         <location filename="../source_selection_ui.py" line="24"/>
@@ -752,41 +752,41 @@ Are you sure you want to continue?</source>
     </message>
     <message>
         <location filename="../ui_comps/__init__.py" line="258"/>
-        <source>&lt;p&gt;Under the hood, Easy Copy currently utilizes Robocopy. In the future, support will be added for rsync and/or rclone.&quot;
-In addition to the functionality that robocopy provides, Easy Copy introduces features such as multiprocessing &amp; process management;
+        <source>v1.0.0-beta&lt;p&gt;Under the hood, VisiCopy currently utilizes robocopy. In the future, support will be added for rsync and/or rclone.&quot;
+In addition to the functionality that robocopy provides, VisiCopy introduces features such as multiprocessing &amp; process management;
 overall progress (rather than just the progress of a single file); and many other features.&lt;/p&gt;
-&lt;p&gt;I have developed Easy Copy as a free and open source software. I do not have any contributors yet; hence, this project takes 
+&lt;p&gt;I have developed VisiCopy as a free and open source software. I do not have any contributors yet; hence, this project takes 
 a significant amount of time and dedication. You can help the development of this software through donations, code contributions, 
-and sharing Easy Copy with others. Any support would be greatly appreciated.&lt;/p&gt;
-&lt;p&gt;Thank you for using Easy Copy!&lt;/p&gt;
+and sharing VisiCopy with others. Any support would be greatly appreciated.&lt;/p&gt;
+&lt;p&gt;Thank you for using VisiCopy!&lt;/p&gt;
 
 &lt;h2&gt;Support&lt;/h2&gt;
-&lt;a href=&apos;https://www.artixios.com/software/easy_copy.html&apos;&gt;Download Page&lt;/a&gt;
-&lt;br/&gt;&lt;a href=&apos;https://www.artixios.com/software/easy_copy.html&apos;&gt;Documentation&lt;/a&gt;
+&lt;a href=&apos;https://www.artixios.com/software/visicopy.html&apos;&gt;Download Page&lt;/a&gt;
+&lt;br/&gt;&lt;a href=&apos;https://www.artixios.com/software/visicopy.html&apos;&gt;Documentation&lt;/a&gt;
 
 &lt;br/&gt;&lt;h2&gt;Legal&lt;/h2&gt;
 License:  GPLv3 (Open Source)
-&lt;br/&gt;© 2024 - Easy Copy Trademark
+&lt;br/&gt;© 2024 - VisiCopy Trademark
 
-&lt;br/&gt;&lt;h2&gt;Developer&lt;/h2&gt;
+&lt;br/&gt;&lt;h2&gt;Developer (Isaac M. Wolford)&lt;/h2&gt;
 &lt;a href=&apos;https://www.artixios.com/about.html#dev_section&apos;&gt;About Me&lt;/a&gt;
 &lt;br/&gt;&lt;a href=&apos;https://pay.artixios.com/donate&apos;&gt;Donate Now&lt;/a&gt;</source>
-        <translation>&lt;p&gt;En la actualidad, Easy Copy utiliza Robocopy. En el futuro, se agregará soporte para rsync y/o rclone&quot;.
-Además de la funcionalidad que proporciona Robocopy, Easy Copy presenta características como multiprocesamiento y administración de procesos;
+        <translation>v1.0.0-beta&lt;p&gt;En la actualidad, VisiCopy utiliza robocopy. En el futuro, se agregará soporte para rsync y/o rclone&quot;.
+Además de la funcionalidad que proporciona robocopy, VisiCopy presenta características como multiprocesamiento y administración de procesos;
 progreso general (en lugar de solo el progreso de un solo archivo); y muchas otras características.&lt;/p&gt;
-&lt;p&gt;He desarrollado Easy Copy como un software libre y de código abierto. Aún no tengo ningún colaborador; por lo tanto, este proyecto requiere
-una cantidad significativa de tiempo y dedicación. Puede ayudar al desarrollo de este software a través de donaciones, contribuciones de código y compartiendo Easy Copy con otros. Cualquier apoyo será muy apreciado.&lt;/p&gt;
-&lt;p&gt;¡Gracias por usar Easy Copy!&lt;/p&gt;
+&lt;p&gt;He desarrollado VisiCopy como un software libre y de código abierto. Todavía no tengo ningún colaborador; por lo tanto, este proyecto requiere
+una cantidad significativa de tiempo y dedicación. Puede ayudar al desarrollo de este software a través de donaciones, contribuciones de código y compartiendo VisiCopy con otros. Cualquier apoyo será muy apreciado.&lt;/p&gt;
+&lt;p&gt;¡Gracias por usar VisiCopy!&lt;/p&gt;
 
 &lt;h2&gt;Soporte&lt;/h2&gt;
-&lt;a href=&apos;https://www.artixios.com/software/easy_copy.html&apos;&gt;Página de descarga&lt;/a&gt;
-&lt;br/&gt;&lt;a href=&apos;https://www.artixios.com/software/easy_copy.html&apos;&gt;Documentación&lt;/a&gt;
+&lt;a href=&apos;https://www.artixios.com/software/visicopy.html&apos;&gt;Página de descarga&lt;/a&gt;
+&lt;br/&gt;&lt;a href=&apos;https://www.artixios.com/software/visicopy.html&apos;&gt;Documentación&lt;/a&gt;
 
 &lt;br/&gt;&lt;h2&gt;Legal&lt;/h2&gt;
 Licencia: GPLv3 (código abierto)
-&lt;br/&gt;© 2024 - Marca registrada Easy Copy
+&lt;br/&gt;© 2024 - Marca registrada de VisiCopy
 
-&lt;br/&gt;&lt;h2&gt;Desarrollador&lt;/h2&gt;
+&lt;br/&gt;&lt;h2&gt;Desarrollador (Isaac M. Wolford)&lt;/h2&gt;
 &lt;a href=&apos;https://www.artixios.com/about.html#dev_section&apos;&gt;Acerca de mí&lt;/a&gt;
 &lt;br/&gt;&lt;a href=&apos;https://pay.artixios.com/donate&apos;&gt;Donar ahora&lt;/a&gt;</translation>
     </message>
