@@ -428,7 +428,7 @@ exposed_settings: dict = {}  # Exposed settings of non-custom elements containin
 """
 
 from core import os_utils
-custom_settings: dict = {}  # Non-robocopy settings that are used for extra features of Easy Copy
+custom_settings: dict = {}  # Non-robocopy settings that are used for extra features of VisiCopy
 class __CustomSettings__:  # TODO must keep this up to date with the id names of custom settings that need quick access.
     """Custom Settings Singleton"""
     @property

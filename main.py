@@ -173,7 +173,7 @@ class JobTab(QWidget):
 class MainWindow(windows.TabWindow):
     def __init__(self):
         super().__init__(remember_window_pos=False, menu_expand_width=150)
-        self.setWindowTitle(tr('Easy Copy'))
+        self.setWindowTitle(tr('VisiCopy'))
         self.resize(1370, 700)
         self.navigationInterface.setCollapsible(True)
         self.navigationInterface.setReturnButtonVisible(False)

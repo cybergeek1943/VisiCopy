@@ -1,4 +1,4 @@
-"""Contains all the individual components like buttons and switches used specifically for the Easy Copy Settings. These switches also automatically alter the mutable __variable__ parameter so that they can make changes to settings data automatically."""
+"""Contains all the individual components like buttons and switches used specifically for the VisiCopy Settings. These switches also automatically alter the mutable __variable__ parameter so that they can make changes to settings data automatically."""
 # Import Utility Classes
 from PySide6.QtWidgets import QWidget, QHBoxLayout
 from PySide6.QtCore import QDate

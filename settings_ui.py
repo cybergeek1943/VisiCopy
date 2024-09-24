@@ -125,7 +125,7 @@ class MainWindow(windows.SubWindow):
         self.tabs['preferences'] = preferences
         preferences.add_widget(cards.SettingWComboBox(Icons.LANGUAGE, tr('Language'), tr('Currently, four languages are supported. More will be added in future releases.'), ('English', 'Español (Spanish)', '简体中文 (Chinese)', 'हिंदी (Hindi)'), get_lang(), self.set_language))
         preferences.add_widget(cards.SettingWComboBox(Icons.BRUSH, tr('Theme Mode'), tr("Change the color of this application's interface."), (tr('Dark'), tr('Light'), tr('System (Auto)')), config.preferences['theme'], self.set_theme))
-        preferences.add_widget(cards.SettingWPushButtons(Icons.SAVE_COPY, tr("Import/Export Settings"), tr('You may use import/export to move Easy Copy settings between computers.'), (tr("Import"), tr("Export")), (self.import_settings, self.export_settings)))
+        preferences.add_widget(cards.SettingWPushButtons(Icons.SAVE_COPY, tr("Import/Export Settings"), tr('You may use import/export to move VisiCopy settings between computers.'), (tr("Import"), tr("Export")), (self.import_settings, self.export_settings)))
         preferences.add_widget(cards.SettingWPushButtons(Icons.SAVE_COPY, tr('Import/Export All Userdata'), tr('You may use import/export to move the settings and preferences between computers.'), (tr("Import"), tr("Export")), (self.import_preferences, self.export_preferences)))
         preferences.add_widget(cards.SettingWPushButtons(Icons.CODE, tr('Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Copy the command-line flags that are used to spawn robocopy processes to the clipboard.'), (tr('Copy to Clipboard'),), (lambda: copyToClipboard(' '.join(settings_parser.parse(settings_data.settings)), app),)))
         preferences.add_widget(cards.SettingWSwitch(Icons.CODE, tr('Automatically Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Automatically copy the command-line flags that are used to spawn robocopy processes to the clipboard when copy starts.'), config.preferences['auto_copy_flags'], lambda b: config.preferences.__setitem__('auto_copy_flags', b)))
@@ -178,7 +178,7 @@ class MainWindow(windows.SubWindow):
             self.restart() if import_settings(filepath=p) else dialogs.info(self, tr('Error'), tr('This file could not be imported because it is corrupt!'), critical=True)
 
     def export_preferences(self):
-        if p := QFileDialog.getSaveFileName(self, caption=tr('Save user preferences as a file'), dir=f'{config.user_docs_path}/easy_copy', filter=tr('Userdata (*.udat)'))[0]:
+        if p := QFileDialog.getSaveFileName(self, caption=tr('Save user preferences as a file'), dir=f'{config.user_docs_path}/visicopy', filter=tr('Userdata (*.udat)'))[0]:
             export_preferences(filepath=p)
 
     def import_preferences(self):
@@ -189,7 +189,7 @@ class MainWindow(windows.SubWindow):
                 dialogs.info(self, tr('Error'), tr('This file could not be imported because it is corrupt!'), critical=True)
 
     def restart(self):
-        dialogs.info(self, tr('Restart Required'), tr('Easy Copy will close automatically. Please reopen Easy Copy for changes to take effect.'))
+        dialogs.info(self, tr('Restart Required'), tr('VisiCopy will close automatically. Please reopen VisiCopy for changes to take effect.'))
         # noinspection PyArgumentList
         app.exit(force_exit=True)
 

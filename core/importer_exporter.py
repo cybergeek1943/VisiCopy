@@ -1,5 +1,4 @@
 import core.settings_data as settings_data
-import core.settings_parser as settings_parser
 import core.config as preferences
 import json
 
@@ -11,7 +10,7 @@ def export_settings(filepath: str) -> None:
 
 
 def import_settings(filepath: str) -> bool:
-    """Import settings (.set) to current job from external file. If successful, return True. Restart of Easy Copy is required."""
+    """Import settings (.set) to current job from external file. If successful, return True. Restart of VisiCopy is required."""
     try:
         with open(filepath, mode='r') as f:
             settings_data.settings.clear()
@@ -35,7 +34,7 @@ def export_preferences(filepath: str) -> None:
 
 
 def import_preferences(filepath: str) -> bool:
-    """`filepath` expects a (.udat) file. Restart of Easy Copy required."""
+    """`filepath` expects a (.udat) file. Restart of VisiCopy required."""
     try:
         preferences.del_old_files()
         with open(filepath, 'r') as f:
