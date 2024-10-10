@@ -24,7 +24,7 @@ class CustomPathEntryTab(windows.TabComponent):
 <ul>
 <li>Remote Path (UNC Paths, Shared Folder Links, etc.)</li>
 <li>Local Path (somewhere on this computer)</li>
-</ul
+</ul>
 <h4>Using remote paths you can copy files from/to servers or other computers:</h4>
 <ul>
 <li>Make sure both computers are connected to the same network.</li>
