@@ -29,7 +29,7 @@ class __CallbackHook__:
 
     def __increment_callables_count__(self, n: int):
         self.callables_count += n
-        self.disabled = True if self.callables_count == 0 else False
+        self.disabled = self.callables_count == 0
 
 
 class __QtHook__(__CallbackHook__, QObject):
