@@ -12,7 +12,7 @@
 > 
 > **Assets**: Many assets (such as icons) I created from scratch. I also use some of the smaller icons provided by QFluentWidgets. I then use Qt's RCC for converting icons and all other resources to python bytes strings. For language translation I use Qt Linguist along with Google Translate.
 >
-> **Architecture**: Primarily Object-Oriented.
+> **Architecture**: All the code is primarily Object-Oriented. The project is separated into three sections (directories): `core`, `main`, and `ui_lib`. The `core` contains most of the backend code for things such as instantiating processes, managing threads, and storing user data. The `ui_lib` provides some of the custom widgets used in VisiCopy. `main` is where the main UI is defined and also contains the `main.py` file (which is the entry-point to the program).
 
 
 #### App Type & Option (BYOP)
