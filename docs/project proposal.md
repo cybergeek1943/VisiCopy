@@ -21,6 +21,7 @@ We will be working on a software called VisiCopy. This software's primary functi
 
 #### Description of **VisiCopy** (Visual Copy)
 VisiCopy's primary purpose is to bring the power of IT tools to everyone by streamlining the process of copying and filtering files in a non-intimidating way. By providing users with an accessible, easily navigable, and self-explanatory user interface, VisiCopy aims to abstract away the complexities of multi-processed copying, backup software configuration (robocopy or rsync), and day-to-day workflow for those who often work with large files.
+
 At its core, VisiCopy integrates advanced file copying utilities (robocopy and/or rsync) with an intuitive and self-explanatory user interface. VisiCopy includes many additional custom features such as batch processing and progress management + reports. Internally VisiCopy works by wrapping robocopy process instances managed by `Process(*settings_args)` objects so that all `STDOUT` and `STDERR` data is processed correctly and abstracted away so that easy manipulation and progress report can be done using methods such as `processInstance.processProgress()`, `processInstance.currentFileProgress()`, or `processInstance.stopProcess(force=True)`. 
 
 
