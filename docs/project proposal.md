@@ -1,7 +1,9 @@
 # Project Proposal (VisiCopy)
 
 > **Developers/Partners**: Isaac W. & Thomas R.
+> 
 > **Language**: Python
+> 
 > **License**: GPLv3
 > 
 > **Libraries and Frameworks**: PySide6, QFluentWidgets, subprocess, threading, json, pathlib, os, and PyInstaller and/or Nuitka (for deployment).
