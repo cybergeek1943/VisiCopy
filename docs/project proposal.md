@@ -6,7 +6,7 @@
 > 
 > **License**: GPLv3
 > 
-> **Libraries and Frameworks**: PySide6, QFluentWidgets, subprocess, threading, json, pathlib, os, and PyInstaller and/or Nuitka (for deployment).
+> **Libraries and Frameworks**: PySide6, QFluentWidgets, subprocess, threading, json, pathlib, os, platform, and PyInstaller and/or Nuitka (for deployment).
 > 
 > **Software Tools**: PyCharm, GitHub, VS Code, Obsidian, Draw.io, Lunacy, Qt RCC, and Qt Linguist along with lupdate & lrelease.
 > 
@@ -28,14 +28,15 @@ At its core, VisiCopy integrates advanced file copying utilities (robocopy and/o
 #### Features that we will introduce and improve
 1. Improve the **Job Manager** by making it possible to edit saved `.job` files and also by making the user interface more intuitive for creating and managing job files.
 2. Add a new feature to the settings such as a **super user** or **advance user** switch. When the switch is off, many of the complex settings will be hidden such as IPG (interpacket network gap), Database sparse states, and SMB compression. Also when it is switched on, it would change the main UI for selecting sources and destinations: instead of being step-by-step, it would let the more advanced user simply add everything in the one window.
-3. Add better support for saving settings and user data in the `AppData` folder.
-4. Improve the codebase organization and documentations:
+3. Make the codebase more modular by creating a custom UI package that unifies widgets from both PySide6 and QFluentWidgets into our own custom widgets package so that its not the confusing mix-up that is currently going on.
+4. Add better support for saving settings and user data in the `AppData` folder for all platforms.
+5. Improve documentation:
 	1. Add docstrings to all classes and methods.
 	2. Make class diagrams for some of the major classes used.
 	3. Add more comments to code where necessary.
 	4. Write well-defined deployment documentation and create a step-by-step guide for working with resources such `.ts` language files and icon resources.
-	5. Make the codebase more modular by creating a custom UI package that unifies widgets from both PySide6 and QFluentWidgets into our own custom widgets package so that its not the confusing mix-up that is currently going on.
-	6. Write some more online documentation and improve GitHub page.
+	5. Write some more online documentation and improve GitHub page.
+ 6. Make an optimal user settings detector so that the initial settings are best suited for the computer that VisiCopy is running on... like optimized thread & process count limit.
 
 
 #### Basic UI sketch
