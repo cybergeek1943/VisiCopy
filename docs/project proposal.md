@@ -6,7 +6,7 @@
 > 
 > **License**: GPLv3
 > 
-> **Libraries and Frameworks**: PySide6, QFluentWidgets, subprocess, threading, json, pathlib, os, platform, and PyInstaller and/or Nuitka (for deployment).
+> **Libraries and Frameworks**: PySide6, QFluentWidgets, subprocess, threading, json, pathlib, os, platform, copy, and PyInstaller and/or Nuitka (for deployment).
 > 
 > **Software Tools**: PyCharm, GitHub, VS Code, Obsidian, Draw.io, Lunacy, Qt RCC, and Qt Linguist along with lupdate & lrelease.
 > 
