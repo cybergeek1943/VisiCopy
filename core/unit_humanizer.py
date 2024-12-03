@@ -1,3 +1,6 @@
+# TODO add doctests and maybe improve design
+
+
 def format_seconds(s: int) -> str:
     if s < 60:
         return f'{s}s'

@@ -4,6 +4,7 @@ from core.config import preferences, save_config
 from PySide6.QtCore import QObject, QCoreApplication, QTranslator, QLocale
 
 
+# TODO doc this
 tr: callable = lambda _: None  # dummy callable used to register additional strings for translation
 tr('day')
 tr('month')

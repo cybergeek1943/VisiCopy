@@ -8,7 +8,7 @@ import json
 import os
 
 
-user_docs_path: str = os.path.expanduser('~\\Documents')
+user_docs_path: str = os.path.expanduser('~\\Documents')  # TODO use separate module for OS interaction
 
 
 class ThemeMode:

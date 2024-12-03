@@ -67,8 +67,10 @@ class HomeTab(QWidget):
         ui.setLayout(grid)
 
         # source
+        # TODO - put imports in proper place
         from source_selection_ui import MainWindow as SourceSelectionSubWindow
         self.source_selection_sub_window = SourceSelectionSubWindow()
+        # TODO - abstract this
         QTimer.singleShot(100, lambda: (self.source_selection_sub_window.resize(int(self.window().size().width() * 0.9), int(self.window().size().height() * 0.9)),
                                         self.source_selection_sub_window.move(self.window().pos().x() + 32, self.window().pos().y() + 32)))  # we must use timer here because we need to wait for the main window to load.
         self.source_selection_sub_window.windowClosing.connect(lambda: self.on_source_selection_window_closed(self.source_selection_sub_window.selection_manager_tab.widget_count()))
@@ -79,8 +81,10 @@ class HomeTab(QWidget):
         grid.addWidget(self.source_connector_line, 0, 1, alignment=AlignFlag.AlignCenter)
 
         # destination
+        # TODO - put imports in proper place
         from destination_selection_ui import MainWindow as DestinationSelectionWindow
         self.destination_selection_sub_window = DestinationSelectionWindow()
+        # TODO - abstract this
         QTimer.singleShot(100, lambda: (self.destination_selection_sub_window.resize(int(self.window().size().width() * 0.9), int(self.window().size().height() * 0.9)),
                                         self.destination_selection_sub_window.move(self.window().pos().x() + 32, self.window().pos().y() + 32)))  # we must use timer here because we need to wait for the main window to load.
         self.destination_selection_sub_window.windowClosing.connect(lambda: self.on_destination_selection_window_closed(self.destination_selection_sub_window.selection_manager_tab.widget_count()))

@@ -17,12 +17,14 @@ import core.config as user_data
 from core.translation import tr
 from core.asset_paths import logoIconPath
 
+# TODO make Policy module in UI lib
 SizePolicy = QSizePolicy.Policy
 AlignFlag = Qt.AlignmentFlag
 FocusPolicy = Qt.FocusPolicy
 FontWeight = QFont.Weight
 LayoutDirection = Qt.LayoutDirection
 
+# TODO put all icons in one icon module within UI lib
 Icons = FluentIcon
 
 
@@ -132,7 +134,7 @@ class cards:
 
 
 class windows:
-    class TabWindow(QFluentWindow):
+    class TabWindow(QFluentWindow):  # TODO make better initial resize code
         """Subclass this class to create a window with a sidebar for tabs."""
         def __init__(self, remember_window_pos: bool = False, menu_expand_width: int = 150):
             QFluentWindow.__init__(self)
@@ -236,6 +238,7 @@ class InfoPageWidget(BodyLabel):
     """This component displays info about VisiCopy"""
     def __init__(self):
         BodyLabel.__init__(self)
+        # TODO put in strings resource file
         html: str = tr("""v1.0.0-beta<p>Under the hood, VisiCopy currently utilizes robocopy. In the future, support will be added for rsync and/or rclone."
 In addition to the functionality that robocopy provides, VisiCopy introduces features such as multiprocessing & process management;
 overall progress (rather than just the progress of a single file); and many other features.</p>

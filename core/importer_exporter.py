@@ -4,25 +4,6 @@ import json
 
 
 def export_settings(filepath: str) -> None:
-    """Export the settings for the currently selected job as a (.set) file."""
-    with open(filepath, 'w') as f:
-        f.write(json.dumps(settings_data.settings))
-
-
-def import_settings(filepath: str) -> bool:
-    """Import settings (.set) to current job from external file. If successful, return True. Restart of VisiCopy is required."""
-    try:
-        with open(filepath, mode='r') as f:
-            settings_data.settings.clear()
-            settings_data.settings = json.loads(f.read())
-            settings_data.save_settings()
-            settings_data.__init_quick_access_settings()
-        return True
-    except (FileNotFoundError, json.JSONDecodeError):
-        return False
-
-
-def export_preferences(filepath: str) -> None:
     """Exports a (.udat) file to `filepath`"""
     settings_data.save_settings()
     userdata_file: dict = {
@@ -33,7 +14,7 @@ def export_preferences(filepath: str) -> None:
         f.write(json.dumps(userdata_file))
 
 
-def import_preferences(filepath: str) -> bool:
+def import_settings(filepath: str) -> bool:
     """`filepath` expects a (.udat) file. Restart of VisiCopy required."""
     try:
         preferences.del_old_files()

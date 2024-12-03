@@ -19,7 +19,7 @@ class SelectedFile(SelectedPath):
         super().__init__(path)
         self.iconLabel.setIcon(Icons.DOCUMENT)
         self.include_dir_checkbox = CheckBox()
-        self.include_dir_checkbox.toggled.connect(lambda b: self.__setattr__('include_base_dir', b))
+        self.include_dir_checkbox.toggled.connect(lambda b: setattr(self, 'include_base_dir', b))
         self.include_dir_checkbox.setChecked(False)
         self.include_dir_checkbox.setText(tr('Include Parent Folder'))
         self.include_dir_checkbox.setToolTip(tr('Create the parent folder of this file in the destination and copy this file into it.'))
@@ -155,6 +155,7 @@ class MainWindow(windows.SubWindow):
         self.addSubInterface(self.custom_path_entry_tab, None, 'CustomPathEntryTab')
 
     def get_source_selection(self) -> list[tuple[str, dict]]:
+        # TODO cleanup
         # noinspection PyUnresolvedReferences
         return [(w.path, {'selected_files': w.selected_files, 'include_base_dir': w.include_base_dir} if isinstance(w, SelectedFolder) else {'include_base_dir': w.include_base_dir})
                 for w in self.selection_manager_tab.get_widgets()]

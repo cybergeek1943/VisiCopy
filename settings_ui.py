@@ -4,7 +4,7 @@ import core.settings_data as settings_data
 from core import config
 from core.translation import tr, set_lang, get_lang
 import core.settings_parser as settings_parser
-from core.importer_exporter import export_settings, import_settings, export_preferences, import_preferences
+from core.importer_exporter import export_settings, import_settings, export_settings, import_settings
 from core.os_utils import copyToClipboard
 
 # Import Components and Visual Tools
@@ -19,6 +19,7 @@ from PySide6.QtWidgets import QVBoxLayout, QFileDialog, QApplication
 from qfluentwidgets import setTheme, Theme as QtTheme
 
 
+# put all icons code in ui_lib
 tab_icons: dict = {  # based on `tab_id` from the settings dict. todo keep these tab IDs up to date with the settings data
     'subfolders': Icons.FOLDER_ADD,
     'performance': Icons.SPEED_HIGH,
@@ -120,18 +121,19 @@ class MainWindow(windows.SubWindow):
             self.tabs[tab_id].add_widget(Card(title=card_title, note=card_note, elements=card_elements, show_card_title=self.tabs[tab_id].__getattribute__('show_card_title')))
 
         # Add the additional user preferences from userdata
+        # TODO abstract lambdas
+        # TODO get rid of both export options
         preferences: windows.TabComponent = windows.TabComponent(tr('Preferences'))
         preferences.setObjectName('preferences')
         self.tabs['preferences'] = preferences
+        preferences.add_widget(cards.SettingWSwitch(Icons.APPLICATION, tr("Advanced Users"), tr('Enable more advanced features and controls for settings such as performance and logging. (requires restart)'), False, lambda: None))
         preferences.add_widget(cards.SettingWComboBox(Icons.LANGUAGE, tr('Language'), tr('Currently, four languages are supported. More will be added in future releases.'), ('English', 'Español (Spanish)', '简体中文 (Chinese)', 'हिंदी (Hindi)'), get_lang(), self.set_language))
         preferences.add_widget(cards.SettingWComboBox(Icons.BRUSH, tr('Theme Mode'), tr("Change the color of this application's interface."), (tr('Dark'), tr('Light'), tr('System (Auto)')), config.preferences['theme'], self.set_theme))
         preferences.add_widget(cards.SettingWPushButtons(Icons.SAVE_COPY, tr("Import/Export Settings"), tr('You may use import/export to move VisiCopy settings between computers.'), (tr("Import"), tr("Export")), (self.import_settings, self.export_settings)))
-        preferences.add_widget(cards.SettingWPushButtons(Icons.SAVE_COPY, tr('Import/Export All Userdata'), tr('You may use import/export to move the settings and preferences between computers.'), (tr("Import"), tr("Export")), (self.import_preferences, self.export_preferences)))
         preferences.add_widget(cards.SettingWPushButtons(Icons.CODE, tr('Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Copy the command-line flags that are used to spawn robocopy processes to the clipboard.'), (tr('Copy to Clipboard'),), (lambda: copyToClipboard(' '.join(settings_parser.parse(settings_data.settings)), app),)))
         preferences.add_widget(cards.SettingWSwitch(Icons.CODE, tr('Automatically Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Automatically copy the command-line flags that are used to spawn robocopy processes to the clipboard when copy starts.'), config.preferences['auto_copy_flags'], lambda b: config.preferences.__setitem__('auto_copy_flags', b)))
-        _ = cards.SettingWPushButtons(Icons.HISTORY, tr('Reset Settings and/or Preferences'), tr('You may reset either the Settings (which manages how copy processes behave) or the User Preferences (such as language, theme, & window position.).'), (tr("Reset Settings"), tr("Reset Preferences")), (self.reset_settings, self.reset_preferences))
-        _.setButtonBorderColor(0, '#d04933')
-        _.setButtonBorderColor(1, '#d04933')
+        _ = cards.SettingWPushButtons(Icons.HISTORY, tr('Reset Settings'), tr("Reset VisiCoy's settings back to their original defaults."), (tr("Reset Settings"),), (self.reset_settings,))
+        _.setButtonBorderColor(0, '#d04933')  # TODO put all styles into custom objects in UI lib!
         preferences.add_widget(_)
         self.addSubInterface(preferences, Icons.DEVELOPER_TOOLS, tr('Preferences'), NavigationItemPosition.BOTTOM)
 
@@ -153,37 +155,22 @@ class MainWindow(windows.SubWindow):
 
     def reset_settings(self):
         r = dialogs.question(self, tr('Please Confirm Carefully!'),
-                             tr('You are about to reset the settings that control how copy processes behave.\nAre you sure you want to continue?'))
+                             tr("You are about to reset VisiCoy's settings back to their defaults.\nAre you sure you want to continue?"))
         if r != dialogs.response.Yes:
             return
         reset_settings()
-        save_settings()
-        self.restart()
-
-    def reset_preferences(self):
-        r = dialogs.question(self, tr('Please Confirm!'),
-                             tr('You are about to reset preferences such as language, theme, and window position.\nAre you sure you want to continue?'))
-        if r != dialogs.response.Yes:
-            return
         config.reset_config()
+        save_settings()
         config.save_config()
         self.restart()
 
     def export_settings(self):
-        if p := QFileDialog.getSaveFileName(self, caption=tr('Save settings as a file'), dir=f'{config.user_docs_path}/settings', filter=tr('Settings (*.set)'))[0]:
+        if p := QFileDialog.getSaveFileName(self, caption=tr('Save settings to a file'), dir=f'{config.user_docs_path}/visicopy', filter=tr('Settings (*.set)'))[0]:
             export_settings(filepath=p)
 
     def import_settings(self):
-        if p := QFileDialog.getOpenFileName(self, caption=tr("Import settings file"), dir=config.user_docs_path, filter=tr('Settings (*.set)'))[0]:
-            self.restart() if import_settings(filepath=p) else dialogs.info(self, tr('Error'), tr('This file could not be imported because it is corrupt!'), critical=True)
-
-    def export_preferences(self):
-        if p := QFileDialog.getSaveFileName(self, caption=tr('Save user preferences as a file'), dir=f'{config.user_docs_path}/visicopy', filter=tr('Userdata (*.udat)'))[0]:
-            export_preferences(filepath=p)
-
-    def import_preferences(self):
-        if p := QFileDialog.getOpenFileName(self, caption=tr("Import user preferences file!"), dir=config.user_docs_path, filter=tr('Userdata (*.udat)'))[0]:
-            if import_preferences(filepath=p):
+        if p := QFileDialog.getOpenFileName(self, caption=tr("Import settings from file"), dir=config.user_docs_path, filter=tr('Settings (*.set)'))[0]:
+            if import_settings(filepath=p):
                 self.restart()
             else:
                 dialogs.info(self, tr('Error'), tr('This file could not be imported because it is corrupt!'), critical=True)

@@ -65,7 +65,7 @@ def switchSizeEntry(label: str,
                     entry: int = 1,
                     min_entry: int = 1,
                     max_entry: int = MAX_INT,
-                    size_options: tuple = ('Bytes', 'Kilobytes', 'Megabytes', 'Gigabytes'),
+                    size_options: tuple = ('Bytes', 'Kilobytes', 'Megabytes', 'Gigabytes', 'Terabytes'),
                     selected_option: int = 2,
                     width_factor: int = 0,
                     disabled: bool = False,
@@ -97,6 +97,8 @@ def switchDropdown(toggled: bool,
     return {'type': 'switch-dropdown', 'toggled': toggled, 'options': options, 'selected_option': selected_option, 'disabled': disabled, **kwargs}
 
 
+# TODO document translation workflow
+# TODO add new flag for advanced user
 tr: callable = lambda _: _  # dummy callable used to register strings for translation
 """ Parser args for these elements (added using **kwargs). The parser assumes that all elements (elements that own settings to their name) have a "toggle" value key.
 `disabled_default`={toggled: True|False, entry: Any, <{kwargs}...>}  use this to tell the parser what the element should evaluated as when it is disabled
@@ -345,6 +347,7 @@ def __set_element_hierarchy():
 settings: list = []  # this is the settings that is accessible
 
 
+# TODO - Put into userdata class in separate file for interacting with OS
 def __load_settings(load_defaults: bool = False) -> None:
     global settings
     if load_defaults:
@@ -393,6 +396,7 @@ def reset_settings() -> None:
     set_detected_changes(0)
 
 
+# Changes tracker - TODO document this
 changes_detected: int = 0
 class cdict(dict):
     """Use this to as the object to pass to __variable__ in the settings ui manager. This way we know when the settings are changed by user."""

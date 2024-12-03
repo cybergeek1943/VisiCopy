@@ -1,5 +1,6 @@
 from PySide6.QtCore import Signal, QObject
 from types import UnionType
+# TODO document code and explain why this is needed.
 
 class __CallbackHook__:
     """Implements a traditional callback system for non-QT applications."""

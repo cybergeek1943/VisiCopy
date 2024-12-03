@@ -112,8 +112,17 @@ arg_map: dict = {
 
 
 def size_value_to_bytes(size_value: int, option: int) -> int:
-    """Takes a value specified by `size_value` and then converts it to bytes int using `option` where 0 is bytes, 1 is kilobytes, 2 is megabytes, and 3 is gigabytes."""
-    return size_value*(10**(0 if option == 0 else 3 if option == 1 else 6 if option == 2 else 9 if option == 3 else 0))
+    """Takes a value specified by `size_value` and then converts it to bytes int using `option` where 0 is bytes, 1 is kilobytes, 2 is megabytes, 3 is gigabytes, and 4 is terabytes.
+    >>> size_value_to_bytes(1, 4)
+    1000000000000
+    >>> size_value_to_bytes(1, 3)
+    1000000000
+    >>> size_value_to_bytes(1, 2)
+    1000000
+    """
+    return size_value*(10**(0, 3, 6, 9, 12)[option])
+
+    # return size_value*(10**(0 if option == 0 else 3 if option == 1 else 6 if option == 2 else 9 if option == 3 else 0))
 
 
 def date_str(year: int, month: int, day: int) -> str:
