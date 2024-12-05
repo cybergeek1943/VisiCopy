@@ -56,13 +56,14 @@ This is the new **Advanced User** feature that will hide complex settings and im
 
 
 #### Interesting Challenges
+- Making the VisiCopy project conducive to collaboration will be a challenge.
 - It will be challenging to make the `.job` files editable because we will have to make the settings UI work for `.job` files.
 - It will be challenging to add the `Advanced User` feature to the settings UI Because it will require a small rewrite of the settings UI mini-framework I created.
 
 
 #### Stretch Goals
-1. Add support for **rsync** so that VisiCopy can have multi-platform support.
-2. Make a rigorous testing suite for most of VisiCopy's features.
-3. Create a scheduler to schedule jobs running in the background.
+1. (Easiest) Add support for **rsync** so that VisiCopy can have multi-platform support.
+2. (Medium) Create a scheduler to run jobs at specified times in the background.
+3. (ambitious, especially after adding support for **rsync**) Make a rigorous testing suite for most of VisiCopy's features.
 
 There is a lot of testing and refining to be done on existing features, which will be done later. If the program could cause world peace, that’d be a huge win, but that’s EXTREMELY ambitious.
