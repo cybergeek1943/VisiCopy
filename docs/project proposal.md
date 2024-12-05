@@ -57,8 +57,8 @@ This is the new **Advanced User** feature that will hide complex settings and im
 
 #### Interesting Challenges
 - Making the VisiCopy project conducive to collaboration will be a challenge.
-- It will be challenging to make the `.job` files editable because we will have to make the settings UI work for `.job` files.
-- It will be challenging to add the **Advanced User** feature to the settings UI Because it will require a small rewrite of the settings UI mini-framework I created.
+- It will be challenging to make the `.job` files editable because we will have to make the settings UI work for `.job` files. Currently, the settings UI is set up to only read from a single user data file. To make the settings UI code more flexible, we will need to rewrite the code that reads in the file to make it more flexible.
+- It will be challenging to add the **Advanced User** feature to the settings UI Because it will require a small rewrite of the settings UI mini-framework I created. More specifically, we must write new code that manages what UI elements get hidden and what gets shown based on new `tags` that define for UI elements in my settings UI framework.
 
 
 #### Stretch Goals
