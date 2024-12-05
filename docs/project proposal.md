@@ -11,8 +11,12 @@
 > **Software Tools**: PyCharm, GitHub, VS Code, Obsidian, Draw.io, Lunacy, Qt RCC, and Qt Linguist, along with lupdate & lrelease.
 > 
 > **Assets**: I created many assets (such as icons) from scratch. I also use some of the smaller icons provided by QFluentWidgets. I then use Qt's RCC to convert icons and all other resources to Python byte strings. For language translation, I use Qt Linguist and Google Translate.
->
-> **Architecture**: All the code is primarily Object-Oriented. The project is separated into three sections (directories): `core`, `main`, and `ui_lib`. The `core` contains most of the backend code for things such as instantiating processes, managing threads, and storing user data. The `ui_lib` provides some of the custom widgets used in VisiCopy. `main` is where the main UI is defined and also contains the `main.py` file (which is the entry point to the program).
+
+#### Architecture
+All the code is primarily Object-Oriented. The project is separated into several sections (directories), including: `core`, `main`, and `ui_lib`. The `core` contains most of the backend code for things such as instantiating processes, managing threads, and storing user data. The `ui_lib` provides some of the custom widgets used in VisiCopy. `main` is where the main UI is defined and also contains the `main.py` file (which is the entry point to the program).
+
+**Below is a diagram (in progress) of the structure of our project:**
+
 
 
 #### App Type & Option (BYOP)
