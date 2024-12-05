@@ -33,15 +33,18 @@ At its core, VisiCopy integrates advanced file copying utilities (robocopy and/o
 5. Improve documentation:
 	1. Add docstrings to all classes and methods.
 	2. Make class diagrams for some of the major classes used.
-	3. Add more comments to code where necessary.
+	3. Add more comments to the code where necessary.
 	4. Write well-defined deployment documentation and create a step-by-step guide for working with resources such `.ts` language files and icon resources.
-	5. Write some more online documentation and improve GitHub page.
+	5. Write some more online documentation and improve the GitHub page.
  6. Make an optimal user settings detector so that the initial settings are best suited for the computer that VisiCopy is running on... like optimized thread & process count limit.
 
 
 #### Basic UI sketch
-The UI is really quite large but here is the basic idea of what the current state is:
+The UI is really quite large, but here is the basic idea of what the current state is:
 ![image](https://github.com/user-attachments/assets/b672d2da-01b5-4e67-a65f-79a4716a6eed)
+![selection](https://github.com/user-attachments/assets/e6a94079-2efa-4b1c-8432-74952ff48d66)
+![job_manager](https://github.com/user-attachments/assets/6546d89f-4968-400c-aae5-b120017b34e4)
+![advanced_user](https://github.com/user-attachments/assets/9ba8bd28-2a3a-457e-ae88-01d900adbdcf)
 
 
 #### MVP
