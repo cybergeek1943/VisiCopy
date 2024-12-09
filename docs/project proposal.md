@@ -64,13 +64,13 @@ This is the new **Advanced User** feature that will hide complex settings and im
 
 #### Interesting Challenges
 - Making the VisiCopy project conducive to collaboration will be a challenge.
-- It will be challenging to make the `.job` files editable because we will have to make the settings UI work for `.job` files. Currently, the settings UI is set up to only read from a single user data file. To make the settings UI code more flexible, we will need to rewrite the code that reads in the file to make it more flexible.
-- It will be challenging to add the **Advanced User** feature to the settings UI Because it will require a small rewrite of the settings UI mini-framework I created. More specifically, we must write new code that manages what UI elements get hidden and what gets shown based on new `tags` that define for UI elements in my settings UI framework.
+- It will be challenging to make the `.job` files editable because we will have to make the settings UI work for `.job` files. Currently, the settings UI is set up to only read from a single user data file. To make the settings UI code more flexible, we will need to rewrite the code that reads in the job file.
+- It will be challenging to add the **Advanced User** feature to the settings UI Because it will require a small rewrite of the settings UI mini-framework I created. More specifically, we must write new code that manages which UI elements get hidden and which get shown based on a new `tags` attribute that is defined for UI elements in my settings UI framework.
 
 
 #### Stretch Goals
-1. (Easiest) Add support for **rsync** so that VisiCopy can have multi-platform support.
-2. (Medium) Create a scheduler to run jobs at specified times in the background.
+1. (Easiest) Create a scheduler to run jobs at specified times in the background.
+2. (Medium) Add support for **rsync** so that VisiCopy can have multi-platform support.
 3. (ambitious, especially after adding support for **rsync**) Make a rigorous testing suite for most of VisiCopy's features.
 
 There is a lot of testing and refining to be done on existing features, which will be done later. If the program could cause world peace, that’d be a huge win, but that’s EXTREMELY ambitious.
