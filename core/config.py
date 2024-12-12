@@ -1,18 +1,13 @@
 from core.userdata_io import UserdataFile
-"""Contains the default configurations of the settings and basic application config. It also contains the interfaces """
+"""Contains the default configuration of the basic application config."""
 class ThemeMode:
     DARK: int = 0
     LIGHT: int = 1
     AUTO: int = 2
 
 
-class SettingsMode:
-    Normal: int = 0
-    Advanced: int = 1
-
-
 __default_config: dict = {
-    'mode': SettingsMode.Normal,  # type: int  # -1 means not specified yet.
+    'advanced_mode': False,  # type: bool
     'language': -1,  # type: int  # -1 means not specified yet.
     'theme': ThemeMode.DARK,  # type: int
     'auto_copy_flags': False,  # type: bool

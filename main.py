@@ -1,7 +1,7 @@
-from core import settings_data
-from core.settings_data import CustomSettings
+from core.settings import settings_file
+import core.settings as settings
 from core.translation import tr, init_translator
-from core.config import user_docs_path
+from core.os_utils import user_docs_path
 import core.importer_exporter as importer_exporter
 import process_manager
 import process_manager_ui
@@ -200,16 +200,16 @@ class MainWindow(windows.TabWindow):
 
 class Application(QApplication):
     def exit(self, retcode: int = 0, force_exit: bool = False):
-        if not force_exit and settings_data.changes_detected != 0:
+        if not force_exit and settings.detected_changes != 0:
             title: str = tr('Confirm Change')
-            message: str = tr('You made 1 change in the settings.\nDo you want to save this change for future use?') if settings_data.changes_detected == 1 \
-                else tr('You made {} changes in the settings.\nDo you want to save these changes for future use?').format(settings_data.changes_detected)
+            message: str = tr('You made 1 change in the settings.\nDo you want to save this change for future use?') if settings.detected_changes == 1 \
+                else tr('You made {} changes in the settings.\nDo you want to save these changes for future use?').format(settings.detected_changes)
             r = dialogs.question(main_window, title, message, show_cancel_button=True)
             if r == dialogs.response.Yes:
-                settings_data.save_settings()
+                settings_file.save()
             elif r == dialogs.response.Cancel:
                 return
-        settings_data.set_detected_changes(0)
+        settings.set_detected_changes(0)
         super().exit(retcode)
 
 

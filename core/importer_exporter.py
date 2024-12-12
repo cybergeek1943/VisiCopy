@@ -6,8 +6,8 @@ import json
 def export_settings(filepath: str) -> None:
     """Exports a (.udat) file to `filepath`"""
     userdata_file: dict = {
-        'settings_data': config_file.data,
-        'preferences_config': config_file.data,
+        'config_data': config_file.data,
+        'settings_data': settings_file.data
     }
     with open(filepath, 'w') as f:  # save the `userdata_file` to `filepath`
         f.write(json.dumps(userdata_file))
@@ -18,10 +18,10 @@ def import_settings(filepath: str) -> bool:
     try:
         with open(filepath, 'r') as f:
             userdata_file: dict = json.loads(f.read())
-            config_file.data = userdata_file['preferences_config']
-            config_file.data = userdata_file['settings_data']
+            config_file.data = userdata_file['config_data']
+            settings_file.data = userdata_file['settings_data']
         config_file.save()
-        config_file.save()
+        settings_file.save()
         return True
     except (FileNotFoundError, json.JSONDecodeError, KeyError):
         return False
@@ -30,7 +30,7 @@ def import_settings(filepath: str) -> bool:
 def export_job_file(filepath: str, sources: list[tuple[str, dict]], destinations: list[str]) -> None:
     """Export the settings along with the selected sources and destinations as a (.job) file."""
     userdata_file: dict = {
-        'settings_data': config_file.data,
+        'settings_data': settings_file.data,
         'sources': sources,
         'destinations': destinations,
     }

@@ -13,7 +13,7 @@ from qfluentwidgets import (BodyLabel as QFLabel,
 
 # Import Utility Classes
 from qfluentwidgets import setTheme, Theme, setFont, FluentIcon
-import core.config as user_data
+from core.config import config_file
 from core.translation import tr
 from core.asset_paths import logoIconPath
 
@@ -141,11 +141,11 @@ class windows:
             self.menu_expand_width: int = menu_expand_width
             self.navigationInterface.setExpandWidth(menu_expand_width)
             self.setWindowIcon(QIcon(logoIconPath))
-            setTheme(theme=Theme.DARK if user_data.preferences['theme'] == 0 else Theme.LIGHT if user_data.preferences['theme'] == 1 else Theme.AUTO)  # CRAZY BUG! -> This bug happens when window is opened to full screen using showMaximized() and the setTheme() is called afterwards. To fix this bug simply call setTheme() before calling showMaximized().
+            setTheme(theme=Theme.DARK if config_file.data['theme'] == 0 else Theme.LIGHT if config_file.data['theme'] == 1 else Theme.AUTO)  # CRAZY BUG! -> This bug happens when window is opened to full screen using showMaximized() and the setTheme() is called afterwards. To fix this bug simply call setTheme() before calling showMaximized().
             if remember_window_pos:
-                self.move(*user_data.preferences['win_pos']) if user_data.preferences['win_pos'] else None
-                self.resize(*user_data.preferences['win_size']) if user_data.preferences['win_size'] else None
-                self.showMaximized() if user_data.preferences['win_max'] else None
+                self.move(*config_file.data['win_pos']) if config_file.data['win_pos'] else None
+                self.resize(*config_file.data['win_size']) if config_file.data['win_size'] else None
+                self.showMaximized() if config_file.data['win_max'] else None
             self.__remember_window_pos: bool = remember_window_pos
 
         def enterEvent(self, e):
@@ -154,12 +154,12 @@ class windows:
         def closeEvent(self, event):
             if self.__remember_window_pos:
                 if self.isMaximized():
-                    user_data.preferences['win_max']: tuple = True
+                    config_file.data['win_max']: tuple = True
                 else:
-                    user_data.preferences['win_max']: tuple = False
-                    user_data.preferences['win_pos']: tuple = self.pos().toTuple()
-                    user_data.preferences['win_size']: tuple = self.size().toTuple()
-                user_data.save_config()
+                    config_file.data['win_max']: tuple = False
+                    config_file.data['win_pos']: tuple = self.pos().toTuple()
+                    config_file.data['win_size']: tuple = self.size().toTuple()
+                config_file.save()
             event.ignore()
 
     class TabComponent(QWidget):

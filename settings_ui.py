@@ -1,6 +1,6 @@
 # Import Application Data
 import core.os_utils
-from core.settings import cdict, settings_file as settings_file
+from core.settings import cdict, settings_file
 import core.settings as settings
 from core.config import config_file
 from core.translation import tr, set_lang, get_lang
@@ -55,7 +55,7 @@ class Card(SimpleCardWidget):
         # Card Elements
         self.__hierarchy__: dict = {}
         for elem in elements:
-            if 'advanced' in elem:
+            if 'advanced' in elem and config_file.data['advanced_mode']:
                 continue
             elem_type = elem['type']
 

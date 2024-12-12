@@ -173,7 +173,7 @@ class CopyProcess(CopyProcess_NoPiping):  # TODO document these classes better
         # Total Stats
         self.sync_complete: bool = False
         self.source_files_count: int = 0  # used to calculate total progress percentage (it can also be the number of changes detected when continuous monitoring is enabled).
-        self.__set_source_files_count(blocking=False)  # run this function in as non-blocking so that copying can start immediately.
+        self.__set_source_files_count(blocking=False)  # run this function as non-blocking so that copying can start immediately.
         self.total_files_read: int = 0  # this is a step ahead because its includes the current file in progress. Use total_files_copied() property to get accurate number of total files copied.
         self.total_bytes_read: int = 0  # this is a step ahead because its includes the full bytes of current file in progress. Use total_bytes_copied() property to get accurate number of total bytes copied.
 
