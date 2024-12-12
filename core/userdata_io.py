@@ -3,13 +3,14 @@ import platform
 import json
 from copy import deepcopy
 from core.hooks import Hook, HookType
-__debug_mode__: bool = False  # enable to only load from default data rather than from actual userdata file
-__store_in_cd__: bool = False  # enable to store the userdata in current directory for debugging purposes
+__debug_mode__: bool = True  # enable to only load from default data rather than from actual userdata file
+__store_in_cd__: bool = True  # enable to store the userdata in current directory for debugging purposes
 __app_name__: str = "VisiCopy"
 __version__: str = "1.0.0"
 
 
 def get_appdata_directory() -> str:
+    """Finds the directory path to store application data in OS."""
     if __store_in_cd__:
         return '.'
     match platform.system():
@@ -35,16 +36,19 @@ class UserdataFile:
         self.onReset: HookType = Hook()
 
     def save(self) -> None:
+        """Writes current data to JSON file and calls onSave."""
         with open(self.file_path, mode='w') as f:
             f.write(json.dumps(self.data))
         self.onSave()
 
     def reset(self) -> None:
+        """Resets data to default and calls onReset."""
         self.data = deepcopy(self.default_data)
         self.save()
         self.onReset()
 
     def load(self) -> None:
+        """Loads data from JSON file and calls onLoad (Loads default if file read fails)."""
         if __debug_mode__:
             self.data = deepcopy(self.default_data)
             self.onLoad()

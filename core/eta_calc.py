@@ -29,6 +29,7 @@ class EtaAndSpeedCalc:  # todo document and confirm
         return output
 
     def reset_eta_and_speed_vars(self) -> None:
+        """Resets variables used for ETA."""
         self.__progress_checkpoint = 0
         self.__bytes_copied_checkpoint = 0
         self.__progress_checkpoint_samples.clear()

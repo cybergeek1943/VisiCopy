@@ -15,6 +15,11 @@ from PySide6.QtCore import QTimer
 from qfluentwidgets import NavigationItemPosition
 from core.asset_paths import MainIconPaths
 
+# TODO verify location of these imports
+from source_selection_ui import MainWindow as SourceSelectionSubWindow
+self.source_selection_sub_window = SourceSelectionSubWindow()
+from destination_selection_ui import MainWindow as DestinationSelectionWindow
+self.destination_selection_sub_window = DestinationSelectionWindow()
 
 class builders:
     class VisualConnectorLine(ProgressBar):
@@ -25,9 +30,11 @@ class builders:
             self.setCustomBarColor('#73e68c', '#73e68c')
 
         def set_complete(self, b: bool):
+            """Sets value to 100 if True"""
             self.setValue(100 if b else 0)
 
     class PrimaryButton(PrimaryPushButton):
+        """Inherits from PrimaryPushButton and initializes a button."""
         def __init__(self, label: str, slots: tuple[callable] = None, disabled: bool = True):
             super().__init__()
             if slots:
@@ -39,6 +46,7 @@ class builders:
             self.setDisabled(disabled)
 
     class Button(PushButton):
+        """Inherits from PushButton and initializes a button."""
         def __init__(self, icon: Icons, label: str, tooltip: str, slots: tuple[callable] = None, disabled: bool = False):
             super().__init__()
             if slots:
@@ -52,6 +60,7 @@ class builders:
 
 
 class HomeTab(QWidget):
+    """Sets up the layout of the home tab."""
     def __init__(self):
         super().__init__()
         self.setObjectName('home_tab')
@@ -65,17 +74,6 @@ class HomeTab(QWidget):
         v_lay.addWidget(ui, alignment=AlignFlag.AlignCenter)
         grid = QGridLayout()
         ui.setLayout(grid)
-
-        # source
-        # TODO - put imports in proper place
-        from source_selection_ui import MainWindow as SourceSelectionSubWindow
-        self.source_selection_sub_window = SourceSelectionSubWindow()
-
-        # destination
-        # TODO - put imports in proper place
-        from destination_selection_ui import MainWindow as DestinationSelectionWindow
-        self.destination_selection_sub_window = DestinationSelectionWindow()
-
 
         QTimer.singleShot(100, self.source_selection_window_size)
 
@@ -95,7 +93,6 @@ class HomeTab(QWidget):
         self.destination_connector_line = builders.VisualConnectorLine()
         grid.addWidget(self.destination_connector_line, 0, 3, alignment=AlignFlag.AlignCenter)
 
-
         # start copy
         grid.addWidget(primitives.ImageIcon(MainIconPaths.startCopy), 0, 4, alignment=AlignFlag.AlignCenter)
         self.start_copy_button = builders.PrimaryButton(tr('Start Copy'), slots=(self.on_start_copy_pressed,))
@@ -108,24 +105,25 @@ class HomeTab(QWidget):
     # TODO next four functions need to be reviewed
 
     def source_selection_window_size(self):
-        ''' Sizes the source selection menu'''
+        """Sizes the source selection menu"""
         self.source_selection_sub_window.resize(int(self.window().size().width() * 0.9), int(self.window().size().height() * 0.9))
         self.source_selection_sub_window.move(self.window().pos().x() + 32, self.window().pos().y() + 32)
 
     def source_selection_window_closer(self):
-        ''' Calls to close the selection window'''
+        """Calls to close the selection window"""
         self.on_source_selection_window_closed(self.source_selection_sub_window.selection_manager_tab.widget_count())
 
     def destination_selection_window_size(self):
-        ''' Sizes the source destination menu'''
+        """Sizes the source destination menu"""
         self.destination_selection_sub_window.resize(int(self.window().size().width() * 0.9), int(self.window().size().height() * 0.9))
         self.destination_selection_sub_window.move(self.window().pos().x() + 32, self.window().pos().y() + 32)
 
     def destination_selection_window_closer(self):
-        ''' Calls to close the selection window'''
+        """Calls to close the selection window"""
         self.on_destination_selection_window_closed(self.destination_selection_sub_window.selection_manager_tab.widget_count())
 
     def on_source_selection_window_closed(self, selected_file_count: int):
+        """Updates the interface based on selected files."""
         if selected_file_count == 0:
             self.select_destination_button.setDisabled(True)
             self.start_copy_button.setDisabled(True)
@@ -136,6 +134,7 @@ class HomeTab(QWidget):
         self.source_connector_line.set_complete(True)
 
     def on_destination_selection_window_closed(self, selected_folder_count: int):
+        """Either enables or disables the copy button based on if a destination folder is selected."""
         if selected_folder_count == 0:
             self.start_copy_button.setDisabled(True)
             self.destination_connector_line.set_complete(False)
@@ -144,6 +143,7 @@ class HomeTab(QWidget):
         self.destination_connector_line.set_complete(True)
 
     def on_start_copy_pressed(self):
+        """Initializes copying process."""
         source_selection: list[tuple[str, dict]] = self.source_selection_sub_window.get_source_selection()
         destination_selection: list[str] = self.destination_selection_sub_window.get_destination_selection()
         process_manager.init_processes(source_selection, destination_selection)
@@ -154,6 +154,7 @@ class HomeTab(QWidget):
             process_manager.start_all_processes()
 
 class JobTab(QWidget):
+    """Manages job files"""
     def __init__(self, home_tab: HomeTab):
         super().__init__()
         self.home_tab = home_tab
@@ -174,6 +175,7 @@ class JobTab(QWidget):
         buttons_lay.addWidget(builders.Button(Icons.PLAY, tr('Run a Job File'), tr('Run a (*.job) file containing sources, destinations, and settings.'), slots=(self.run_job_file,)))
 
     def run_job_file(self):
+        """Prompts sleection of job file imports processes, begins copy."""
         if (path := QFileDialog.getOpenFileName(self, tr('Run a Job File'), user_docs_path, tr('Jobs (*.job)')))[0]:
             if j := importer_exporter.import_job_file(path[0]):
                 process_manager.init_processes(*j)
@@ -187,6 +189,7 @@ class JobTab(QWidget):
                 dialogs.info(self, tr('Error'), tr('This file could not be imported because it is corrupt!'), critical=True)
 
     def create_job_file(self):
+        """Enables user to save new job file."""
         source_selection: list[tuple[str, dict]] = self.home_tab.source_selection_sub_window.get_source_selection()
         destination_selection: list[str] = self.home_tab.destination_selection_sub_window.get_destination_selection()
         if not source_selection or not destination_selection:
@@ -197,6 +200,7 @@ class JobTab(QWidget):
 
 
 class MainWindow(windows.TabWindow):
+    """Creates main window"""
     def __init__(self):
         super().__init__(remember_window_pos=False, menu_expand_width=150)
         self.setWindowTitle(tr('VisiCopy'))
@@ -216,12 +220,14 @@ class MainWindow(windows.TabWindow):
         self.navigationInterface.addItem('open_settings', Icons.SETTING, tr('Settings'), selectable=False, onClick=settings_ui.start, position=NavigationItemPosition.BOTTOM)
 
     def closeEvent(self, event):
+        """Exists application on window close."""
         app.exit()
         event.ignore()  # so that dialog cancel button can work
 
 
-class Application(QApplication):
+class Application(QApplication)
     def exit(self, retcode: int = 0, force_exit: bool = False):
+        """Checks for unsaved changes, if found, prompts the user."""
         if not force_exit and settings.detected_changes != 0:
             title: str = tr('Confirm Change')
             message: str = tr('You made 1 change in the settings.\nDo you want to save this change for future use?') if settings.detected_changes == 1 \
