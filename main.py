@@ -226,7 +226,7 @@ class MainWindow(windows.TabWindow):
         event.ignore()  # so that dialog cancel button can work
 
 
-class Application(QApplication)
+class Application(QApplication):
     def exit(self, retcode: int = 0, force_exit: bool = False):
         """Checks for unsaved changes, if found, prompts the user."""
         if not force_exit and settings.detected_changes != 0:
