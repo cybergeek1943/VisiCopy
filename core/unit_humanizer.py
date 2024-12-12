@@ -1,17 +1,22 @@
-# TODO add doctests and maybe improve design
-
+# TODO add doctests and maybe improve design (only bytes)
 
 def format_seconds(s: int) -> str:
-    if s < 60:
-        return f'{s}s'
-    m: int = s // 60
-    if m < 60:
-        return f'{m}m:{s-(m*60)}s'
-    h: int = m // 60
-    return f'{h}h:{m-(h*60)}m:{s-(m*60)}s'
-
+    '''Converts integer seconds into string of hour:minute:second
+    >>> format_seconds(45)
+    '45s'
+    >>> format_seconds(1000)
+    '16m:40s'
+    >>> format_seconds(0)
+    '0s'
+    >>> format_seconds(10000)
+    '2h:46m:40s'
+    '''
+    m = s // 60
+    h = m // 60
+    return f'{h}h:{m-(h*60)}m:{s-(m*60)}s' if h> 0 else (f'{m}m:{s-(m*60)}s' if m>0 else f'{s}s')
 
 def format_bytes(b: int, per_second: bool = False) -> str:
+    '''Converts integer bytes into strings'''
     time: str = f'ps' if per_second else ''
     if b < 1024:
         return f'{r(b)}B{time}'

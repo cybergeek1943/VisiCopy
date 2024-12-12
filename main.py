@@ -70,29 +70,31 @@ class HomeTab(QWidget):
         # TODO - put imports in proper place
         from source_selection_ui import MainWindow as SourceSelectionSubWindow
         self.source_selection_sub_window = SourceSelectionSubWindow()
-        # TODO - abstract this
-        QTimer.singleShot(100, lambda: (self.source_selection_sub_window.resize(int(self.window().size().width() * 0.9), int(self.window().size().height() * 0.9)),
-                                        self.source_selection_sub_window.move(self.window().pos().x() + 32, self.window().pos().y() + 32)))  # we must use timer here because we need to wait for the main window to load.
-        self.source_selection_sub_window.windowClosing.connect(lambda: self.on_source_selection_window_closed(self.source_selection_sub_window.selection_manager_tab.widget_count()))
+
+        # destination
+        # TODO - put imports in proper place
+        from destination_selection_ui import MainWindow as DestinationSelectionWindow
+        self.destination_selection_sub_window = DestinationSelectionWindow()
+
+
+        QTimer.singleShot(100, self.source_selection_window_size)
+
+        self.source_selection_sub_window.windowClosing.connect(self.source_selection_window_closer)
         grid.addWidget(primitives.ImageIcon(MainIconPaths.selectSource), 0, 0, alignment=AlignFlag.AlignCenter)
         self.select_source_button = builders.PrimaryButton(tr('Select Source'), slots=(self.source_selection_sub_window.show,), disabled=False)
         grid.addWidget(self.select_source_button, 2, 0, alignment=AlignFlag.AlignCenter)
         self.source_connector_line = builders.VisualConnectorLine()
         grid.addWidget(self.source_connector_line, 0, 1, alignment=AlignFlag.AlignCenter)
 
-        # destination
-        # TODO - put imports in proper place
-        from destination_selection_ui import MainWindow as DestinationSelectionWindow
-        self.destination_selection_sub_window = DestinationSelectionWindow()
-        # TODO - abstract this
-        QTimer.singleShot(100, lambda: (self.destination_selection_sub_window.resize(int(self.window().size().width() * 0.9), int(self.window().size().height() * 0.9)),
-                                        self.destination_selection_sub_window.move(self.window().pos().x() + 32, self.window().pos().y() + 32)))  # we must use timer here because we need to wait for the main window to load.
-        self.destination_selection_sub_window.windowClosing.connect(lambda: self.on_destination_selection_window_closed(self.destination_selection_sub_window.selection_manager_tab.widget_count()))
+        QTimer.singleShot(100, self.destination_selection_window_size)
+
+        self.destination_selection_sub_window.windowClosing.connect(self.destination_selection_window_closer)
         grid.addWidget(primitives.ImageIcon(MainIconPaths.selectDestination), 0, 2, alignment=AlignFlag.AlignCenter)
         self.select_destination_button = builders.PrimaryButton(tr('Select Destination'), slots=(self.destination_selection_sub_window.show,))
         grid.addWidget(self.select_destination_button, 2, 2, alignment=AlignFlag.AlignCenter)
         self.destination_connector_line = builders.VisualConnectorLine()
         grid.addWidget(self.destination_connector_line, 0, 3, alignment=AlignFlag.AlignCenter)
+
 
         # start copy
         grid.addWidget(primitives.ImageIcon(MainIconPaths.startCopy), 0, 4, alignment=AlignFlag.AlignCenter)
@@ -102,6 +104,26 @@ class HomeTab(QWidget):
         # spacers
         grid.addWidget(primitives.SpacerItem(0, 32), 1, 2)  # vertical space between buttons and icons.
         grid.addWidget(primitives.SpacerItem(0, 32), 3, 2)  # vertical space after buttons to shift ui up.
+
+    # TODO next four functions need to be reviewed
+
+    def source_selection_window_size(self):
+        ''' Sizes the source selection menu'''
+        self.source_selection_sub_window.resize(int(self.window().size().width() * 0.9), int(self.window().size().height() * 0.9))
+        self.source_selection_sub_window.move(self.window().pos().x() + 32, self.window().pos().y() + 32)
+
+    def source_selection_window_closer(self):
+        ''' Calls to close the selection window'''
+        self.on_source_selection_window_closed(self.source_selection_sub_window.selection_manager_tab.widget_count())
+
+    def destination_selection_window_size(self):
+        ''' Sizes the source destination menu'''
+        self.destination_selection_sub_window.resize(int(self.window().size().width() * 0.9), int(self.window().size().height() * 0.9))
+        self.destination_selection_sub_window.move(self.window().pos().x() + 32, self.window().pos().y() + 32)
+
+    def destination_selection_window_closer(self):
+        ''' Calls to close the selection window'''
+        self.on_destination_selection_window_closed(self.destination_selection_sub_window.selection_manager_tab.widget_count())
 
     def on_source_selection_window_closed(self, selected_file_count: int):
         if selected_file_count == 0:
