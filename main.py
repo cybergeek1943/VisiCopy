@@ -1,5 +1,6 @@
 from core.settings import settings_file
 import core.settings as settings
+from core.settings import CustomSettings
 from core.translation import tr, init_translator
 from core.os_utils import user_docs_path
 import core.importer_exporter as importer_exporter

@@ -55,7 +55,7 @@ class Card(SimpleCardWidget):
         # Card Elements
         self.__hierarchy__: dict = {}
         for elem in elements:
-            if 'advanced' in elem and config_file.data['advanced_mode']:
+            if 'advanced' in elem and not config_file.data['advanced_mode']:
                 continue
             elem_type = elem['type']
 
@@ -110,6 +110,8 @@ class MainWindow(windows.SubWindow):
         self.navigationInterface.addSeparator()
         self.tabs: dict[str, windows.TabComponent] = {}  # used to store the tab object and its route key (object name).
         for card in settings_file.data:
+            if 'advanced' in card and not config_file.data['advanced_mode']:
+                continue
             tab_title: str | None = card.get('tab_title', None)
             tab_id: str = card['tab_id']
             card_title: str = card['title']
@@ -126,25 +128,33 @@ class MainWindow(windows.SubWindow):
         # Add the additional user preferences from userdata
         # TODO abstract lambdas
         # TODO get rid of both export options
-        preferences: windows.TabComponent = windows.TabComponent(tr('Config'))
-        preferences.setObjectName('preferences')
+        preferences: windows.TabComponent = windows.TabComponent(tr('Configuration'))
+        preferences.setObjectName('configuration')
         self.tabs['preferences'] = preferences
-        preferences.add_widget(cards.SettingWSwitch(Icons.APPLICATION, tr("Advanced Users"), tr('Enable more advanced features and controls for settings such as performance and logging. (requires restart)'), False, lambda: None))
+        preferences.add_widget(cards.SettingWSwitch(Icons.APPLICATION, tr("Advanced Users"), tr('Enable more advanced features and controls for settings such as performance and logging. (requires restart)'), config_file.data['advanced_mode'], self.set_advanced_mode))
         preferences.add_widget(cards.SettingWComboBox(Icons.LANGUAGE, tr('Language'), tr('Currently, four languages are supported. More will be added in future releases.'), ('English', 'Español (Spanish)', '简体中文 (Chinese)', 'हिंदी (Hindi)'), get_lang(), self.set_language))
         preferences.add_widget(cards.SettingWComboBox(Icons.BRUSH, tr('Theme Mode'), tr("Change the color of this application's interface."), (tr('Dark'), tr('Light'), tr('System (Auto)')), config_file.data['theme'], self.set_theme))
-        preferences.add_widget(cards.SettingWPushButtons(Icons.SAVE_COPY, tr("Import/Export Settings"), tr('You may use import/export to move VisiCopy settings between computers.'), (tr("Import"), tr("Export")), (self.import_settings, self.export_settings)))
-        preferences.add_widget(cards.SettingWPushButtons(Icons.CODE, tr('Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Copy the command-line flags that are used to spawn robocopy processes to the clipboard.'), (tr('Copy to Clipboard'),), (lambda: copyToClipboard(' '.join(settings_parser.parse(settings_file.data)), app),)))
-        preferences.add_widget(cards.SettingWSwitch(Icons.CODE, tr('Automatically Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Automatically copy the command-line flags that are used to spawn robocopy processes to the clipboard when copy starts.'), config_file.data['auto_copy_flags'], lambda b: config_file.data.__setitem__('auto_copy_flags', b)))
+        if config_file.data['advanced_mode']:
+            preferences.add_widget(cards.SettingWPushButtons(Icons.SAVE_COPY, tr("Import/Export Settings"), tr('You may use import/export to move VisiCopy settings between computers.'), (tr("Import"), tr("Export")), (self.import_settings, self.export_settings)))
+            preferences.add_widget(cards.SettingWPushButtons(Icons.CODE, tr('Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Copy the command-line flags that are used to spawn robocopy processes to the clipboard.'), (tr('Copy to Clipboard'),), (lambda: copyToClipboard(' '.join(settings_parser.parse(settings_file.data)), app),)))
+            preferences.add_widget(cards.SettingWSwitch(Icons.CODE, tr('Automatically Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Automatically copy the command-line flags that are used to spawn robocopy processes to the clipboard when copy starts.'), config_file.data['auto_copy_flags'], lambda b: config_file.data.__setitem__('auto_copy_flags', b)))
         _ = cards.SettingWPushButtons(Icons.HISTORY, tr('Reset Settings'), tr("Reset VisiCoy's settings back to their original defaults."), (tr("Reset Settings"),), (self.reset_settings,))
         _.setButtonBorderColor(0, '#d04933')  # TODO put all styles into custom objects in UI lib!
         preferences.add_widget(_)
-        self.addSubInterface(preferences, Icons.DEVELOPER_TOOLS, tr('Config'), NavigationItemPosition.BOTTOM)
+        self.addSubInterface(preferences, Icons.DEVELOPER_TOOLS, tr('Configuration'), NavigationItemPosition.BOTTOM)
 
         # Add Info tab
         info: windows.TabComponent = windows.TabComponent(tr('Info'))
         info.setObjectName('info')
         info.add_widget(InfoPageWidget())
         self.addSubInterface(info, Icons.INFO, tr('Info'), NavigationItemPosition.BOTTOM)
+
+    def set_advanced_mode(self , b: bool) -> None:
+        config_file.data['advanced_mode'] = b
+        dialogs.info(self, tr('Restart Required'), tr('VisiCopy will close automatically. Please reopen VisiCopy for changes to take effect.'))
+        config_file.save()
+        # noinspection PyArgumentList
+        app.exit(force_exit=True)
 
     def set_language(self, index: int):
         set_lang(index)

@@ -111,6 +111,7 @@ tr: callable = lambda _: _  # dummy callable used to register strings for transl
 'title': this is the title of the card and will be displayed on the card only if there is more than one card in the tab. Otherwise, this title will be used for the tab title instead.
 'note': this places a note at the beginning of the card.
 'elements': contains the UI elements to placed in the card.
+'advanced': only show this card if the advanced mode is on.
 """
 """ Extra Args for elements
 'sub_pos': This is an `int` that set the elements sub position giving us the ability to nest elements and make a "tree". This should only be used if the element has a 'disabled' arg.
@@ -182,8 +183,8 @@ __default_settings: list = [
         'note': None,
         'elements': [
             # related
-            switch(tr('Copy only files with the Archive attribute'), toggled=False, id='only_archived'),
-            switch(tr('Remove the Archive attribute from files in source after copy'), toggled=False, sub_pos=1, id='remove_archive_attrib'),
+            switch(tr('Copy only files with the Archive attribute'), toggled=False, advanced=True, id='only_archived'),
+            switch(tr('Remove the Archive attribute from files in source after copy'), toggled=False, sub_pos=1, advanced=True, id='remove_archive_attrib'),
             spacer(),
 
             switchDropdown(toggled=False, options=(tr("Don't copy files with the following attributes"), tr('Only copy files with the following attributes')), id=('exclude_files_with_attrib', 'include_files_with_attrib')),
@@ -192,13 +193,14 @@ __default_settings: list = [
             checkBox(tr('System'), toggled=False, sub_pos=1, id='system'),
             checkBox(tr('Hidden'), toggled=False, sub_pos=1, id='hidden'),
             checkBox(tr('Compressed'), toggled=False, sub_pos=1, id='compressed'),
-            checkBox(tr('Not Content Indexed'), toggled=False, sub_pos=1, id='not_content_indexed'),
+            checkBox(tr('Not Content Indexed'), toggled=False, sub_pos=1, advanced=True, id='not_content_indexed'),
             checkBox(tr('Encrypted'), toggled=False, sub_pos=1, id='encrypted'),
             checkBox(tr('Temporary'), toggled=False, sub_pos=1, id='temporary'),
             checkBox(tr('Offline'), toggled=False, sub_pos=1, id='offline')
         ]
     },
     {
+        'advanced': True,
         'tab_id': 'filters',
         'title': tr('Source/Destination Relation Filters'),
         'note': tr('Note:'
@@ -229,8 +231,8 @@ __default_settings: list = [
             switchNumEntry(tr('Monitor source and update destination after n changes happen'), toggled=False, entry=1, expose=True, id='sync_every_n_change'),
             switchNumEntry(tr('Wait in intervals of n minutes before updating destination'), toggled=False, entry=1, expose=True, id='sync_every_n_min', sub_pos=1),
 
-            switch(tr('Revaluate security attributes on files already in destination and fix them if they have changed in source. (happens per pass)'), toggled=False, id='revaluate_security_attributes'),
-            switch(tr('Revaluate timestamps on files already in destination and fix them if they have changed in source. (happens per pass)'), toggled=False, id='revaluate_timestamps'),
+            switch(tr('Revaluate security attributes on files already in destination and fix them if they have changed in source. (happens per pass)'), toggled=False, advanced=True, id='revaluate_security_attributes'),
+            switch(tr('Revaluate timestamps on files already in destination and fix them if they have changed in source. (happens per pass)'), toggled=False, advanced=True, id='revaluate_timestamps'),
         ]
     },
     {
@@ -251,8 +253,8 @@ __default_settings: list = [
             checkBox(tr('Timestamps'), toggled=True, sub_pos=1, id='timestamps'),
             checkBox(tr('Owner Information'), toggled=False, sub_pos=1, id='owner_info'),
             checkBox(tr('Auditing Information'), toggled=False, sub_pos=1, id='audit_info'),
-            checkBox(tr('NTFS access control list (ACL)'), toggled=False, sub_pos=1, id='ntfs_acl'),
-            checkBox(tr('Skip alt data streams'), toggled=False, sub_pos=1, id='skip_alt_data_streams'),
+            checkBox(tr('NTFS access control list (ACL)'), toggled=False, sub_pos=1, advanced=True, id='ntfs_acl'),
+            checkBox(tr('Skip alt data streams'), toggled=False, sub_pos=1, advanced=True, id='skip_alt_data_streams'),
             spacer(),
 
             # related
@@ -260,8 +262,8 @@ __default_settings: list = [
             checkBox(tr('Folder Data'), toggled=True, sub_pos=1, id='data'),
             checkBox(tr('Attributes'), toggled=True, sub_pos=1, id='attributes'),
             checkBox(tr('Timestamps'), toggled=True, sub_pos=1, id='timestamps'),
-            checkBox(tr('Extended Attributes'), toggled=False, sub_pos=1, id='owner_info'),
-            checkBox(tr('Skip alt data streams'), toggled=False, sub_pos=1, id='skip_alt_data_streams'),
+            checkBox(tr('Extended Attributes'), toggled=False, sub_pos=1, advanced=True, id='owner_info'),
+            checkBox(tr('Skip alt data streams'), toggled=False, sub_pos=1, advanced=True, id='skip_alt_data_streams'),
             spacer(divider=True),
 
             # related
@@ -271,7 +273,7 @@ __default_settings: list = [
             checkBox(tr('System'), toggled=False, sub_pos=1, id='system'),
             checkBox(tr('Hidden'), toggled=False, sub_pos=1, id='hidden'),
             checkBox(tr('Compressed'), toggled=False, sub_pos=1, id='compressed'),
-            checkBox(tr('Not Content Indexed'), toggled=False, sub_pos=1, id='not_content_indexed'),
+            checkBox(tr('Not Content Indexed'), toggled=False, sub_pos=1, advanced=True, id='not_content_indexed'),
             checkBox(tr('Encrypted'), toggled=False, sub_pos=1, id='encrypted'),
             checkBox(tr('Temporary'), toggled=False, sub_pos=1, id='temporary'),
             spacer(),
@@ -283,17 +285,18 @@ __default_settings: list = [
             checkBox(tr('System'), toggled=False, sub_pos=1, id='system'),
             checkBox(tr('Hidden'), toggled=False, sub_pos=1, id='hidden'),
             checkBox(tr('Compressed'), toggled=False, sub_pos=1, id='compressed'),
-            checkBox(tr('Not Content Indexed'), toggled=False, sub_pos=1, id='not_content_indexed'),
+            checkBox(tr('Not Content Indexed'), toggled=False, sub_pos=1, advanced=True, id='not_content_indexed'),
             checkBox(tr('Encrypted'), toggled=False, sub_pos=1, id='encrypted'),
             checkBox(tr('Temporary'), toggled=False, sub_pos=1, id='temporary'),
-            spacer(divider=True),
+            spacer(divider=True, advanced=True),
 
-            switch(tr('Assume FAT File Times (2-second date/time granularity) - use this when copying files to a linux NAS or other non-windows file system'), toggled=False, id='assume_fat_file_times'),
-            switch(tr('Copy any encrypted files using EFS RAW mode (can disable multi-threading)'), toggled=False, id='efs_raw_mode'),
-            switch(tr('Create destination files using 8.3 FAT file names only (legacy)'), toggled=False, id='legacy_name_mode'),
+            switch(tr('Assume FAT File Times (2-second date/time granularity) - use this when copying files to a linux NAS or other non-windows file system'), toggled=False, advanced=True, id='assume_fat_file_times'),
+            switch(tr('Copy any encrypted files using EFS RAW mode (can disable multi-threading)'), toggled=False, advanced=True, id='efs_raw_mode'),
+            switch(tr('Create destination files using 8.3 FAT file names only (legacy)'), toggled=False, advanced=True, id='legacy_name_mode'),
         ]
     },
     {
+        'advanced': True,
         'tab_id': 'logging',
         'title': tr('Logging & Progress Status'),
         'note': None,
