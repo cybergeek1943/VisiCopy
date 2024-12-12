@@ -1,6 +1,6 @@
 from core.translation import tr
 import core.os_utils as os_utils
-from core.config import user_docs_path
+from core.os_utils import user_docs_path
 
 # Import Components and Visual Tools
 from qfluentwidgets import BodyLabel, HorizontalSeparator, CheckBox, PrimaryPushButton, PushButton

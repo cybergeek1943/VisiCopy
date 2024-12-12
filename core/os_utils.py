@@ -1,3 +1,4 @@
+import os
 from os import walk, scandir, system, listdir
 from pathlib import Path
 from shlex import split as arg_split
@@ -5,6 +6,10 @@ from os.path import isfile, isdir, abspath
 # NOTE: unused import statements may be used by other modules using os_utils.
 from PySide6.QtGui import QGuiApplication
 """Contains the OS utilities needed to interact with the system and programs used for copying the files."""
+
+
+user_docs_path: str = os.path.expanduser('~\\Documents')  # TODO use separate module for OS interaction
+
 
 DEFAULT_PATTERN: tuple = ("*.*",)
 

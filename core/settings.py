@@ -1,20 +1,16 @@
-"""Contains the code for loading and saving settings data."""
-from copy import deepcopy
-import json
-import core.config as preferences
+from core.userdata_io import UserdataFile
 from core.hooks import Hook, HookType
+"""Contains the code for loading and saving settings data.
 
+NOTE: if these component functions are changed then the program will crash (because of key errors) if we do not re-initiate the json file
+NOTE: __default_settings should only define layout and information... not styling
+NOTE: currently the `disabled` key is only used to store/initiate information about the disabled state of an element... it can automatically be flipped on/off depending on its `sub_pos` relationship with a parent element.
+"""
 MAX_INT: int = 2147483647  # this is the maximum integer possible because of C++ restraint
 
 
-# Element Builders
-# NOTE: if these components are changed then the program will crash (because of key errors) if we do not re-initiate the json file
-# NOTE: __default_settings should only define layout and information... not styling
-# NOTE: currently the `disabled` key is only used to store/initiate information about the disabled state of an element... it can automatically be flipped on/off depending on its `sub_pos` relationship with a parent element.
-
-
-def spacer(units: int = 1, divider: bool = False) -> dict:
-    return {'type': 'spacer', 'units': units, 'divider': divider}
+def spacer(units: int = 1, divider: bool = False, **kwargs) -> dict:
+    return {'type': 'spacer', 'units': units, 'divider': divider, **kwargs}
 
 
 def constant(label: str,
@@ -106,6 +102,7 @@ tr: callable = lambda _: _  # dummy callable used to register strings for transl
 `inverse`=True  use this to tell the parser that the elements boolean value should be inverted when considering its arg status
 `custom`=True  use this to tell the parser that the element is custom and cannot be mapped to an argument.
 `expose`=True  use this to make elements accessible in `exposed_setting` variable.
+`advanced`=True  use this to mark an element to only be shown when advanced switch is on.
 `id`=<name>  use this to give shortened name to element to be accessed by parser. For `switchDropdown()`, pass a tuple of IDs for each item in dropdown.
 """
 """ Each entry in the settings below is a card. Each card is placed into a tab using 'tab_id'
@@ -116,7 +113,7 @@ tr: callable = lambda _: _  # dummy callable used to register strings for transl
 'elements': contains the UI elements to placed in the card.
 """
 """ Extra Args for elements
-'sub_pos': This is an `int` that set the elements sub position giving us the ability to nest elements and make a "tree". This should only be used of the element has a 'disabled' arg.
+'sub_pos': This is an `int` that set the elements sub position giving us the ability to nest elements and make a "tree". This should only be used if the element has a 'disabled' arg.
 """
 __default_settings: list = [
     {
@@ -146,16 +143,16 @@ __default_settings: list = [
             switchNumEntry(tr('Multiprocessing - max number of processes to run simultaneously when copying from multiple sources or copying to multiple destinations (1-32)'), toggled=True, entry=8, min_entry=1, max_entry=32, id='multiprocess', custom=True),
             checkBox(tr('Prioritize multiple destinations (de-prioritizes multiple sources)'), toggled=True, sub_pos=1, id='prioritize_dst', custom=True),
             checkBox(tr('Allow next pending process to run when a currently running process is finished and in Continuous Monitoring/Sync Mode'), toggled=True, sub_pos=1, id='allow_new_multi_processes_in_sync_mode', custom=True),
-            spacer(divider=True),
+            spacer(divider=True, advanced=True),
 
-            switchSizeEntry(tr('Apply the following throttle settings for files greater than'), toggled=False, entry=1, id='throttle_threshold'),
-            switchSizeEntry(tr('Throttle the I/O rate to n amount per second'), toggled=False, selected_option=2, sub_pos=1, id='throttle_rate'),
-            switchSizeEntry(tr('Max I/O size per read/write cycle'), toggled=False, selected_option=2, sub_pos=1, id='throttle_cycle'),
-            spacer(divider=True),
+            switchSizeEntry(tr('Apply the following throttle settings for files greater than'), toggled=False, entry=1, advanced=True, id='throttle_threshold'),
+            switchSizeEntry(tr('Throttle the I/O rate to n amount per second'), toggled=False, selected_option=2, sub_pos=1, advanced=True, id='throttle_rate'),
+            switchSizeEntry(tr('Max I/O size per read/write cycle'), toggled=False, selected_option=2, sub_pos=1, advanced=True, id='throttle_cycle'),
+            spacer(divider=True, advanced=True),
 
-            switch(tr('Use SMB compression for copies over network (can improve speed significantly)'), toggled=False, id='network_compression'),
-            switch(tr('Optimize the sparse state of files (useful for large files with lots of empty data. e.g. large database files with lots of empty space get optimized for storage)'), toggled=True, id='retain_sparse_state', inverse=True),
-            switchNumEntry(tr('Specify the IPG (inter-packet gap) in milliseconds to free up bandwidth on slow lines (can effect performance; research best IPG for your network)'), toggled=False, entry=0.096, id='inter_packet_gap'),
+            switch(tr('Use SMB compression for copies over network (can improve speed significantly)'), toggled=False, advanced=True, id='network_compression'),
+            switch(tr('Optimize the sparse state of files (useful for large files with lots of empty data. e.g. large database files with lots of empty space get optimized for storage)'), toggled=True, advanced=True, id='retain_sparse_state', inverse=True),
+            switchNumEntry(tr('Specify the IPG (inter-packet gap) in milliseconds to free up bandwidth on slow lines (can effect performance; research best IPG for your network)'), toggled=False, advanced=True, entry=0.096, id='inter_packet_gap'),
         ]
     },
     {
@@ -176,7 +173,7 @@ __default_settings: list = [
 
             switchStrEntry(tr('Only copy files matching the given names/wildcards (separated by a space)'), toggled=False, placeholder=tr('e.g.,   *.txt   "file name.*"'), width_factor=3, id='only_specified_files', custom=True),  # could use non-custom /if:files here... but then specified file selection may be grouped with extra unexpected files from that src directory
             switchStrEntry(tr("Exclude files matching the given names/wildcards/paths (separated by a space)"), toggled=False, placeholder=tr('e.g.,   *.mp4   "file name.*"   "path"'), width_factor=3, id='exclude_files'),
-            switchStrEntry(tr("Exclude folders matching the given names/wildcards/paths (separated by a space)"), toggled=False, placeholder=tr('e.g.,   *.mp4   "file name.*"   "path"'), width_factor=3, id='exclude_folders'),
+            switchStrEntry(tr("Exclude folders matching the given names/wildcards/paths (separated by a space)"), toggled=False, placeholder=tr('e.g., "* folder name"   "path"'), width_factor=3, id='exclude_folders'),
         ]
     },
     {
@@ -327,114 +324,30 @@ __default_settings: list = [
         ]
     }
 ]
+settings_file: UserdataFile = UserdataFile(f'settings', default_data=__default_settings)
+__hierarchy__: dict = {}
+for card in __default_settings:  # Set the hierarchy of elements by disabling sub-elements of elements that switched off.
+    for elem in card['elements']:
+        if not elem.__contains__('disabled'):  # stop here if element type is unsupported in the hierarchy (does not have an explicit `disabled` arg)
+            continue
+        sub_pos: int = elem.get('sub_pos', 0)
+        __hierarchy__[sub_pos] = elem
+        if sub_pos != 0:
+            parent = __hierarchy__[sub_pos - 1]
+            elem['disabled'] = not parent['toggled'] or parent['disabled']
 
 
-def __set_element_hierarchy():
-    """This function runs only when the __default_settings is used to start a new setting.json file. It takes care of assigning disabled status to elements based on their hierarchy so that the parser will accurately parse settings that should be disabled."""
-    __hierarchy__: dict = {}
-    for card in __default_settings:
-        for elem in card['elements']:
-            if not elem.__contains__('disabled'):  # stop here if element type is unsupported in the hierarchy (does not have an explicit `disabled` arg)
-                continue
-            sub_pos: int = elem.get('sub_pos', 0)
-            __hierarchy__[sub_pos] = elem
-            if sub_pos != 0:
-                parent = __hierarchy__[sub_pos - 1]
-                elem['disabled'] = not parent['toggled'] or parent['disabled']
-
-
-# ---------------- Settings Management ----------------
-settings: list = []  # this is the settings that is accessible
-
-
-# TODO - Put into userdata class in separate file for interacting with OS
-def __load_settings(load_defaults: bool = False) -> None:
-    global settings
-    if load_defaults:
-        __set_element_hierarchy()
-        settings = deepcopy(__default_settings)
-        __init_quick_access_settings()
-        return
-    settings_path: str = preferences.paths.settingsPath
-    try:
-        with open(settings_path, mode='r') as f:
-            settings = json.loads(f.read())
-        __init_quick_access_settings()
-    except (FileNotFoundError, json.JSONDecodeError):  # if error occurs then reload default settings.
-        __set_element_hierarchy()
-        with open(settings_path, mode='w') as f:
-            f.write(json.dumps(__default_settings))
-        __load_settings()  # recursively call to reload settings
-
-
-pre_job_load_settings: list[dir] | None = None
-def load_job_file_settings(settings_data: list[dir]) -> None:
-    global settings, pre_job_load_settings
-    pre_job_load_settings = settings
-    settings = settings_data
-    __init_quick_access_settings()
-def exit_job_file_settings() -> None:
-    global settings, pre_job_load_settings
-    if pre_job_load_settings is None:
-        return
-    settings = pre_job_load_settings
-    __init_quick_access_settings()
-    pre_job_load_settings = None
-
-
-def save_settings() -> None:
-    with open(preferences.paths.settingsPath, mode='w') as f:
-        f.write(json.dumps(settings))
-    set_detected_changes(0)
-
-
-def reset_settings() -> None:
-    global settings
-    __set_element_hierarchy()
-    settings = deepcopy(__default_settings)  # we must deepcopy so that the default settings to get overwritten when they are changed by user.
-    __init_quick_access_settings()
-    set_detected_changes(0)
-
-
-# Changes tracker - TODO document this
-changes_detected: int = 0
-class cdict(dict):
-    """Use this to as the object to pass to __variable__ in the settings ui manager. This way we know when the settings are changed by user."""
-    def __init__(self, elem: dict):
-        super().__init__(elem)  # this creates a copy of the `elem` initial state when `elem is created` because dict({}) creates a copy of its arg data.
-        self.elem: dict = elem  # this is the fluid copy of `elem` which gets updated by the user interactions with the user interface.
-
-    def __setitem__(self, key, value):
-        if self.elem[key] != value and key != 'disabled':  # if the key's value is not already the same AND also the key is not a "disable" type of key.
-            if self[key] == value:  # if the original `elem`'s value is equal to the new value
-                set_detected_changes(n=-1, add_n=True)
-            elif self[key] == self.elem[key]:  # if the current value of key is equal to the original value of key... makes it so that only one change adds to counter and not many changes.
-                set_detected_changes(n=1, add_n=True)
-        self.elem.__setitem__(key, value)
-def set_detected_changes(n: int, add_n: bool = False) -> None:
-    global changes_detected
-    if add_n:
-        changes_detected += n
-    else:
-        changes_detected = n
-    changesDetectedHook()
-changesDetectedHook: HookType = Hook()
-
-
-# ---------------- Quick Settings Retrieval (used for process manager to easily retrieve settings.) ----------------
-exposed_settings: dict = {}  # Exposed settings of non-custom elements containing the expose keyword... this is used by CopyProcess to anticipate flags such as those causing recursion.
-""" Current Settings in `exposed_settings`:
-"recursive",
-"retry_limit",
-"retry_wait",
-"sync_every_n_change",
-"sync_every_n_min"
+# Quick Settings Retrieval (used for process manager to easily retrieve settings.)
+""" Settings that are currently included in exposed_settings:
+- 'recursive'
+- 'retry_limit'
+- 'retry_wait'
+- 'sync_every_n_change'
+- 'sync_every_n_min'
 """
-
-from core import os_utils
-custom_settings: dict = {}  # Non-robocopy settings that are used for extra features of VisiCopy
+exposed_settings: dict = {}  # Exposed settings of non-custom elements containing the expose keyword... this is used by CopyProcess to anticipate flags such as those that cause recursion.
+custom_settings: dict = {}  # Non-robocopy custom settings that are used for extra features of VisiCopy
 class __CustomSettings__:  # TODO must keep this up to date with the id names of custom settings that need quick access.
-    """Custom Settings Singleton"""
     @property
     def use_gui(self) -> bool:
         return not custom_settings['show_console']['toggled']
@@ -453,6 +366,7 @@ class __CustomSettings__:  # TODO must keep this up to date with the id names of
 
     @property
     def selector_pattern(self) -> list | tuple:
+        from core import os_utils
         return os_utils.arg_split(custom_settings['only_specified_files']['entry']) if custom_settings['only_specified_files']['toggled'] and custom_settings['only_specified_files']['entry'] else os_utils.DEFAULT_PATTERN
 
     @property
@@ -467,19 +381,45 @@ class __CustomSettings__:  # TODO must keep this up to date with the id names of
     def eta_progress_checkpoints(self) -> int:
         return custom_settings['eta_progress_checkpoints']['entry'] if custom_settings['eta_progress_checkpoints']['toggled'] else 1
 CustomSettings: __CustomSettings__ = __CustomSettings__()
-
-
 def __init_quick_access_settings():  # only call locally in this module when settings are loaded from files or reset.
     """this must be called whenever settings are loaded from file or reset."""
     exposed_settings.clear()
     custom_settings.clear()
-    for c in settings:  # todo must keep this up to date with the layout of settings
+    for c in settings_file.data:  # todo must keep this up to date with the layout of settings
         for e in c['elements']:
             if e.get('custom') and e['id'] != '':
                 custom_settings[e['id']] = e
             if e.get('expose'):
                 exposed_settings[e['id']] = e
+settings_file.onLoad.connect_(__init_quick_access_settings)
+settings_file.onReset.connect_(__init_quick_access_settings)
 
 
-# ---------------- load settings when module is run ----------------
-__load_settings()
+# ========================================== Load Settings from file ===================================================
+settings_file.load()  # If you want to only use the default configuration for testing purposes, use __debug_mode__ in the userdata_io.py module.
+
+
+# ============================================== Changes Tracker =======================================================
+detected_changes: int = 0
+class cdict(dict):
+    """Use this to as the object to pass to __variable__ in the settings ui manager. This way we know when the settings are changed by user."""
+    def __init__(self, elem: dict):
+        super().__init__(elem)  # this creates a copy of the `elem` initial state when `elem is created` because dict({}) creates a copy of its arg data.
+        self.elem: dict = elem  # this is the fluid copy of `elem` which gets updated by the user interactions with the user interface.
+
+    def __setitem__(self, key, value):
+        if self.elem[key] != value and key != 'disabled':  # if the key's value is not already the same AND also the key is not a "disable" type of key.
+            if self[key] == value:  # if the original `elem`'s value is equal to the new value
+                set_detected_changes(n=-1, add_n=True)
+            elif self[key] == self.elem[key]:  # if the current value of key is equal to the original value of key... makes it so that only one change adds to counter and not many changes.
+                set_detected_changes(n=1, add_n=True)
+        self.elem.__setitem__(key, value)
+def set_detected_changes(n: int, add_n: bool = False) -> None:
+    global detected_changes
+    if add_n:
+        detected_changes += n
+    else:
+        detected_changes = n
+    changesDetectedHook()
+changesDetectedHook: HookType = Hook()
+settings_file.onSave.connect_(lambda: set_detected_changes(0))

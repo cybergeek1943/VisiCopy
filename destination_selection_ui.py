@@ -1,5 +1,5 @@
 from core.translation import tr
-from core.config import user_docs_path
+from core.os_utils import user_docs_path
 from core import os_utils
 
 # Import Components and Visual Tools

@@ -1,6 +1,6 @@
 from core import lang_rc
 from warnings import warn
-from core.config import preferences, save_config
+from core.config import config_file
 from PySide6.QtCore import QObject, QCoreApplication, QTranslator, QLocale
 
 
@@ -54,13 +54,13 @@ def init_translator(app: QCoreApplication):
 # Functions
 def set_lang(lang: int) -> None:
     if lang == -1:
-        lang = 0
-    preferences['language']: int = lang
-    save_config()
+        lang = Language.ENGLISH
+    config_file.data['language']: int = lang
+    config_file.save()
 
 
 def get_lang() -> int:
-    return preferences['language']
+    return config_file.data['language']
 
 
 def get_system_lang_code() -> str:

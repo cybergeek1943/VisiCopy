@@ -1,6 +1,5 @@
 from core import settings_parser
-from core import settings_data
-from core.settings_data import CustomSettings, exposed_settings
+from core.settings import CustomSettings, exposed_settings, settings_file
 from core.robocopy import CopyProcess, CopyProcess_NoPiping
 from core.hooks import Hook, HookType, Binder
 """Takes care of initializing and running the copy processes"""
@@ -9,11 +8,8 @@ processes_count: int
 source_sorted_processes: dict = {}
 destination_sorted_processes: dict = {}
 # noinspection DuplicatedCode
-def init_processes(src_paths: list[tuple[str, dict]], dst_paths: list[str], settings: list[dict] | None = None, use_gui: bool | None = None):
+def init_processes(src_paths: list[tuple[str, dict]], dst_paths: list[str], job_settings: list[dict] | None = None, use_gui: bool | None = None):
     """This function initiates all the processes so that copying can actually begin. This MUST be called before any other functions in the module are called. If `process_flags` is NONE then the process flags will automatically be parsed from the current settings configuration."""
-    if settings:
-        settings_data.load_job_file_settings(settings)
-
     # ---- Exposed Settings ----
     flags_info: dict = {}  # this is used to tell the CopyProcess what flags to expect as `options`.
     for e in exposed_settings:  # this code is specifically designed for the CopyClass.init() _option_stats argument and is also only deigned for the current configuration of settings_data.exposed_settings
@@ -29,7 +25,7 @@ def init_processes(src_paths: list[tuple[str, dict]], dst_paths: list[str], sett
     allow_new_multi_processes_in_sync_mode: bool = CustomSettings.allow_new_multi_processes_in_sync_mode
 
     # ---- Create the processes and add them to `processes` ----
-    process_flags: list[str] = settings_parser.parse(settings_data.settings)
+    process_flags: list[str] = settings_parser.parse(settings_file.data if not job_settings else job_settings)
     if dst_prioritized and len(dst_paths) > 1:  # when prioritizing the dst
         for src in src_paths:
             for dst in dst_paths:

@@ -1,8 +1,7 @@
-from core import config
+from core.config import config_file
 from core.hooks import Binder
 from core.os_utils import copyToClipboard
-from core.settings_data import CustomSettings
-from core import settings_data
+from core.settings import CustomSettings
 from core.translation import tr
 import core.os_utils as os_utils
 from core.robocopy import CopyProcess
@@ -610,7 +609,6 @@ class MainWindow(windows.TabWindow):
             event.ignore()
             return
         super().closeEvent(event)  # must call here so that window pos and size is saved to preferences
-        settings_data.exit_job_file_settings()  # must exit them here incase a job file was loaded... this way they are not actually saved as the main settings.
         app.exit()  # call this so that all open windows will close.
         process_manager.stop_all_processes()  # call this so that we avoid creating zombie processes.
 
@@ -702,7 +700,7 @@ def start(app_context: QApplication):
     main_window.show()
     update_timer.start()
     QTimer.singleShot(1000, process_manager.start_all_processes)
-    if config.preferences['auto_copy_flags']:
-        from core import settings_data
+    if config_file.data['auto_copy_flags']:
+        from core.settings import settings_file
         from core import settings_parser
-        copyToClipboard(' '.join(settings_parser.parse(settings_data.settings)), app)
+        copyToClipboard(' '.join(settings_parser.parse(settings_file.data)), app)

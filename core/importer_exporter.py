@@ -1,14 +1,13 @@
-import core.settings_data as settings_data
-import core.config as preferences
+from core.settings import settings_file
+from core.config import config_file
 import json
 
 
 def export_settings(filepath: str) -> None:
     """Exports a (.udat) file to `filepath`"""
-    settings_data.save_settings()
     userdata_file: dict = {
-        'settings_data': settings_data.settings,
-        'preferences_config': preferences.preferences,
+        'settings_data': config_file.data,
+        'preferences_config': config_file.data,
     }
     with open(filepath, 'w') as f:  # save the `userdata_file` to `filepath`
         f.write(json.dumps(userdata_file))
@@ -17,15 +16,12 @@ def export_settings(filepath: str) -> None:
 def import_settings(filepath: str) -> bool:
     """`filepath` expects a (.udat) file. Restart of VisiCopy required."""
     try:
-        preferences.del_old_files()
         with open(filepath, 'r') as f:
             userdata_file: dict = json.loads(f.read())
-            preferences.preferences.clear()
-            preferences.preferences = userdata_file['preferences_config']
-            settings_data.settings.clear()
-            settings_data.settings = userdata_file['settings_data']
-        preferences.save_config()
-        settings_data.save_settings()
+            config_file.data = userdata_file['preferences_config']
+            config_file.data = userdata_file['settings_data']
+        config_file.save()
+        config_file.save()
         return True
     except (FileNotFoundError, json.JSONDecodeError, KeyError):
         return False
@@ -34,7 +30,7 @@ def import_settings(filepath: str) -> bool:
 def export_job_file(filepath: str, sources: list[tuple[str, dict]], destinations: list[str]) -> None:
     """Export the settings along with the selected sources and destinations as a (.job) file."""
     userdata_file: dict = {
-        'settings_data': settings_data.settings,
+        'settings_data': config_file.data,
         'sources': sources,
         'destinations': destinations,
     }
@@ -50,7 +46,3 @@ def import_job_file(filepath: str) -> tuple[list[list[str, dict]], list[str], li
             return job_file['sources'], job_file['destinations'], job_file['settings_data']
     except (FileNotFoundError, json.JSONDecodeError):
         return None
-
-
-def clear_job_file():
-    settings_data.__load_settings()

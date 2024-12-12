@@ -1,10 +1,11 @@
 # Import Application Data
-from core.settings_data import cdict, save_settings, reset_settings
-import core.settings_data as settings_data
-from core import config
+import core.os_utils
+from core.settings import cdict, settings_file as settings_file
+import core.settings as settings
+from core.config import config_file
 from core.translation import tr, set_lang, get_lang
 import core.settings_parser as settings_parser
-from core.importer_exporter import export_settings, import_settings, export_settings, import_settings
+from core.importer_exporter import export_settings, import_settings
 from core.os_utils import copyToClipboard
 
 # Import Components and Visual Tools
@@ -54,6 +55,8 @@ class Card(SimpleCardWidget):
         # Card Elements
         self.__hierarchy__: dict = {}
         for elem in elements:
+            if 'advanced' in elem:
+                continue
             elem_type = elem['type']
 
             if elem_type == 'spacer':
@@ -101,12 +104,12 @@ class MainWindow(windows.SubWindow):
         # Set Window Configuration
         self.navigationInterface.setReturnButtonVisible(False)
         self.setWindowTitle(tr("Settings"))
-        settings_data.changesDetectedHook.connect_(lambda: self.setWindowTitle(tr("Settings")) if settings_data.changes_detected == 0 else self.setWindowTitle(tr("Settings") + f'  •  {settings_data.changes_detected} ' + (tr('change') if settings_data.changes_detected == 1 else tr('changes'))))
+        settings.changesDetectedHook.connect_(lambda: self.setWindowTitle(tr("Settings")) if settings.detected_changes == 0 else self.setWindowTitle(tr("Settings") + f'  •  {settings.detected_changes} ' + (tr('change') if settings.detected_changes == 1 else tr('changes'))))
 
         # Add to tabs the main settings from settings data
         self.navigationInterface.addSeparator()
         self.tabs: dict[str, windows.TabComponent] = {}  # used to store the tab object and its route key (object name).
-        for card in settings_data.settings:
+        for card in settings_file.data:
             tab_title: str | None = card.get('tab_title', None)
             tab_id: str = card['tab_id']
             card_title: str = card['title']
@@ -123,19 +126,19 @@ class MainWindow(windows.SubWindow):
         # Add the additional user preferences from userdata
         # TODO abstract lambdas
         # TODO get rid of both export options
-        preferences: windows.TabComponent = windows.TabComponent(tr('Preferences'))
+        preferences: windows.TabComponent = windows.TabComponent(tr('Config'))
         preferences.setObjectName('preferences')
         self.tabs['preferences'] = preferences
         preferences.add_widget(cards.SettingWSwitch(Icons.APPLICATION, tr("Advanced Users"), tr('Enable more advanced features and controls for settings such as performance and logging. (requires restart)'), False, lambda: None))
         preferences.add_widget(cards.SettingWComboBox(Icons.LANGUAGE, tr('Language'), tr('Currently, four languages are supported. More will be added in future releases.'), ('English', 'Español (Spanish)', '简体中文 (Chinese)', 'हिंदी (Hindi)'), get_lang(), self.set_language))
-        preferences.add_widget(cards.SettingWComboBox(Icons.BRUSH, tr('Theme Mode'), tr("Change the color of this application's interface."), (tr('Dark'), tr('Light'), tr('System (Auto)')), config.preferences['theme'], self.set_theme))
+        preferences.add_widget(cards.SettingWComboBox(Icons.BRUSH, tr('Theme Mode'), tr("Change the color of this application's interface."), (tr('Dark'), tr('Light'), tr('System (Auto)')), config_file.data['theme'], self.set_theme))
         preferences.add_widget(cards.SettingWPushButtons(Icons.SAVE_COPY, tr("Import/Export Settings"), tr('You may use import/export to move VisiCopy settings between computers.'), (tr("Import"), tr("Export")), (self.import_settings, self.export_settings)))
-        preferences.add_widget(cards.SettingWPushButtons(Icons.CODE, tr('Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Copy the command-line flags that are used to spawn robocopy processes to the clipboard.'), (tr('Copy to Clipboard'),), (lambda: copyToClipboard(' '.join(settings_parser.parse(settings_data.settings)), app),)))
-        preferences.add_widget(cards.SettingWSwitch(Icons.CODE, tr('Automatically Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Automatically copy the command-line flags that are used to spawn robocopy processes to the clipboard when copy starts.'), config.preferences['auto_copy_flags'], lambda b: config.preferences.__setitem__('auto_copy_flags', b)))
+        preferences.add_widget(cards.SettingWPushButtons(Icons.CODE, tr('Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Copy the command-line flags that are used to spawn robocopy processes to the clipboard.'), (tr('Copy to Clipboard'),), (lambda: copyToClipboard(' '.join(settings_parser.parse(settings_file.data)), app),)))
+        preferences.add_widget(cards.SettingWSwitch(Icons.CODE, tr('Automatically Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Automatically copy the command-line flags that are used to spawn robocopy processes to the clipboard when copy starts.'), config_file.data['auto_copy_flags'], lambda b: config_file.data.__setitem__('auto_copy_flags', b)))
         _ = cards.SettingWPushButtons(Icons.HISTORY, tr('Reset Settings'), tr("Reset VisiCoy's settings back to their original defaults."), (tr("Reset Settings"),), (self.reset_settings,))
         _.setButtonBorderColor(0, '#d04933')  # TODO put all styles into custom objects in UI lib!
         preferences.add_widget(_)
-        self.addSubInterface(preferences, Icons.DEVELOPER_TOOLS, tr('Preferences'), NavigationItemPosition.BOTTOM)
+        self.addSubInterface(preferences, Icons.DEVELOPER_TOOLS, tr('Config'), NavigationItemPosition.BOTTOM)
 
         # Add Info tab
         info: windows.TabComponent = windows.TabComponent(tr('Info'))
@@ -149,27 +152,27 @@ class MainWindow(windows.SubWindow):
 
     @staticmethod
     def set_theme(index: int):
-        config.preferences['theme']: int = index
+        config_file.data['theme']: int = index
         setTheme(theme=QtTheme.DARK if index == 0 else QtTheme.LIGHT if index == 1 else QtTheme.AUTO)
-        config.save_config()
+        config_file.save()
 
     def reset_settings(self):
         r = dialogs.question(self, tr('Please Confirm Carefully!'),
                              tr("You are about to reset VisiCoy's settings back to their defaults.\nAre you sure you want to continue?"))
         if r != dialogs.response.Yes:
             return
-        reset_settings()
-        config.reset_config()
-        save_settings()
-        config.save_config()
+        settings_file.reset()
+        config_file.reset()
+        settings_file.save()
+        config_file.save()
         self.restart()
 
     def export_settings(self):
-        if p := QFileDialog.getSaveFileName(self, caption=tr('Save settings to a file'), dir=f'{config.user_docs_path}/visicopy', filter=tr('Settings (*.set)'))[0]:
+        if p := QFileDialog.getSaveFileName(self, caption=tr('Save settings to a file'), dir=f'{core.os_utils.user_docs_path}/visicopy', filter=tr('Settings (*.set)'))[0]:
             export_settings(filepath=p)
 
     def import_settings(self):
-        if p := QFileDialog.getOpenFileName(self, caption=tr("Import settings from file"), dir=config.user_docs_path, filter=tr('Settings (*.set)'))[0]:
+        if p := QFileDialog.getOpenFileName(self, caption=tr("Import settings from file"), dir=core.os_utils.user_docs_path, filter=tr('Settings (*.set)'))[0]:
             if import_settings(filepath=p):
                 self.restart()
             else:
