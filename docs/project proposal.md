@@ -30,8 +30,8 @@ At its core, VisiCopy integrates advanced file copying utilities (robocopy and/o
 > - Make the codebase more modular by creating a custom UI package that unifies widgets from both PySide6 and QFluentWidgets into our own custom widgets package so that it's not the confusing mix-up that is currently going on.
 > - Make an optimal user settings detector so that the initial settings are best suited for the computer that VisiCopy is running on... like optimized thread & process count limit.
 1. Improve the **Job Manager** by making it possible to edit saved `.job` files and also by making the user interface more intuitive for creating and managing job files.
-2. Add a new feature to the settings, such as a **super user** or **advance user** switch. When the switch is off, many complex settings such as IPG (interpacket network gap), Database sparse states, and SMB compression will be hidden. Also, when switched on, it would change the main UI for selecting sources and destinations: instead of being step-by-step, it would let the more advanced user simply add everything in one window.
-3. Add better support for saving settings and user data in the `AppData` folder for all platforms.
+2. Add a new feature to the settings, such as a **super user** or **advanced user** switch. When the switch is off, many complex settings such as IPG (interpacket network gap), Database sparse states, and SMB compression will be hidden. Also, when switched on, it would change the main UI for selecting sources and destinations: instead of being step-by-step, it would let the more advanced user simply add everything in one window.
+3. Add better support for saving settings and user data in the `AppData` folder for all platforms. Make the userdata versioned... that way different versions of VisiCopy have thier own userdata files.
 4. Improve documentation:
 	1. Add docstrings for classes and methods.
 	2. Add more comments to the code where necessary.
