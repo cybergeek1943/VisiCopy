@@ -132,13 +132,13 @@ class MainWindow(windows.SubWindow):
         preferences.setObjectName('configuration')
         self.tabs['preferences'] = preferences
         preferences.add_widget(cards.SettingWSwitch(Icons.APPLICATION, tr("Advanced Users"), tr('Enable more advanced features and controls for settings such as performance and logging. (requires restart)'), config_file.data['advanced_mode'], self.set_advanced_mode))
-        preferences.add_widget(cards.SettingWComboBox(Icons.LANGUAGE, tr('Language'), tr('Currently, four languages are supported. More will be added in future releases.'), ('English', 'Español (Spanish)', '简体中文 (Chinese)', 'हिंदी (Hindi)'), get_lang(), self.set_language))
+        preferences.add_widget(cards.SettingWComboBox(Icons.LANGUAGE, tr('Language'), tr("Change the language from your locale's default setting. (requires restart)"), ('English', 'Español (Spanish)', '简体中文 (Chinese)', 'हिंदी (Hindi)'), get_lang(), self.set_language))
         preferences.add_widget(cards.SettingWComboBox(Icons.BRUSH, tr('Theme Mode'), tr("Change the color of this application's interface."), (tr('Dark'), tr('Light'), tr('System (Auto)')), config_file.data['theme'], self.set_theme))
         if config_file.data['advanced_mode']:
-            preferences.add_widget(cards.SettingWPushButtons(Icons.SAVE_COPY, tr("Import/Export Settings"), tr('You may use import/export to move VisiCopy settings between computers.'), (tr("Import"), tr("Export")), (self.import_settings, self.export_settings)))
-            preferences.add_widget(cards.SettingWPushButtons(Icons.CODE, tr('Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Copy the command-line flags that are used to spawn robocopy processes to the clipboard.'), (tr('Copy to Clipboard'),), (lambda: copyToClipboard(' '.join(settings_parser.parse(settings_file.data)), app),)))
             preferences.add_widget(cards.SettingWSwitch(Icons.CODE, tr('Automatically Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Automatically copy the command-line flags that are used to spawn robocopy processes to the clipboard when copy starts.'), config_file.data['auto_copy_flags'], lambda b: config_file.data.__setitem__('auto_copy_flags', b)))
-        _ = cards.SettingWPushButtons(Icons.HISTORY, tr('Reset Settings'), tr("Reset VisiCoy's settings back to their original defaults."), (tr("Reset Settings"),), (self.reset_settings,))
+            preferences.add_widget(cards.SettingWPushButtons(Icons.CODE, tr('Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Copy the command-line flags that are used to spawn robocopy processes to the clipboard.'), (tr('Copy to Clipboard'),), (lambda: copyToClipboard(' '.join(settings_parser.parse(settings_file.data)), app),)))
+            preferences.add_widget(cards.SettingWPushButtons(Icons.SAVE_COPY, tr("Import/Export Settings"), tr('You may use import/export to move VisiCopy settings between computers. (requires restart)'), (tr("Import"), tr("Export")), (self.import_settings, self.export_settings)))
+        _ = cards.SettingWPushButtons(Icons.HISTORY, tr('Reset Settings'), tr("Reset VisiCoy's settings back to their original defaults. (requires restart)"), (tr("Reset Settings"),), (self.reset_settings,))
         _.setButtonBorderColor(0, '#d04933')  # TODO put all styles into custom objects in UI lib!
         preferences.add_widget(_)
         self.addSubInterface(preferences, Icons.DEVELOPER_TOOLS, tr('Configuration'), NavigationItemPosition.BOTTOM)
