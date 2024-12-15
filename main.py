@@ -18,9 +18,8 @@ from core.asset_paths import MainIconPaths
 
 # TODO verify location of these imports
 from source_selection_ui import MainWindow as SourceSelectionSubWindow
-self.source_selection_sub_window = SourceSelectionSubWindow()
 from destination_selection_ui import MainWindow as DestinationSelectionWindow
-self.destination_selection_sub_window = DestinationSelectionWindow()
+
 
 class builders:
     class VisualConnectorLine(ProgressBar):
@@ -78,6 +77,7 @@ class HomeTab(QWidget):
 
         QTimer.singleShot(100, self.source_selection_window_size)
 
+        self.source_selection_sub_window = SourceSelectionSubWindow()
         self.source_selection_sub_window.windowClosing.connect(self.source_selection_window_closer)
         grid.addWidget(primitives.ImageIcon(MainIconPaths.selectSource), 0, 0, alignment=AlignFlag.AlignCenter)
         self.select_source_button = builders.PrimaryButton(tr('Select Source'), slots=(self.source_selection_sub_window.show,), disabled=False)
@@ -87,6 +87,7 @@ class HomeTab(QWidget):
 
         QTimer.singleShot(100, self.destination_selection_window_size)
 
+        self.destination_selection_sub_window = DestinationSelectionWindow()
         self.destination_selection_sub_window.windowClosing.connect(self.destination_selection_window_closer)
         grid.addWidget(primitives.ImageIcon(MainIconPaths.selectDestination), 0, 2, alignment=AlignFlag.AlignCenter)
         self.select_destination_button = builders.PrimaryButton(tr('Select Destination'), slots=(self.destination_selection_sub_window.show,))
