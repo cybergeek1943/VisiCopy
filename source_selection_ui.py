@@ -4,10 +4,12 @@ from core.os_utils import user_docs_path
 
 # Import Components and Visual Tools
 from qfluentwidgets import BodyLabel, HorizontalSeparator, CheckBox, PrimaryPushButton, PushButton
-from ui_comps import AlignFlag, SizePolicy, Icons, primitives, windows
+from ui_lib.policy import *
+from ui_lib import HorizontalExpandSpace, ImageIcon
+from ui_lib import windows, pages
+from ui_lib.icons import MainIcon, FluentIcon
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QWidget, QFileDialog
-from core.asset_paths import MainIconPaths
-from ui_comps.selection_ui_comps import CustomPathEntryTab, SelectedPath
+from ui_components.selection_ui_comps import CustomPathEntryTab, SelectedPath
 
 
 class SelectedFile(SelectedPath):
@@ -17,9 +19,8 @@ class SelectedFile(SelectedPath):
         `selected_files` this is the selected files in the dir. If empty, this means that the whole dir is being copied.
         """
         super().__init__(path)
-        self.iconLabel.setIcon(Icons.DOCUMENT)
+        self.iconLabel.setIcon(FluentIcon.DOCUMENT)
         self.include_dir_checkbox = CheckBox()
-        self.include_dir_checkbox.toggled.connect(lambda b: setattr(self, 'include_base_dir', b))
         self.include_dir_checkbox.setChecked(False)
         self.include_dir_checkbox.setText(tr('Include Parent Folder'))
         self.include_dir_checkbox.setToolTip(tr('Create the parent folder of this file in the destination and copy this file into it.'))
@@ -30,6 +31,7 @@ class SelectedFile(SelectedPath):
 
         # Internal State
         self.include_base_dir: bool = False
+        self.include_dir_checkbox.toggled.connect(lambda b: setattr(self, 'include_base_dir', b))
 
     def mouseDoubleClickEvent(self, event):
         if not self.include_dir_checkbox.underMouse():
@@ -43,7 +45,7 @@ class SelectedFolder(SelectedFile):
         `selected_files` this is the selected files in the dir. If empty, this means that the whole dir is being copied.
         """
         super().__init__(path)
-        self.iconLabel.setIcon(Icons.FOLDER)
+        self.iconLabel.setIcon(FluentIcon.FOLDER)
         self.include_dir_checkbox.setChecked(True)
         self.include_dir_checkbox.setText(tr('Include Folder'))
         self.include_dir_checkbox.setToolTip(tr("Create this folder in the destination and copy this folder's contents into it.\nOtherwise, only this folder's contents will be copied to the destination."))
@@ -63,7 +65,7 @@ class EmptySelectionTab(QWidget):
         v_lay = QVBoxLayout()
         self.setLayout(v_lay)
 
-        v_lay.addWidget(primitives.ImageIcon(MainIconPaths.dragDrop, 96), alignment=AlignFlag.AlignHCenter | AlignFlag.AlignBottom)
+        v_lay.addWidget(ImageIcon(MainIcon.dragDrop, 96), alignment=AlignFlag.AlignHCenter | AlignFlag.AlignBottom)
         _ = BodyLabel()
         _.setText(('<center><h2>{0}</h2>'
                    '{1}&nbsp;&nbsp;'
@@ -75,7 +77,7 @@ class EmptySelectionTab(QWidget):
         self.addItemsLinksClicked = _.linkActivated
 
 
-class SelectionManagerTab(windows.TabComponent):
+class SelectionManagerTab(pages.TabComponent):
     def __init__(self):
         super().__init__(tab_title=None)
         self.setObjectName('selection_manager_tab')
@@ -92,9 +94,9 @@ class SelectionManagerTab(windows.TabComponent):
                    '<a style="text-decoration: none" href="path">{4}</a></center>').format(tr("Drag & Drop files or folders to add more"), tr('or'),
                                                                                            tr("Add Folder"), tr("Add File(s)"), tr("Add Custom Path")))
         self.addItemsLinksClicked = _.linkActivated
-        h_lay.addItem(primitives.HorizontalExpandSpace())
+        h_lay.addItem(HorizontalExpandSpace())
         h_lay.addWidget(_)
-        h_lay.addItem(primitives.HorizontalExpandSpace())
+        h_lay.addItem(HorizontalExpandSpace())
 
         _ = PushButton()
         _.setText(tr('Clear Selection'))
@@ -126,7 +128,7 @@ class SelectionManagerTab(windows.TabComponent):
             self.add_widget(SelectedFolder(path, None))
 
 
-class MainWindow(windows.SubWindow):
+class MainWindow(windows.SubFluentWindow):
     def __init__(self):
         super().__init__()
         self.setAcceptDrops(True)

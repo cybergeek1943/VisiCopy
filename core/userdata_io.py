@@ -3,7 +3,7 @@ import platform
 import json
 from copy import deepcopy
 from core.hooks import Hook, HookType
-__debug_mode__: bool = False  # enable to only load from default data rather than from actual userdata file
+__debug_mode__: bool = True  # enable to only load from default data rather than from actual userdata file
 __store_in_cd__: bool = True  # enable to store the userdata in current directory for debugging purposes
 __app_name__: str = "VisiCopy"
 __version__: str = "1.0.0"

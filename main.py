@@ -3,18 +3,21 @@ import core.settings as settings
 from core.settings import CustomSettings
 from core.translation import tr, init_translator
 from core.os_utils import user_docs_path
+from core.config import config_file
 import core.importer_exporter as importer_exporter
-import process_manager
+from core import process_manager
 import process_manager_ui
-import settings_ui
+import settings_window
 
 # Import Components and Visual Tools
-from qfluentwidgets import BodyLabel, PrimaryPushButton, PushButton, ProgressBar
-from ui_comps import AlignFlag, SizePolicy, Icons, primitives, windows, dialogs
+from qfluentwidgets import BodyLabel, PrimaryPushButton, PushButton, ProgressBar, VerticalSeparator, SingleDirectionScrollArea
+from ui_lib.policy import *
+from ui_lib.icons import FluentIcon, MainIcon
+from ui_lib import windows, dialogs
+from ui_lib import ImageIcon, SpacerItem, Label
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QGridLayout, QFileDialog
 from PySide6.QtCore import QTimer
 from qfluentwidgets import NavigationItemPosition
-from core.asset_paths import MainIconPaths
 
 # TODO verify location of these imports
 from source_selection_ui import MainWindow as SourceSelectionSubWindow
@@ -47,7 +50,7 @@ class builders:
 
     class Button(PushButton):
         """Inherits from PushButton and initializes a button."""
-        def __init__(self, icon: Icons, label: str, tooltip: str, slots: tuple[callable] = None, disabled: bool = False):
+        def __init__(self, icon: FluentIcon, label: str, tooltip: str, slots: tuple[callable] = None, disabled: bool = False):
             super().__init__()
             if slots:
                 for c in slots:
@@ -66,7 +69,7 @@ class HomeTab(QWidget):
         self.setObjectName('home_tab')
         v_lay = QVBoxLayout()
         self.setLayout(v_lay)
-        v_lay.addWidget(primitives.ImageIcon(MainIconPaths.logoWName, 32), alignment=AlignFlag.AlignHCenter)
+        v_lay.addWidget(ImageIcon(MainIcon.logoWName, 32), alignment=AlignFlag.AlignHCenter)
 
         # -------- UI --------
         ui = QWidget()
@@ -79,7 +82,7 @@ class HomeTab(QWidget):
 
         self.source_selection_sub_window = SourceSelectionSubWindow()
         self.source_selection_sub_window.windowClosing.connect(self.source_selection_window_closer)
-        grid.addWidget(primitives.ImageIcon(MainIconPaths.selectSource), 0, 0, alignment=AlignFlag.AlignCenter)
+        grid.addWidget(ImageIcon(MainIcon.selectSource), 0, 0, alignment=AlignFlag.AlignCenter)
         self.select_source_button = builders.PrimaryButton(tr('Select Source'), slots=(self.source_selection_sub_window.show,), disabled=False)
         grid.addWidget(self.select_source_button, 2, 0, alignment=AlignFlag.AlignCenter)
         self.source_connector_line = builders.VisualConnectorLine()
@@ -89,20 +92,20 @@ class HomeTab(QWidget):
 
         self.destination_selection_sub_window = DestinationSelectionWindow()
         self.destination_selection_sub_window.windowClosing.connect(self.destination_selection_window_closer)
-        grid.addWidget(primitives.ImageIcon(MainIconPaths.selectDestination), 0, 2, alignment=AlignFlag.AlignCenter)
+        grid.addWidget(ImageIcon(MainIcon.selectDestination), 0, 2, alignment=AlignFlag.AlignCenter)
         self.select_destination_button = builders.PrimaryButton(tr('Select Destination'), slots=(self.destination_selection_sub_window.show,))
         grid.addWidget(self.select_destination_button, 2, 2, alignment=AlignFlag.AlignCenter)
         self.destination_connector_line = builders.VisualConnectorLine()
         grid.addWidget(self.destination_connector_line, 0, 3, alignment=AlignFlag.AlignCenter)
 
         # start copy
-        grid.addWidget(primitives.ImageIcon(MainIconPaths.startCopy), 0, 4, alignment=AlignFlag.AlignCenter)
+        grid.addWidget(ImageIcon(MainIcon.startCopy), 0, 4, alignment=AlignFlag.AlignCenter)
         self.start_copy_button = builders.PrimaryButton(tr('Start Copy'), slots=(self.on_start_copy_pressed,))
         grid.addWidget(self.start_copy_button, 2, 4, alignment=AlignFlag.AlignCenter)
 
         # spacers
-        grid.addWidget(primitives.SpacerItem(0, 32), 1, 2)  # vertical space between buttons and icons.
-        grid.addWidget(primitives.SpacerItem(0, 32), 3, 2)  # vertical space after buttons to shift ui up.
+        grid.addWidget(SpacerItem(0, 32), 1, 2)  # vertical space between buttons and icons.
+        grid.addWidget(SpacerItem(0, 32), 3, 2)  # vertical space after buttons to shift ui up.
 
     # TODO next four functions need to be reviewed
 
@@ -155,9 +158,28 @@ class HomeTab(QWidget):
         else:
             process_manager.start_all_processes()
 
+
+class AdvancedHomeTab(QWidget):
+    """Sets up the layout of the home tab."""
+    def __init__(self):
+        super().__init__()
+        self.setObjectName('home_tab')
+        grid = QGridLayout()
+        self.setLayout(grid)
+
+        # -------- UI --------
+        grid.addWidget(Label('Source', 24, weight=FontWeight.Bold), 0, 0)
+        grid.addWidget(SingleDirectionScrollArea(), 1, 0)
+        grid.addWidget(builders.Button(None, 'Clear Selection', 'Clear the source selection'), 2, 0)
+
+        grid.addWidget(VerticalSeparator(), 0, 1, 2, 1)
+        grid.addWidget(Label('Destination', 24, weight=FontWeight.Bold), 0, 2)
+        grid.addWidget(SingleDirectionScrollArea(), 1, 2)
+
+
 class JobTab(QWidget):
     """Manages job files"""
-    def __init__(self, home_tab: HomeTab):
+    def __init__(self, home_tab: HomeTab | AdvancedHomeTab):
         super().__init__()
         self.home_tab = home_tab
         self.setObjectName('job_tab')
@@ -173,11 +195,11 @@ class JobTab(QWidget):
         buttons_lay = QHBoxLayout()
         buttons_lay.setAlignment(AlignFlag.AlignLeft)
         v_lay.addLayout(buttons_lay)
-        buttons_lay.addWidget(builders.Button(Icons.SAVE_AS, tr('Create a Job File'), tr('Create a (*.job) file from the current selection of sources, destinations, and settings.'), slots=(self.create_job_file,)))
-        buttons_lay.addWidget(builders.Button(Icons.PLAY, tr('Run a Job File'), tr('Run a (*.job) file containing sources, destinations, and settings.'), slots=(self.run_job_file,)))
+        buttons_lay.addWidget(builders.Button(FluentIcon.SAVE_AS, tr('Create a Job File'), tr('Create a (*.job) file from the current selection of sources, destinations, and settings.'), slots=(self.create_job_file,)))
+        buttons_lay.addWidget(builders.Button(FluentIcon.PLAY, tr('Run a Job File'), tr('Run a (*.job) file containing sources, destinations, and settings.'), slots=(self.run_job_file,)))
 
     def run_job_file(self):
-        """Prompts sleection of job file imports processes, begins copy."""
+        """Prompts selection of job file, initiates processes, and begins copy."""
         if (path := QFileDialog.getOpenFileName(self, tr('Run a Job File'), user_docs_path, tr('Jobs (*.job)')))[0]:
             if j := importer_exporter.import_job_file(path[0]):
                 process_manager.init_processes(*j)
@@ -201,25 +223,25 @@ class JobTab(QWidget):
             importer_exporter.export_job_file(path[0], source_selection, destination_selection)
 
 
-class MainWindow(windows.TabWindow):
+class MainWindow(windows.FluentWindow):
     """Creates main window"""
     def __init__(self):
         super().__init__(remember_window_pos=False, menu_expand_width=150)
-        self.setWindowTitle(tr('VisiCopy'))
+        self.setWindowTitle(tr('VisiCopy') if not config_file.data['advanced_mode'] else tr('VisiCopy (Pro Mode)'))
         self.resize(1370, 700)
         self.navigationInterface.setCollapsible(True)
         self.navigationInterface.setReturnButtonVisible(False)
 
         # -------------------------------- Tabs --------------------------------
         # src/dst selection
-        home_tab = HomeTab()
-        self.addSubInterface(home_tab, Icons.HOME, tr('Home'))
+        home_tab: HomeTab | AdvancedHomeTab = AdvancedHomeTab() if config_file.data['advanced_mode'] else HomeTab()
+        self.addSubInterface(home_tab, FluentIcon.HOME, tr('Home'))
 
         # Job Manager
-        self.addSubInterface(JobTab(home_tab), Icons.BOOK_SHELF, tr('Job Manager'))
+        self.addSubInterface(JobTab(home_tab), FluentIcon.BOOK_SHELF, tr('Job Manager'))
 
         # Settings Button
-        self.navigationInterface.addItem('open_settings', Icons.SETTING, tr('Settings'), selectable=False, onClick=settings_ui.start, position=NavigationItemPosition.BOTTOM)
+        self.navigationInterface.addItem('open_settings', FluentIcon.SETTING, tr('Settings'), selectable=False, onClick=settings_window.start, position=NavigationItemPosition.BOTTOM)
 
     def closeEvent(self, event):
         """Exists application on window close."""
@@ -250,7 +272,7 @@ def start():
     global main_window
     main_window = MainWindow()
     main_window.show()
-    settings_ui.app = app
+    settings_window.app = app
     app.exec()  # loop starts here and only exits when application is quit or restarted
 
 

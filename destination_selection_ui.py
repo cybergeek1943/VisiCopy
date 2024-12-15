@@ -4,12 +4,14 @@ from core import os_utils
 
 # Import Components and Visual Tools
 from qfluentwidgets import BodyLabel, HorizontalSeparator, PrimaryPushButton, PushButton
-from ui_comps import AlignFlag, SizePolicy, primitives, windows
+from ui_lib.policy import *
+from ui_lib import windows, pages
+from ui_lib import HorizontalExpandSpace
 from PySide6.QtWidgets import QHBoxLayout, QFileDialog
-from ui_comps.selection_ui_comps import CustomPathEntryTab, SelectedPath
+from ui_components.selection_ui_comps import CustomPathEntryTab, SelectedPath
 
 
-class SelectionManagerTab(windows.TabComponent):
+class SelectionManagerTab(pages.TabComponent):
     def __init__(self):
         super().__init__(tab_title=None)
         self.setObjectName('selection_manager_tab')
@@ -25,9 +27,9 @@ class SelectionManagerTab(windows.TabComponent):
                    '<a style="text-decoration: none" href="path">{3}</a></center>').format(tr("Drag & Drop Folders"), tr('or'),
                                                                                            tr("Add Folder"), tr("Add Custom Path")))
         self.addItemsLinksClicked = _.linkActivated
-        h_lay.addItem(primitives.HorizontalExpandSpace())
+        h_lay.addItem(HorizontalExpandSpace())
         h_lay.addWidget(_)
-        h_lay.addItem(primitives.HorizontalExpandSpace())
+        h_lay.addItem(HorizontalExpandSpace())
 
         _ = PushButton()
         _.setText(tr('Clear Selection'))
@@ -44,7 +46,7 @@ class SelectionManagerTab(windows.TabComponent):
         self.add_widget(SelectedPath(path))
 
 
-class MainWindow(windows.SubWindow):
+class MainWindow(windows.SubFluentWindow):
     def __init__(self):
         super().__init__()
         self.setAcceptDrops(True)

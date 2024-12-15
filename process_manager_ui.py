@@ -7,15 +7,17 @@ import core.os_utils as os_utils
 from core.robocopy import CopyProcess
 from core.unit_humanizer import format_seconds, format_bytes
 from core.eta_calc import EtaAndSpeedCalc
-import process_manager
+from core import process_manager
 
 # Import Components and Visual Tools
 from qfluentwidgets import (SimpleCardWidget,
                             TitleLabel, BodyLabel,
                             HorizontalSeparator, InfoBadge,
                             ProgressRing, ProgressBar, PushButton, ImageLabel, IndeterminateProgressRing)
-from ui_comps import AlignFlag, SizePolicy, Icons, windows, dialogs, primitives, cards, InfoPageWidget
-from core.asset_paths import ProcessStatusIconPaths
+from ui_components import InfoPageWidget
+from ui_lib import AlignFlag, SizePolicy, windows, dialogs, cards
+from ui_lib import ScrollContainer, HorizontalExpandSpace
+from ui_lib.icons import ProcessManagerIcon, FluentIcon
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QGridLayout
 from PySide6.QtGui import QFont, QColor
 from PySide6.QtCore import QTimer
@@ -39,19 +41,19 @@ class builders:
             self.ring.show() if show_pending_ring else self.ring.hide()
 
         def set_Pending(self):
-            self.__setImage(ProcessStatusIconPaths.pending, show_pending_ring=True)
+            self.__setImage(ProcessManagerIcon.pending, show_pending_ring=True)
 
         def set_Complete(self):
-            self.__setImage(ProcessStatusIconPaths.complete)
+            self.__setImage(ProcessManagerIcon.complete)
 
         def set_Monitoring(self):
-            self.__setImage(ProcessStatusIconPaths.monitoring, show_pending_ring=True)
+            self.__setImage(ProcessManagerIcon.monitoring, show_pending_ring=True)
 
         def set_StoppedMidway(self):
-            self.__setImage(ProcessStatusIconPaths.stoppedMidway)
+            self.__setImage(ProcessManagerIcon.stoppedMidway)
 
         def set_CompleteWithError(self):
-            self.__setImage(ProcessStatusIconPaths.completeWithError)
+            self.__setImage(ProcessManagerIcon.completeWithError)
 
     class ProcessProgressStats(QWidget):
         def __init__(self):
@@ -64,7 +66,7 @@ class builders:
             layout.addLayout(labels)
             self.left_label = BodyLabel()
             labels.addWidget(self.left_label)
-            labels.addSpacerItem(primitives.HorizontalExpandSpace())
+            labels.addSpacerItem(HorizontalExpandSpace())
             self.right_label = BodyLabel()
             labels.addWidget(self.right_label)
 
@@ -132,7 +134,8 @@ class components:
             # Instead of using the Update Hooks we will use a timer to update progress
             process_manager.processesStartedHook.connect_(self.on_processes_started)
             process_manager.allProcessesStoppedHook.connect_(self.on_all_processes_stopped)
-            process_manager.runningProcessCountChangedHook.connect_(lambda: self.setRunningProcesses(process_manager.running_process_count))
+            process_manager.runningProcessCountChangedHook.connect_(lambda: self.setRunningProcesses(
+                process_manager.running_process_count))
 
             # -------------------------------- Internal State --------------------------------
             self.total_progress: float = 0
@@ -247,15 +250,15 @@ class components:
             self.view_process_errors.setText(tr('View Errors'))
             self.view_process_errors.clicked.connect(self.on_view_errors_clicked)
             h_lay.addWidget(self.view_process_errors)
-            h_lay.addSpacerItem(primitives.HorizontalExpandSpace())
+            h_lay.addSpacerItem(HorizontalExpandSpace())
             self.delete_process = PushButton()
             self.delete_process.setText(tr('Delete Process'))
-            self.delete_process.setIcon(Icons.DELETE)
+            self.delete_process.setIcon(FluentIcon.DELETE)
             self.delete_process.clicked.connect(self.on_delete_clicked)
             h_lay.addWidget(self.delete_process)
             self.stop_or_restart_process = PushButton()
             self.stop_or_restart_process.setText(tr('Stop Process'))
-            self.stop_or_restart_process.setIcon(Icons.PAUSE)
+            self.stop_or_restart_process.setIcon(FluentIcon.PAUSE)
             self.stop_or_restart_process.clicked.connect(self.on_stop_clicked)
             self.stop_button_showing: bool = True  # used to switch between 'stop' and 'reset' buttons
             self.restart_button_showing: bool = False  # used to switch between 'stop' and 'reset' buttons
@@ -345,7 +348,7 @@ class components:
             self.stop_or_restart_process.clicked.disconnect(self.on_stop_clicked)
             self.stop_or_restart_process.clicked.connect(self.on_restart_clicked)
             self.stop_or_restart_process.setText(tr('Restart Process'))
-            self.stop_or_restart_process.setIcon(Icons.SYNC)
+            self.stop_or_restart_process.setIcon(FluentIcon.SYNC)
             self.restart_button_showing = True
             self.stop_button_showing = False
 
@@ -355,7 +358,7 @@ class components:
             self.stop_or_restart_process.clicked.disconnect(self.on_restart_clicked)
             self.stop_or_restart_process.clicked.connect(self.on_stop_clicked)
             self.stop_or_restart_process.setText(tr('Stop Process'))
-            self.stop_or_restart_process.setIcon(Icons.PAUSE)
+            self.stop_or_restart_process.setIcon(FluentIcon.PAUSE)
             self.stop_button_showing = True
             self.restart_button_showing = False
 
@@ -503,7 +506,7 @@ class tabs:
                 self.layout.addWidget(title)
 
             # Scrollable Card Container
-            self.card_container = primitives.ScrollContainer()
+            self.card_container = ScrollContainer()
             self.layout.addWidget(self.card_container)
 
         def add_widget(self, w_: QWidget):
@@ -539,7 +542,7 @@ class tabs:
             self.view_all_errors.setText(tr('View Errors') + f':  0')
             self.view_all_errors.setSizePolicy(SizePolicy.Fixed, SizePolicy.Fixed)
             buttons.addWidget(self.view_all_errors, alignment=AlignFlag.AlignLeft)
-            buttons.addSpacerItem(primitives.HorizontalExpandSpace())
+            buttons.addSpacerItem(HorizontalExpandSpace())
 
             restart_processes = PushButton()
             restart_processes.clicked.connect(self.on_restart_all_processes_clicked)
@@ -569,7 +572,7 @@ class tabs:
             process_manager.stop_all_processes() if dialogs.question(main_window, tr('Stop all Processes?'), tr('This will stop all currently running processes!\nAre you sure you want to continue?')) == dialogs.response.Yes else None
 
 
-class MainWindow(windows.TabWindow):
+class MainWindow(windows.FluentWindow):
     def __init__(self):
         super().__init__(menu_expand_width=150, remember_window_pos=True)
         self.setWindowTitle(tr('Copy Process Manager'))
@@ -582,27 +585,27 @@ class MainWindow(windows.TabWindow):
         for i, p in enumerate(process_manager.processes):
             process_tab.add_widget(components.ProcessCard(i, p))
         process_tab.setObjectName('processes')
-        self.addSubInterface(process_tab, Icons.APPLICATION, tr('Processes'))
+        self.addSubInterface(process_tab, FluentIcon.APPLICATION, tr('Processes'))
 
         # Sources
         src_tab = tabs.GenericTab(tr('Sources'))
         src_tab.setObjectName('src')
-        self.addSubInterface(src_tab, Icons.FOLDER, tr('Sources'))
+        self.addSubInterface(src_tab, FluentIcon.FOLDER, tr('Sources'))
         for src_path in process_manager.source_sorted_processes:
-            src_tab.add_widget(cards.SettingWPushButtons(Icons.FOLDER, f'{os_utils.getPathTarget(src_path)}', src_path, (tr('Open in Explorer'),), (Binder(os_utils.showDirInExplorer, src_path),)))
+            src_tab.add_widget(cards.SettingWPushButtons(FluentIcon.FOLDER, f'{os_utils.getPathTarget(src_path)}', src_path, (tr('Open in Explorer'),), (Binder(os_utils.showDirInExplorer, src_path),)))
 
         # Destination
         dst_tab = tabs.GenericTab(tr('Destinations'))
         dst_tab.setObjectName('dst')
-        self.addSubInterface(dst_tab, Icons.FLAG, tr('Destinations'))
+        self.addSubInterface(dst_tab, FluentIcon.FLAG, tr('Destinations'))
         for dst_path in process_manager.destination_sorted_processes:
-            dst_tab.add_widget(cards.SettingWPushButtons(Icons.FOLDER, f'{os_utils.getPathTarget(dst_path)}', dst_path, (tr('Open in Explorer'),), (Binder(os_utils.showDirInExplorer, dst_path),)))
+            dst_tab.add_widget(cards.SettingWPushButtons(FluentIcon.FOLDER, f'{os_utils.getPathTarget(dst_path)}', dst_path, (tr('Open in Explorer'),), (Binder(os_utils.showDirInExplorer, dst_path),)))
 
         # Information
         info = tabs.GenericTab(tr('Information'))
         info.setObjectName('info')
         info.add_widget(InfoPageWidget())
-        self.addSubInterface(info, Icons.INFO, tr('Info'), position=NavigationItemPosition.BOTTOM)
+        self.addSubInterface(info, FluentIcon.INFO, tr('Info'), position=NavigationItemPosition.BOTTOM)
 
     def closeEvent(self, event):
         if dialogs.question(self, tr('Close Process Manager?'), tr('Exiting the Process Manager will terminate all the currently running processes!\nAre you sure you want to continue?')) != dialogs.response.Yes:
@@ -613,7 +616,7 @@ class MainWindow(windows.TabWindow):
         process_manager.stop_all_processes()  # call this so that we avoid creating zombie processes.
 
 
-class ErrorsWindow(windows.SubWindow):
+class ErrorsWindow(windows.SubFluentWindow):
     class ErrorCard(SimpleCardWidget):
         def __init__(self, details: str, message: str):
             SimpleCardWidget.__init__(self)
@@ -631,7 +634,7 @@ class ErrorsWindow(windows.SubWindow):
             message_label.setWordWrap(True)
             v_lay.addWidget(message_label)
             clipboard_button = PushButton()
-            clipboard_button.setIcon(Icons.PASTE)
+            clipboard_button.setIcon(FluentIcon.PASTE)
             clipboard_button.setText(tr('Copy to Clipboard'))
             clipboard_button.setSizePolicy(SizePolicy.Fixed, SizePolicy.Fixed)
             clipboard_button.clicked.connect(lambda: os_utils.copyToClipboard(f'{details_label.text()}\n{message_label.text()}', app))
@@ -650,12 +653,12 @@ class ErrorsWindow(windows.SubWindow):
         # Errors
         self.errors_tab = tabs.GenericTab(tr('Errors'))
         self.errors_tab.setObjectName('errors')
-        self.addSubInterface(self.errors_tab, Icons.TAG, tr('Errors'))
+        self.addSubInterface(self.errors_tab, FluentIcon.TAG, tr('Errors'))
 
         # Affected Files
         self.affected_files_tab = tabs.GenericTab(tr('Affected Files'))
         self.affected_files_tab.setObjectName('affected_files')
-        self.addSubInterface(self.affected_files_tab, Icons.DOCUMENT, tr('Affected Files'))
+        self.addSubInterface(self.affected_files_tab, FluentIcon.DOCUMENT, tr('Affected Files'))
 
         # No Errors Label
         self.no_errors_label = TitleLabel(self.stackedWidget)
@@ -679,7 +682,7 @@ class ErrorsWindow(windows.SubWindow):
         self.errors_tab.add_widget(ErrorsWindow.ErrorCard(details, message))
         if affected_file in self.affected_files:
             return
-        self.affected_files_tab.add_widget(cards.SettingWPushButtons(Icons.DOCUMENT, f'{os_utils.getPathTarget(affected_file)}  •  {format_bytes(affected_file_size)}', affected_file, (tr('Open in Explorer'),), (lambda: os_utils.selectFileInExplorer(affected_file),)))
+        self.affected_files_tab.add_widget(cards.SettingWPushButtons(FluentIcon.DOCUMENT, f'{os_utils.getPathTarget(affected_file)}  •  {format_bytes(affected_file_size)}', affected_file, (tr('Open in Explorer'),), (lambda: os_utils.selectFileInExplorer(affected_file),)))
         self.affected_files.add(affected_file)
 
     def clearAllErrors(self):

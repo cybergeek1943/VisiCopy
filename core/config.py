@@ -8,7 +8,7 @@ class ThemeMode:
 
 
 __default_config: dict = {
-    'advanced_mode': False,  # type: bool
+    'advanced_mode': True,  # type: bool
     'language': -1,  # type: int  # -1 means not specified yet.
     'theme': ThemeMode.DARK,  # type: int
     'auto_copy_flags': False,  # type: bool

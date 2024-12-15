@@ -33,7 +33,7 @@ class __CallbackHook__:
         self.__increment_callables_count__(-1)
 
     def __increment_callables_count__(self, n: int):
-        """Increments (or decremates) count of callables."""
+        """Increments (or decrements) count of callables."""
         self.callables_count += n
         self.disabled = self.callables_count == 0
 
@@ -65,7 +65,7 @@ class __QtHook__(__CallbackHook__, QObject):
 
 HookType: UnionType = __CallbackHook__ | __QtHook__
 def Hook(running_in_qt_app: bool = False) -> HookType:
-    """Returns an instance of __CallbackHook__ or __QtHook__ based on if the application is running or not."""
+    """Returns an instance of __CallbackHook__ or __QtHook__ based on if the application is a Qt app or not."""
     return __CallbackHook__() if not running_in_qt_app else __QtHook__()
 
 

@@ -12,10 +12,9 @@ from qfluentwidgets import (CheckBox as QFCheckBox,
                             DoubleSpinBox as QFDoubleSpinBox,
                             LineEdit as QFLineEdit)
 from qfluentwidgets.components.widgets.switch_button import Indicator as QFSwitch  # we do this because the normal SwitchButton has On and Off text which is inconvenient for our purposes.
-from ui_comps import primitives
-Label: type[primitives.Label] = primitives.Label
+from ui_lib import Label
 from qfluentwidgets import setTheme, Theme
-setTheme(Theme.DARK)
+setTheme(Theme.DARK)  # TODO we may not want this here.
 
 
 # noinspection PyUnresolvedReferences
