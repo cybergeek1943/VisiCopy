@@ -10,6 +10,7 @@ MAX_INT: int = 2147483647  # this is the maximum integer possible because of C++
 
 
 def spacer(units: int = 1, divider: bool = False, **kwargs) -> dict:
+    """Creates a spacer element with customizable units and optional divider."""
     return {'type': 'spacer', 'units': units, 'divider': divider, **kwargs}
 
 
@@ -24,6 +25,7 @@ def switch(label: str,
            toggled: bool,
            disabled: bool = False,
            **kwargs) -> dict:
+    """Creates a toggleable switch element with optional disabled state."""
     return {'type': 'switch', 'label': label, 'toggled': toggled, 'disabled': disabled, **kwargs}
 
 
@@ -31,6 +33,7 @@ def checkBox(label: str,
              toggled: bool,
              disabled: bool = False,
              **kwargs) -> dict:
+    """Generates a checkbox element with a toggled state and optional disabled state."""
     return {'type': 'checkbox', 'label': label, 'toggled': toggled, 'disabled': disabled, **kwargs}
 
 
@@ -41,6 +44,7 @@ def switchStrEntry(label: str,
                    width_factor: int = 0,  # if 0, the default is used.
                    disabled: bool = False,
                    **kwargs) -> dict:
+    """Creates a switch element that includes a string input entry with a placeholder and width factor."""
     # generally use `placeholder` only when displaying info about what to enter; conversely, put default values in `entry` instead of `placeholder`
     return {'type': 'switch-str-entry', 'label': label, 'toggled': toggled, 'entry': entry, 'placeholder': placeholder, 'width_factor': width_factor, 'disabled': disabled, **kwargs}
 
@@ -53,6 +57,7 @@ def switchNumEntry(label: str,
                    width_factor: int = 0,
                    disabled: bool = False,
                    **kwargs) -> dict:
+    """Creates a switch element that includes a numeric input entry with defined min and max values."""
     return {'type': 'switch-num-entry', 'label': label, 'toggled': toggled, 'entry': entry, 'min_entry': min_entry, 'max_entry': max_entry, 'width_factor': width_factor, 'disabled': disabled, **kwargs}
 
 
@@ -66,6 +71,7 @@ def switchSizeEntry(label: str,
                     width_factor: int = 0,
                     disabled: bool = False,
                     **kwargs) -> dict:
+    """Generates a switch element with a size input entry and options for size units (e.g., Bytes, Kilobytes)."""
     return {'type': 'switch-size-entry', 'label': label, 'toggled': toggled, 'entry': entry, 'min_entry': min_entry, 'max_entry': max_entry, 'size_options': size_options, 'selected_option': selected_option, 'width_factor': width_factor, 'disabled': disabled, **kwargs}
 
 
@@ -80,6 +86,7 @@ def switchDateEntry(label: str,
                     max_days: int = 1899,
                     disabled: bool = False,
                     **kwargs) -> dict:
+    """Creates a switch element with a date entry field, allowing for day, month, and year inputs with optional day range."""
     return {'type': 'switch-date-entry', 'label': label, 'toggled': toggled, 'day': day, 'month': month, 'year': year, 'use_days': use_days, 'days': days, 'min_days': min_days, 'max_days': max_days, 'disabled': disabled, **kwargs}
 
 
@@ -88,6 +95,7 @@ def switchDropdown(toggled: bool,
                    selected_option: int = 0,
                    disabled: bool = False,
                    **kwargs) -> dict:
+    """Generates a switch element with a dropdown list of options and a selected option."""
     # default option is options[0]
     # id must also be a tuple
     return {'type': 'switch-dropdown', 'toggled': toggled, 'options': options, 'selected_option': selected_option, 'disabled': disabled, **kwargs}
@@ -353,35 +361,43 @@ custom_settings: dict = {}  # Non-robocopy custom settings that are used for ext
 class __CustomSettings__:  # TODO must keep this up to date with the id names of custom settings that need quick access.
     @property
     def use_gui(self) -> bool:
+        """Returns a boolean indicating whether the graphical user interface (GUI) should be used, based on the console display setting."""
         return not custom_settings['show_console']['toggled']
 
     @property
     def concurrent_process_limit(self) -> int:
+        """Returns the limit on the number of concurrent processes based on the user's settings, defaulting to 1 if not specified."""
         return custom_settings['multiprocess']['entry'] if custom_settings['multiprocess']['toggled'] and custom_settings['multiprocess']['entry'] else 1
 
     @property
     def dst_prioritized(self) -> bool:
+        """Returns a boolean indicating whether the destination (DST) is prioritized, as per the user's setting."""
         return custom_settings['prioritize_dst']['toggled']
 
     @property
     def allow_new_multi_processes_in_sync_mode(self) -> bool:
+        """Returns a boolean indicating whether new multi-processes are allowed in synchronous mode, as specified in the settings."""
         return custom_settings['allow_new_multi_processes_in_sync_mode']['toggled']
 
     @property
     def selector_pattern(self) -> list | tuple:
+        """Returns a list or tuple representing the file selection pattern, based on the user's settings for specified files."""
         from core import os_utils
         return os_utils.arg_split(custom_settings['only_specified_files']['entry']) if custom_settings['only_specified_files']['toggled'] and custom_settings['only_specified_files']['entry'] else os_utils.DEFAULT_PATTERN
 
     @property
     def gui_show_full_file_path(self) -> bool:
+        """Returns a boolean indicating whether to show the full file path in the GUI, based on user preferences."""
         return custom_settings['gui_show_full_file_path']['toggled']
 
     @property
     def speed_eta_seconds_interval(self) -> int:
+        """Returns the interval in seconds for speed and ETA updates if enabled, otherwise returns 0."""
         return custom_settings['speed_eta_seconds_interval']['entry'] if custom_settings['speed_eta_seconds_interval']['toggled'] else 0
 
     @property
     def eta_progress_checkpoints(self) -> int:
+        """Returns the number of checkpoints for ETA progress updates if enabled, otherwise returns 1."""
         return custom_settings['eta_progress_checkpoints']['entry'] if custom_settings['eta_progress_checkpoints']['toggled'] else 1
 CustomSettings: __CustomSettings__ = __CustomSettings__()
 def __init_quick_access_settings():  # only call locally in this module when settings are loaded from files or reset.
@@ -407,10 +423,12 @@ detected_changes: int = 0
 class cdict(dict):
     """Use this to as the object to pass to __variable__ in the settings ui manager. This way we know when the settings are changed by user."""
     def __init__(self, elem: dict):
+        """intializes."""
         super().__init__(elem)  # this creates a copy of the `elem` initial state when `elem is created` because dict({}) creates a copy of its arg data.
         self.elem: dict = elem  # this is the fluid copy of `elem` which gets updated by the user interactions with the user interface.
 
     def __setitem__(self, key, value):
+        """Sets a value for the specified key in the dictionary, updating the detected_changes counter when the value changes, except for keys that are disabled."""
         if self.elem[key] != value and key != 'disabled':  # if the key's value is not already the same AND also the key is not a "disable" type of key.
             if self[key] == value:  # if the original `elem`'s value is equal to the new value
                 set_detected_changes(n=-1, add_n=True)
@@ -418,6 +436,7 @@ class cdict(dict):
                 set_detected_changes(n=1, add_n=True)
         self.elem.__setitem__(key, value)
 def set_detected_changes(n: int, add_n: bool = False) -> None:
+    """This hook is called whenever the number of detected changes is updated, enabling external actions to be triggered."""
     global detected_changes
     if add_n:
         detected_changes += n

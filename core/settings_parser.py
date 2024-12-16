@@ -126,6 +126,7 @@ def size_value_to_bytes(size_value: int, option: int) -> int:
 
 
 def date_str(year: int, month: int, day: int) -> str:
+    """Returns the date as a string."""
     return f'{year}{'0' if 10 > month else ''}{month}{'0' if 10 > day else ''}{day}'
 
 

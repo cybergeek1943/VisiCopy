@@ -63,6 +63,7 @@ def init_processes(src_paths: list[tuple[str, dict]], dst_paths: list[str], job_
 
 # noinspection PyDefaultArgument
 def getProcessesStats() -> tuple[float, int]:
+    """Calculates and returns the overall progress and total bytes copied for all processes."""
     overall_progress: float = 0
     total_copied_bytes: int = 0
     for pr in processes:
@@ -79,6 +80,7 @@ runningProcessCountChangedHook: HookType = Hook()  # used to change the running 
 
 running_process_count: int = 0
 def __increment_running_process_count(negative: bool = False, reset: bool = False) -> None:
+    """Increments or decrements the running process count and updates the associated hooks."""
     global running_process_count
     if reset:
         running_process_count = 0
@@ -109,6 +111,7 @@ def start_all_processes() -> None:
 
 # noinspection PyDefaultArgument
 def stop_all_processes() -> None:
+    """Stops all running and pending processes, and waits for them to terminate."""
     allow_new_multi_processes_in_sync_mode: bool = CustomSettings.allow_new_multi_processes_in_sync_mode
     for pr in processes:
         if pr.pending or pr.process_running:
@@ -124,6 +127,7 @@ def stop_all_processes() -> None:
 
 # noinspection PyDefaultArgument
 def restart_all_processes() -> None:
+    """Restarts all processes that are not currently running or deleted."""
     for pr in processes:
         if not pr.process_running and not pr.process_deleted:
             pr.__reset_stats__()
@@ -131,6 +135,7 @@ def restart_all_processes() -> None:
 
 
 def __start_single_process(pr: CopyProcess | CopyProcess_NoPiping) -> None:
+    """Starts a single process and increments the running process count."""
     if running_process_count == CustomSettings.concurrent_process_limit:
         return
     pr.start()

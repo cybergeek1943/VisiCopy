@@ -83,11 +83,15 @@ class CopyProcess_NoPiping:  # not to be used directly within Qt GUI application
         self.recursion_enabled = False
 
     def __create_process_obj__(self) -> Popen:
+        """Creates and returns a new `Popen` object to run the `robocopy` process with the given source, destination,
+        selector pattern, and flags. The `robocopy` command is executed with the specified arguments."""
         return Popen(f'robocopy "{self.src_path}" "{self.dst_path}" {os_utils.joinArgs(self.selector_pattern)}{' ' if self.flags else ''}{' '.join(self.flags)}',
                      creationflags=CREATE_NEW_CONSOLE,
                      cwd=self.cwd)
 
     def start(self, blocked: bool = False) -> None:
+        """Starts the `robocopy` process by calling `__create_process_obj__` to create the process and then
+        either blocks execution or runs the process in a separate thread depending on the `blocked` parameter."""
         if self.process_deleted:
             return
         self.__reset_stats__()
@@ -100,6 +104,8 @@ class CopyProcess_NoPiping:  # not to be used directly within Qt GUI application
             Thread(target=self.__process_analyzer__, args=(self.__process_obj__,)).start()
 
     def startPending(self) -> None:
+        """Marks the current copy process as pending and triggers the `pendingStartedHook`.
+        This is used to indicate that the process is awaiting execution."""
         self.pending = True
         self.pendingStartedHook()
 
@@ -108,6 +114,8 @@ class CopyProcess_NoPiping:  # not to be used directly within Qt GUI application
         self.unnatural_termination_occurred = False
 
     def terminate(self) -> None:
+        """Terminates the running `robocopy` process if it is active, otherwise marks the process as stopped.
+        Sets the `unnatural_termination_occurred` flag to True."""
         self.pending = False
         self.unnatural_termination_occurred = True
         if self.process_running:
@@ -124,17 +132,21 @@ class CopyProcess_NoPiping:  # not to be used directly within Qt GUI application
         self.deletedHook()
 
     def __process_analyzer__(self, p: Popen) -> None:
+        """Analyzes the output of the `robocopy` process to track the progress, detect errors, and handle file copying events. It also updates internal statistics for the copy process and manages hooks for progress tracking and error reporting."""
         self.startedHook()
         p.wait()
         self.stoppedHook()
         self.process_running = False
 
     def __repr__(self) -> str:
+        """Returns a string representation of the current instance, including the source path, destination path,
+        selector pattern, flags, and other relevant arguments for debugging purposes."""
         return self.__arg_repr__.__str__()
 
 
 class CopyProcess(CopyProcess_NoPiping):  # TODO document these classes better
     def __set_source_files_count(self, blocking: bool = False, __running_threaded__: bool = False) -> None:
+        """Calculates and sets the total number of files to be copied based on the source directory and the selector pattern."""
         # must be calculated at the beginning of copy if the total progress is going to be calculated
         if not __running_threaded__:
             if os_utils.isfile(self.src_path):  # if only copying one file
@@ -223,6 +235,7 @@ class CopyProcess(CopyProcess_NoPiping):  # TODO document these classes better
         return self.total_files_read - 1
 
     def current_file_name(self, show_parent_dirs: bool = False) -> str:
+        """Returns the name of the current file being copied, optionally including its parent directory."""
         return self.current_file[self.src_path_char_count+1:] if show_parent_dirs else os_utils.getPathTarget(self.current_file)
 
     def __reset_stats__(self) -> None:
@@ -236,6 +249,7 @@ class CopyProcess(CopyProcess_NoPiping):  # TODO document these classes better
         self.unnatural_termination_occurred = False
 
     def __create_process_obj__(self) -> Popen:
+        """Creates and returns a new `Popen` object to run the `robocopy` process with the required flags for piping."""
         return Popen(f'robocopy "{self.src_path}" "{self.dst_path}" {os_utils.joinArgs(self.selector_pattern)}{' ' if self.flags else ''}{' '.join(self.flags)} {' '.join(self.__required_flags_for_piping__)}',
                      stdout=PIPE,  # this tells us to pipe the output into buffer
                      creationflags=CREATE_NO_WINDOW,

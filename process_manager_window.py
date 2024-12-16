@@ -28,6 +28,7 @@ class builders:
     """Contains basic builder components."""
     class StatusIcon(ImageLabel):
         def __init__(self):
+            """Initializes the StatusIcon component, sets up the progress ring, and sets the initial status to 'Pending.'"""
             ImageLabel.__init__(self)
             self.ring = IndeterminateProgressRing(self)
             self.ring.setCustomBarColor('white', 'white')
@@ -35,28 +36,35 @@ class builders:
             self.set_Pending()
 
         def __setImage(self, path: str, show_pending_ring: bool = False):
+            """Sets the image for the icon and optionally displays a pending progress ring based on the show_pending_ring argument."""
             self.setImage(path)
             self.scaledToHeight(100)
             self.ring.setFixedSize(self.size())
             self.ring.show() if show_pending_ring else self.ring.hide()
 
         def set_Pending(self):
+            """Sets the status to 'Pending' by displaying the pending icon and showing the pending progress ring."""
             self.__setImage(ProcessManagerIcon.pending, show_pending_ring=True)
 
         def set_Complete(self):
+            """Sets the status to 'Complete' by displaying the complete icon."""
             self.__setImage(ProcessManagerIcon.complete)
 
         def set_Monitoring(self):
+            """Sets the status to 'Monitoring' by displaying the monitoring icon and showing the pending progress ring."""
             self.__setImage(ProcessManagerIcon.monitoring, show_pending_ring=True)
 
         def set_StoppedMidway(self):
+            """Sets the status to 'Stopped Midway' by displaying the stopped midway icon."""
             self.__setImage(ProcessManagerIcon.stoppedMidway)
 
         def set_CompleteWithError(self):
+            """Sets the status to 'Complete With Error' by displaying the corresponding error icon."""
             self.__setImage(ProcessManagerIcon.completeWithError)
 
     class ProcessProgressStats(QWidget):
         def __init__(self):
+            """Initializes the overall progress panel UI, sets up labels, progress ring, and internal state, and connects backend hooks for progress updates."""
             QWidget.__init__(self)
             layout = QVBoxLayout()
             self.setLayout(layout)
@@ -78,13 +86,16 @@ class builders:
             layout.addWidget(self.progress_bar)
 
         def setProgressPercentage(self, p: float):
+            """Updates the progress bar's value based on the given percentage p. The percentage is multiplied by 100 and the value is set on the progress bar."""
             self.progress_percentage = int(p*100)
             self.progress_bar.setValue(1 + self.progress_percentage)
 
         def setLeftLabel(self, text: str):
+            """Sets the text of the left label to the provided string text."""
             self.left_label.setText(text)
 
         def setRightLabel(self, text: str):
+            """Sets the text of the right label to the provided string text."""
             self.right_label.setText(text)
 
 
@@ -153,22 +164,28 @@ class components:
 
         # -------------------------------- Setters --------------------------------
         def setProgressBar(self, p: float):
+            """Updates the value of the progress bar based on the provided percentage p."""
             self.progress_ring.setValue(int(p*100))
 
         def setEtaAndSpeed(self, eta: int | None, b: int | None):
+            """Updates the ETA and speed labels with the provided eta and b (speed in bytes)."""
             self.eta_label.setText(tr('Eta') + f':  {format_seconds(eta) if eta else '----'}')
             self.speed_label.setText(tr('Speed') + f':  {format_bytes(b, per_second=True) if b else '----'}')
 
         def setElapsedTime(self, time: float):
+            """Updates the elapsed time label with the provided time in seconds."""
             self.elapsed_time_label.setText(tr('Elapsed Time') + f':  {format_seconds(int(time))}')
 
         def setBytesCopied(self, b: int):
+            """Updates the bytes copied label with the provided byte value b."""
             self.bytes_copied_label.setText(tr('Amount Copied') + f':  {format_bytes(b)}')
 
         def setRunningProcesses(self, n: int):
+            """Updates the running processes label with the provided number n of running processes."""
             self.running_processes_label.setText(tr('Running Processes') + f':  {n}')  # sometimes n is negative because of process deletion. Hence, the greater than zero check!
 
         def __setDefaults(self):
+            """Sets the default values for all UI elements (progress bar, ETA, elapsed time, bytes copied, running processes)."""
             self.setProgressBar(0)
             self.setEtaAndSpeed(None, None)
             self.setElapsedTime(0)
@@ -176,6 +193,7 @@ class components:
             self.setRunningProcesses(0)
         
         def start_timers(self):
+            """Starts the timers for updating progress and calculating ETA and speed if the timers are not already running."""
             if self.timers_running:
                 return
             update_timer.timeout.connect(self.__on_progress_update_interval)
@@ -183,6 +201,7 @@ class components:
             self.timers_running = True
 
         def stop_timers(self):
+            """Stops the timers for updating progress and calculating ETA and speed if the timers are running."""
             if not self.timers_running:
                 return
             update_timer.timeout.disconnect(self.__on_progress_update_interval)
@@ -199,6 +218,7 @@ class components:
             self.setBytesCopied(self.total_bytes_copied)
 
         def on_processes_started(self):
+            """Resets the internal state for the next restart of processes and starts the timers to begin progress updates."""
             # reset internal state for next restart:
             self.total_bytes_copied = 0
             self.total_progress = 0
@@ -207,6 +227,7 @@ class components:
             self.start_timers()
 
         def on_all_processes_stopped(self):
+            """Stops the timers, updates the progress UI, and resets the ETA and speed values when all processes have stopped."""
             self.stop_timers()
             self.__on_progress_update_interval()
             self.setEtaAndSpeed(None, None)
@@ -302,9 +323,11 @@ class components:
 
         # -------------------------------- Setters --------------------------------
         def setTitle(self, *args):
+            """Sets the title of the process card. It includes the process index and any additional arguments passed, formatting them into a title string."""
             self.title.setText(tr('Process') + f' {self.process_index}  •  {'  •  '.join(args)}')
 
         def setNote(self, *args):
+            """Sets a note or notes to be displayed on the process card. If no notes are provided, hides the note section. If one or more notes are provided, they are displayed as a list."""
             args: list = [s for s in args if s is not None]
             if not args:
                 self.finish_notes.hide()
@@ -316,7 +339,7 @@ class components:
             self.finish_notes.show()
 
         def setCurrentFileProgress(self, percentage: float, current_file_name: str | None):
-            """sets the """
+            """Updates the progress for the current file being copied. The percentage of progress and the current file name are updated accordingly. If the file name is None, it shows a placeholder."""
             self.current_file_progress.setProgressPercentage(percentage)
             if current_file_name:
                 self.current_file_progress.setLeftLabel(tr('Current File') + f' {self.current_file_progress.progress_percentage}%:  {current_file_name}')
@@ -329,12 +352,15 @@ class components:
             self.process_progress.setLeftLabel('{0}:  {1}\n{2}:  {3}%'.format(tr('Amount Copied'), format_bytes(amount_copied), tr('Process Progress'), self.process_progress.progress_percentage if self.pr.source_files_count else tr('calculating')))
 
         def setCurrentFileSize(self, size: int | None):
+            """Sets the size of the current file being copied. If no size is provided, it shows a placeholder."""
             self.current_file_progress.setRightLabel(tr('Current File Size') + f':  {format_bytes(size) if size else '----'}')
 
         def setEtaAndSpeed(self, eta: int | None, speed: int | None):
+            """Sets the estimated time of arrival (ETA) and the copying speed for the process. If either value is None, a placeholder is shown."""
             self.process_progress.setRightLabel('{0}:  {1}\n{2}:  {3}'.format(tr('Eta'), format_seconds(eta) if eta else '----', tr('Speed'), format_bytes(speed, per_second=True) if speed else '----'))
 
         def setErrorCountBadge(self, count: int):
+            """Updates the error count badge on the process card. If the count is zero, the badge is hidden. Otherwise, it shows the error count."""
             if count == 0:
                 self.error_count_badge.hide()
                 return
@@ -343,6 +369,7 @@ class components:
             self.error_count_badge.show()
 
         def showRestartProcessButton(self):
+            """Changes the "Stop Process" button to a "Restart Process" button, and connects the corresponding slot for restarting the process. Hides the stop button and shows the restart button."""
             if self.restart_button_showing:
                 return
             self.stop_or_restart_process.clicked.disconnect(self.on_stop_clicked)
@@ -353,6 +380,7 @@ class components:
             self.stop_button_showing = False
 
         def showStopProcessButton(self):
+            """Changes the "Restart Process" button to a "Stop Process" button, and connects the corresponding slot for stopping the process. Hides the restart button and shows the stop button."""
             if self.stop_button_showing:
                 return
             self.stop_or_restart_process.clicked.disconnect(self.on_restart_clicked)
@@ -363,6 +391,7 @@ class components:
             self.restart_button_showing = False
 
         def __set_progress_bars_defaults(self, show_full_progress_bars: bool = True):
+            """Sets the default values for the progress bars, including setting the progress to 0 or 100 depending on the show_full_progress_bars flag."""
             self.setEtaAndSpeed(None, None)
             self.setCurrentFileSize(None)
             self.setCurrentFileProgress(1.0 if show_full_progress_bars else 0.0, None)
@@ -371,10 +400,12 @@ class components:
         # -------------------------------- Strings --------------------------------
         @property
         def files_copied_title(self) -> str:
+            """Returns a string showing the number of files copied out of the total source files, or "calculating" if the total file count is unknown."""
             return (f'{self.pr.total_files_copied}/{self.pr.source_files_count}' if self.pr.source_files_count else tr('calculating')) + ' ' + tr('Files Copied')
 
         @property
         def failed_copies_note(self) -> str | None:
+            """Returns a string describing the number of files that failed to copy due to various issues, or None if all files were copied successfully."""
             not_copied_file_count: int = self.pr.source_files_count - self.pr.total_files_copied
             if not_copied_file_count < 0:
                 return None
@@ -385,6 +416,7 @@ class components:
 
         # -------------------------------- Progress Update Slots --------------------------------
         def start_timers(self):
+            """Starts the timers used to update the progress of the process and calculate the ETA and speed. Ensures that the timers are not started multiple times."""
             if self.timers_running:
                 return
             update_timer.timeout.connect(self.__on_progress_update_interval)
@@ -392,6 +424,7 @@ class components:
             self.timers_running = True
 
         def stop_timers(self):
+            """Stops the timers that update the progress and calculate the ETA and speed. Ensures that the timers are not stopped if they are not running."""
             if not self.timers_running:
                 return
             update_timer.timeout.disconnect(self.__on_progress_update_interval)
@@ -410,6 +443,7 @@ class components:
                 self.setCurrentFileProgress(self.pr.current_file_progress, self.pr.current_file_name(show_parent_dirs=True))
 
         def on_copy_process_started(self):
+            """Slot for when the copy process starts. Clears the error window, resets the ETA and speed variables, and starts the progress timers. Also shows the "Stop Process" button and hides the status icon."""
             self.errors_window.clearAllErrors()
             self.eta_and_speed_calculator.reset_eta_and_speed_vars()
             self.start_timers()
@@ -418,6 +452,7 @@ class components:
             self.showStopProcessButton()
 
         def on_pending_started(self):
+            """Slot for when the process is in the "Pending" state. Sets the title to "Pending," hides the finish notes, and shows the "Stop Process" button. The progress bars are also set to a default state."""
             self.setTitle(tr('Pending'))
             self.finish_notes.hide()
             self.status_icon.set_Pending()
@@ -425,6 +460,7 @@ class components:
             self.__set_progress_bars_defaults(show_full_progress_bars=False)
 
         def on_copy_process_stopped(self):
+            """Slot for when the process stops. Stops the timers and updates the UI based on the stopping condition (errors, midway stop, or successful completion). Displays the restart button."""
             self.stop_timers()
             if self.pr.process_deleted:
                 return
@@ -445,6 +481,7 @@ class components:
             self.showRestartProcessButton()
 
         def on_sync_complete(self):
+            """Slot for when the sync process completes. Updates the title to "Finished" with "Continuous Sync Enabled," updates the note, and changes the status icon to "Monitoring.""""
             if not self.pr.continuous_sync_running:
                 return
             self.stop_timers()
@@ -457,10 +494,12 @@ class components:
             self.__set_progress_bars_defaults()
 
         def on_error_occurred(self):
+            """Slot for when an error occurs during the process. Updates the error count badge and adds the error details to the error window."""
             self.setErrorCountBadge(self.pr.error_count)
             self.errors_window.addError(self.pr.errors[-1][0], self.pr.errors[-1][1], self.pr.current_file, self.pr.current_file_size)
 
         def on_process_deleted(self):
+            """Slot for when the process is deleted. Updates the UI to reflect the deletion by removing the process-related elements and adjusting the layout."""
             self.setTitle(tr('Deleted'))
             # Delete UI elements
             self.finish_notes.deleteLater()
@@ -475,16 +514,20 @@ class components:
 
         # -------------------------------- Button Slots --------------------------------
         def on_delete_clicked(self):
+            """Slot for when the "Delete Process" button is clicked. Displays a confirmation dialog and deletes the process if confirmed."""
             self.pr.delete() if dialogs.question(main_window, tr('Delete this Process?'), tr('Deleting this process will terminate it!\nAre you sure you want to continue?')) == dialogs.response.Yes else None
 
         def on_stop_clicked(self):
+            """Slot for when the "Stop Process" button is clicked. Displays a confirmation dialog and stops the process if confirmed."""
             self.pr.terminate() if dialogs.question(main_window, tr('Stop this Process?'), tr('Stopping this process will temporarily terminate it!\nAre you sure you want to continue?')) == dialogs.response.Yes else None
 
         def on_restart_clicked(self):
+            """Slot for when the "Restart Process" button is clicked. Displays a confirmation dialog and restarts the process if confirmed."""
             if dialogs.question(main_window, tr('Restart this Process?'), tr('Restarting this process will continue the copying of files.\nAre you sure you want to continue?')) == dialogs.response.Yes:
                 self.pr.startPending()
 
         def on_view_errors_clicked(self):
+            """Slot for when the "View Errors" button is clicked. Displays the error window to show the detailed error list."""
             self.errors_window.show()
 
 
@@ -493,6 +536,7 @@ class tabs:
 
     class GenericTab(QWidget):
         def __init__(self, tab_title: str | None):
+            """Initializes the generic tab widget."""
             QWidget.__init__(self)
 
             # Layout
@@ -510,10 +554,12 @@ class tabs:
             self.layout.addWidget(self.card_container)
 
         def add_widget(self, w_: QWidget):
+            """Adds a widget to the tab's card container."""
             self.card_container.add_widget(w_)
 
     class ProcessesTab(GenericTab):
         def __init__(self):
+            """Initializes the Processes tab widget."""
             tabs.GenericTab.__init__(self, tab_title=None)
             # -------------------------------- Error Manager --------------------------------
             self.total_error_count: int = 0
@@ -558,6 +604,7 @@ class tabs:
 
         # Slots
         def on_error_occurred(self, pr: CopyProcess):
+            """Handles the occurrence of an error in a process."""
             self.total_error_count += 1
             self.view_all_errors.setText(tr('View Errors') + f':  {self.total_error_count}')
             self.all_errors_window.addError(pr.errors[-1][0], pr.errors[-1][1], pr.current_file, pr.current_file_size)
@@ -565,15 +612,18 @@ class tabs:
         # Buttons
         @staticmethod
         def on_restart_all_processes_clicked():
+            """Restarts all processes."""
             process_manager.restart_all_processes() if dialogs.question(main_window, tr('Restart All Processes?'), tr('This will restart any processes that are not currently running.\nAre you sure you want to continue?')) == dialogs.response.Yes else None
 
         @staticmethod
         def on_stop_all_processes_clicked():
+            """Stops all currently running processes."""
             process_manager.stop_all_processes() if dialogs.question(main_window, tr('Stop all Processes?'), tr('This will stop all currently running processes!\nAre you sure you want to continue?')) == dialogs.response.Yes else None
 
 
 class MainWindow(windows.FluentWindow):
     def __init__(self):
+        """Initializes the main window of the application."""
         super().__init__(menu_expand_width=150, remember_window_pos=True)
         self.setWindowTitle(tr('Copy Process Manager'))
         self.navigationInterface.setCollapsible(False)
@@ -608,6 +658,7 @@ class MainWindow(windows.FluentWindow):
         self.addSubInterface(info, FluentIcon.INFO, tr('Info'), position=NavigationItemPosition.BOTTOM)
 
     def closeEvent(self, event):
+        """Handles the window close event."""
         if dialogs.question(self, tr('Close Process Manager?'), tr('Exiting the Process Manager will terminate all the currently running processes!\nAre you sure you want to continue?')) != dialogs.response.Yes:
             event.ignore()
             return
@@ -619,6 +670,7 @@ class MainWindow(windows.FluentWindow):
 class ErrorsWindow(windows.SubFluentWindow):
     class ErrorCard(SimpleCardWidget):
         def __init__(self, details: str, message: str):
+            """Initializes the ErrorsWindow."""
             SimpleCardWidget.__init__(self)
             error_color: QColor = QColor(219, 63, 61)
             v_lay = QVBoxLayout()
@@ -670,14 +722,17 @@ class ErrorsWindow(windows.SubFluentWindow):
         self.navigationInterface.panel.displayModeChanged.connect(lambda _: self.center_no_errors_label())
 
     def resizeEvent(self, event):  # center the empty_container_label() whenever resize happens
+        """Handles the window resize event."""
         self.no_errors_label.move((self.stackedWidget.size().width() // 2) - (self.no_errors_label.size().width() // 2), (self.stackedWidget.size().height() // 2) - (self.no_errors_label.size().height() // 2))
         super().resizeEvent(event)
 
     def show(self):
+        """Shows the ErrorsWindow."""
         self.center_no_errors_label()
         super().show()
 
     def addError(self, details: str, message: str, affected_file: str, affected_file_size: int):
+        """Adds an error to the ErrorsWindow."""
         self.no_errors_label.hide()
         self.errors_tab.add_widget(ErrorsWindow.ErrorCard(details, message))
         if affected_file in self.affected_files:
@@ -686,6 +741,7 @@ class ErrorsWindow(windows.SubFluentWindow):
         self.affected_files.add(affected_file)
 
     def clearAllErrors(self):
+        """Clears all errors from the window."""
         self.errors_tab.card_container.clear_widgets()
         self.affected_files_tab.card_container.clear_widgets()
         self.no_errors_label.show()
@@ -695,6 +751,7 @@ main_window: MainWindow
 update_timer: QTimer
 app: QApplication
 def start(app_context: QApplication):
+    """Starts the application."""
     global main_window, update_timer, app
     app = app_context
     update_timer = QTimer(app_context)

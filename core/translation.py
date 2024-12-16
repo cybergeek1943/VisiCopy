@@ -3,8 +3,6 @@ from warnings import warn
 from core.config import config_file
 from PySide6.QtCore import QObject, QCoreApplication, QTranslator, QLocale
 
-
-# TODO doc this
 tr: callable = lambda _: None  # dummy callable used to register additional strings for translation
 tr('day')
 tr('month')
@@ -32,10 +30,22 @@ class Language:
 
 
 def lang_enum_to_code(lang: int) -> str:
+    """Converts a language enum value to its corresponding language code.
+    >>> lang_enum_to_code(2)
+    'zh'
+    >>> lang_enum_to_code(0)
+    'en'
+    """
     return ('en', 'es', 'zh', 'hi')[lang]
 
 
 def lang_code_to_enum(code: str) -> int:
+    """Converts a language code (e.g., 'en', 'es') to its corresponding enum value.
+    >>> lang_code_to_enum('es')
+    1
+    >>> lang_code_to_enum('hi')
+    3
+    """
     try:
         return ('en', 'es', 'zh', 'hi').index(code)
     except ValueError:
@@ -53,6 +63,7 @@ def init_translator(app: QCoreApplication):
 
 # Functions
 def set_lang(lang: int) -> None:
+    """Sets the application's language to the specified enum value and saves the setting to the configuration file."""
     if lang == -1:
         lang = Language.ENGLISH
     config_file.data['language']: int = lang
@@ -60,10 +71,12 @@ def set_lang(lang: int) -> None:
 
 
 def get_lang() -> int:
+    """Retrieves the current language setting from the configuration file."""
     return config_file.data['language']
 
 
 def get_system_lang_code() -> str:
+    """Returns the system's default language code (e.g., 'en', 'es') based on the system's locale."""
     return QLocale.system().name().split('_')[0]
 
 

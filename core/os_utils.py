@@ -15,9 +15,11 @@ DEFAULT_PATTERN: tuple = ("*.*",)
 
 
 def getPathTarget(path: str) -> str:
-    return path.rpartition('\\')[-1] if path[-1] != '\\' else path
+    """Returns the target component of the specified path."""
+        return path.rpartition('\\')[-1] if path[-1] != '\\' else path
 
 def getParentDir(path: str) -> str:
+    """Returns the parent directory of the specified path."""
     return path.rpartition('\\')[0]
 
 
@@ -39,18 +41,22 @@ def fileCounter(path: str, pattern: tuple | list = None, recursive: bool = True)
 
 
 def joinArgs(split_arg: list | tuple) -> str:
+    """Joins a list or tuple of arguments into a single string, with each argument enclosed in double quotes."""
     return f'"{'" "'.join(split_arg)}"'
 
 
 def selectFileInExplorer(path: str) -> None:
+    """Opens the file explorer and selects the specified file."""
     system(f'explorer /select,"{path}"')
 
 
 def showDirInExplorer(path: str):
+    """Opens the file explorer and navigates to the specified directory."""
     system(f'explorer "{path}"')
 
 
 def copyToClipboard(text: str, application_context: QGuiApplication) -> None:
+    """Copies the specified text to the system clipboard."""
     application_context.clipboard().setText(text)
 
 
