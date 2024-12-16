@@ -16,7 +16,7 @@ DEFAULT_PATTERN: tuple = ("*.*",)
 
 def getPathTarget(path: str) -> str:
     """Returns the target component of the specified path."""
-        return path.rpartition('\\')[-1] if path[-1] != '\\' else path
+    return path.rpartition('\\')[-1] if path[-1] != '\\' else path
 
 def getParentDir(path: str) -> str:
     """Returns the parent directory of the specified path."""

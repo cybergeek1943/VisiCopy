@@ -423,7 +423,7 @@ detected_changes: int = 0
 class cdict(dict):
     """Use this to as the object to pass to __variable__ in the settings ui manager. This way we know when the settings are changed by user."""
     def __init__(self, elem: dict):
-        """intializes."""
+        """initializes."""
         super().__init__(elem)  # this creates a copy of the `elem` initial state when `elem is created` because dict({}) creates a copy of its arg data.
         self.elem: dict = elem  # this is the fluid copy of `elem` which gets updated by the user interactions with the user interface.
 

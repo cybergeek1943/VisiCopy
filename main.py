@@ -81,7 +81,7 @@ class HomeTab(QWidget):
         QTimer.singleShot(100, self.source_selection_window_size)
 
         self.source_selection_sub_window = SourceSelectionSubWindow()
-        self.source_selection_sub_window.windowClosing.connect(self.source_selection_window_closer)
+        self.source_selection_sub_window.onWindowHidden.connect(self.source_selection_window_closer)
         grid.addWidget(ImageLabel(MainIcon.selectSource), 0, 0, alignment=AlignFlag.AlignCenter)
         self.select_source_button = builders.PrimaryButton(tr('Select Source'), slots=(self.source_selection_sub_window.show,), disabled=False)
         grid.addWidget(self.select_source_button, 2, 0, alignment=AlignFlag.AlignCenter)
@@ -91,7 +91,7 @@ class HomeTab(QWidget):
         QTimer.singleShot(100, self.destination_selection_window_size)
 
         self.destination_selection_sub_window = DestinationSelectionWindow()
-        self.destination_selection_sub_window.windowClosing.connect(self.destination_selection_window_closer)
+        self.destination_selection_sub_window.onWindowHidden.connect(self.destination_selection_window_closer)
         grid.addWidget(ImageLabel(MainIcon.selectDestination), 0, 2, alignment=AlignFlag.AlignCenter)
         self.select_destination_button = builders.PrimaryButton(tr('Select Destination'), slots=(self.destination_selection_sub_window.show,))
         grid.addWidget(self.select_destination_button, 2, 2, alignment=AlignFlag.AlignCenter)
@@ -246,7 +246,7 @@ class MainWindow(windows.FluentWindow):
     def closeEvent(self, event):
         """Exists application on window close."""
         app.exit()
-        event.ignore()  # so that dialog cancel button can work
+        event.ignore()  # so that exit()'s dialogs can work.
 
 
 class Application(QApplication):

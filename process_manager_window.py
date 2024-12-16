@@ -481,7 +481,7 @@ class components:
             self.showRestartProcessButton()
 
         def on_sync_complete(self):
-            """Slot for when the sync process completes. Updates the title to "Finished" with "Continuous Sync Enabled," updates the note, and changes the status icon to "Monitoring.""""
+            """Slot for when the sync process completes. Updates the title to "Finished" with "Continuous Sync Enabled," updates the note, and changes the status icon to "Monitoring."""
             if not self.pr.continuous_sync_running:
                 return
             self.stop_timers()
