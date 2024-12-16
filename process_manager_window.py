@@ -558,6 +558,7 @@ class tabs:
             self.card_container.add_widget(w_)
 
     class ProcessesTab(GenericTab):
+        #Sets up the "Processes" tab in the UI with error tracking, an overall progress panel, and buttons for managing processes (viewing errors, restarting all processes, and stopping all processes). It connects process error hooks to handle errors and manages the UI layout to display relevant information and controls for the user.
         def __init__(self):
             """Initializes the Processes tab widget."""
             tabs.GenericTab.__init__(self, tab_title=None)
