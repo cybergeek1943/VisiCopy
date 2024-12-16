@@ -5,13 +5,14 @@ from core import os_utils
 # Import Components and Visual Tools
 from qfluentwidgets import BodyLabel, HorizontalSeparator, PrimaryPushButton, PushButton
 from ui_lib.policy import *
-from ui_lib import windows, pages
+from ui_lib import windows
 from ui_lib import HorizontalExpandSpace
+from ui_components import ListView
 from PySide6.QtWidgets import QHBoxLayout, QFileDialog
 from ui_components.selection_ui_comps import CustomPathEntryTab, SelectedPath
 
 
-class SelectionManagerTab(pages.TabComponent):
+class SelectionManagerTab(ListView):
     def __init__(self):
         super().__init__(tab_title=None)
         self.setObjectName('selection_manager_tab')

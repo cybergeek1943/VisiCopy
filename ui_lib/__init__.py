@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QSpacerItem
 from PySide6.QtGui import QColor
 
 #  Import Components
-from qfluentwidgets import (BodyLabel as QFLabel, ImageLabel, SingleDirectionScrollArea)
+from qfluentwidgets import (BodyLabel as QFLabel, ImageLabel as QFImageLabel, SingleDirectionScrollArea)
 
 # Import Utility Classes
 from qfluentwidgets import setFont
@@ -29,51 +29,58 @@ class Label(QFLabel):
         self.darkColor: QColor = QColor(*self.darkColor.getRgb()[:3], 100 if arg__1 else 255)
         self.lightColor: QColor = QColor(*self.lightColor.getRgb()[:3], 100 if arg__1 else 255)
 
-class ImageIcon(ImageLabel):
+
+class ImageLabel(QFImageLabel):
     def __init__(self, image_path, height: int = 180):
         super().__init__()
         self.setImage(image_path)
         self.scaledToHeight(height)
 
+
 class HorizontalExpandSpace(QSpacerItem):
     def __init__(self):
         QSpacerItem.__init__(self, 0, 0, SizePolicy.Expanding, SizePolicy.Fixed)
+
 
 class SpacerItem(QWidget):
     def __init__(self, w: int, h: int):
         super().__init__()
         self.setMinimumSize(w, h)
 
-class ScrollContainer(SingleDirectionScrollArea):
+
+class VerticalScrollArea(SingleDirectionScrollArea):
     def __init__(self):
         SingleDirectionScrollArea.__init__(self)
-        # self.setFocusPolicy(FocusPolicy.NoFocus)
         self.setStyleSheet("QScrollArea{background: transparent; border: none}")
+        self.setWidgetResizable(True)
+        # self.setFocusPolicy(FocusPolicy.NoFocus)
 
+
+class ScrollView(VerticalScrollArea):
+    def __init__(self):
+        super().__init__()
         view = QWidget()
         view.setStyleSheet("QWidget{background: transparent}")
-        self.cards = QVBoxLayout()
-        self.cards.setAlignment(AlignFlag.AlignTop)
-        view.setLayout(self.cards)
-        self.__cards__: list[QWidget] = []
-
-        self.setWidgetResizable(True)
+        self.widgets = QVBoxLayout()
+        view.setLayout(self.widgets)
+        self.widgets.setAlignment(AlignFlag.AlignTop)
         self.setWidget(view)
+        self.__widgets__: list[QWidget] = []
 
     def add_widget(self, w: QWidget):
-        self.cards.addWidget(w)
-        self.__cards__.append(w)
+        self.widgets.addWidget(w)
+        self.__widgets__.append(w)
 
     def clear_widgets(self) -> None:
-        for w in self.__cards__:
+        for w in self.__widgets__:
             w.deleteLater()
-        self.__cards__.clear()
+        self.__widgets__.clear()
 
     def get_widgets(self) -> list[QWidget]:
-        return self.__cards__
+        return self.__widgets__
 
     def widget_count(self) -> int:
-        return len(self.__cards__)
+        return len(self.__widgets__)
 
 
 if __name__ == "__main__":

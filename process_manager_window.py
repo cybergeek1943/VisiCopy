@@ -16,7 +16,7 @@ from qfluentwidgets import (SimpleCardWidget,
                             ProgressRing, ProgressBar, PushButton, ImageLabel, IndeterminateProgressRing)
 from ui_components import InfoPageWidget
 from ui_lib import AlignFlag, SizePolicy, windows, dialogs, cards
-from ui_lib import ScrollContainer, HorizontalExpandSpace
+from ui_lib import ScrollView, HorizontalExpandSpace
 from ui_lib.icons import ProcessManagerIcon, FluentIcon
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QGridLayout
 from PySide6.QtGui import QFont, QColor
@@ -506,7 +506,7 @@ class tabs:
                 self.layout.addWidget(title)
 
             # Scrollable Card Container
-            self.card_container = ScrollContainer()
+            self.card_container = ScrollView()
             self.layout.addWidget(self.card_container)
 
         def add_widget(self, w_: QWidget):

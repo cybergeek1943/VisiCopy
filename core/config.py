@@ -1,5 +1,7 @@
 from core.userdata_io import UserdataFile
 """Contains the default configuration of the basic application config."""
+
+
 class ThemeMode:
     """Defines constants for brightness themes."""
     DARK: int = 0

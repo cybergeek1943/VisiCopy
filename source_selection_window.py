@@ -5,8 +5,9 @@ from core.os_utils import user_docs_path
 # Import Components and Visual Tools
 from qfluentwidgets import BodyLabel, HorizontalSeparator, CheckBox, PrimaryPushButton, PushButton
 from ui_lib.policy import *
-from ui_lib import HorizontalExpandSpace, ImageIcon
-from ui_lib import windows, pages
+from ui_lib import HorizontalExpandSpace, ImageLabel
+from ui_components import ListView
+from ui_lib import windows
 from ui_lib.icons import MainIcon, FluentIcon
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QWidget, QFileDialog
 from ui_components.selection_ui_comps import CustomPathEntryTab, SelectedPath
@@ -65,7 +66,7 @@ class EmptySelectionTab(QWidget):
         v_lay = QVBoxLayout()
         self.setLayout(v_lay)
 
-        v_lay.addWidget(ImageIcon(MainIcon.dragDrop, 96), alignment=AlignFlag.AlignHCenter | AlignFlag.AlignBottom)
+        v_lay.addWidget(ImageLabel(MainIcon.dragDrop, 96), alignment=AlignFlag.AlignHCenter | AlignFlag.AlignBottom)
         _ = BodyLabel()
         _.setText(('<center><h2>{0}</h2>'
                    '{1}&nbsp;&nbsp;'
@@ -77,7 +78,7 @@ class EmptySelectionTab(QWidget):
         self.addItemsLinksClicked = _.linkActivated
 
 
-class SelectionManagerTab(pages.TabComponent):
+class SelectionManagerTab(ListView):
     def __init__(self):
         super().__init__(tab_title=None)
         self.setObjectName('selection_manager_tab')

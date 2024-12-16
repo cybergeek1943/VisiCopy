@@ -1,5 +1,43 @@
-from qfluentwidgets import BodyLabel
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QWidget, QGridLayout, QVBoxLayout
+from qfluentwidgets import BodyLabel, TitleLabel, setFont, SimpleCardWidget
 from core.translation import tr
+from ui_lib import ScrollView
+
+
+
+class ListView(QWidget):
+    def __init__(self, tab_title: str | None):
+        QWidget.__init__(self)
+
+        # Layout
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
+
+        # Title
+        if tab_title:
+            title = TitleLabel(text=tab_title)
+            setFont(title, 24, QFont.Weight.Bold)
+            self.layout.addWidget(title)
+
+        self.layout.addWidget(SimpleCardWidget())
+
+        # Scrollable Card Container
+        self.scroll_container = ScrollView()
+        self.layout.addWidget(self.scroll_container)
+
+    def add_widget(self, w_: QWidget) -> None:
+        self.scroll_container.add_widget(w_)
+
+    def clear_widgets(self) -> None:
+        self.scroll_container.clear_widgets()
+
+    def get_widgets(self) -> list[QWidget]:
+        return self.scroll_container.get_widgets()
+
+    def widget_count(self) -> int:
+        return self.scroll_container.widget_count()
+
 
 
 class InfoPageWidget(BodyLabel):

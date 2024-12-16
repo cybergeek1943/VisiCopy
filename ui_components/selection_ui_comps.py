@@ -4,14 +4,14 @@ from core.translation import tr
 
 # Import Components and Visual Tools
 from qfluentwidgets import (BodyLabel, HorizontalSeparator, LineEdit, SettingCard, PrimaryPushButton, PushButton)
-from ui_lib.pages import TabComponent
+from ui_components import ListView
 from ui_lib.policy import AlignFlag, SizePolicy
 from ui_lib.icons import FluentIcon
 from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtCore import Qt
 
 
-class CustomPathEntryTab(TabComponent):
+class CustomPathEntryTab(ListView):
     def __init__(self):
         super().__init__(tab_title=None)
         self.setObjectName('custom_path_entry_tab')

@@ -6,7 +6,7 @@ from core.os_utils import user_docs_path
 from core.config import config_file
 import core.importer_exporter as importer_exporter
 from core import process_manager
-import process_manager_ui
+import process_manager_window
 import settings_window
 
 # Import Components and Visual Tools
@@ -14,14 +14,14 @@ from qfluentwidgets import BodyLabel, PrimaryPushButton, PushButton, ProgressBar
 from ui_lib.policy import *
 from ui_lib.icons import FluentIcon, MainIcon
 from ui_lib import windows, dialogs
-from ui_lib import ImageIcon, SpacerItem, Label
+from ui_lib import ImageLabel, SpacerItem, Label
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QGridLayout, QFileDialog
 from PySide6.QtCore import QTimer
 from qfluentwidgets import NavigationItemPosition
 
 # TODO verify location of these imports
-from source_selection_ui import MainWindow as SourceSelectionSubWindow
-from destination_selection_ui import MainWindow as DestinationSelectionWindow
+from source_selection_window import MainWindow as SourceSelectionSubWindow
+from destination_selection_window import MainWindow as DestinationSelectionWindow
 
 
 class builders:
@@ -69,7 +69,7 @@ class HomeTab(QWidget):
         self.setObjectName('home_tab')
         v_lay = QVBoxLayout()
         self.setLayout(v_lay)
-        v_lay.addWidget(ImageIcon(MainIcon.logoWName, 32), alignment=AlignFlag.AlignHCenter)
+        v_lay.addWidget(ImageLabel(MainIcon.logoWName, 32), alignment=AlignFlag.AlignHCenter)
 
         # -------- UI --------
         ui = QWidget()
@@ -82,7 +82,7 @@ class HomeTab(QWidget):
 
         self.source_selection_sub_window = SourceSelectionSubWindow()
         self.source_selection_sub_window.windowClosing.connect(self.source_selection_window_closer)
-        grid.addWidget(ImageIcon(MainIcon.selectSource), 0, 0, alignment=AlignFlag.AlignCenter)
+        grid.addWidget(ImageLabel(MainIcon.selectSource), 0, 0, alignment=AlignFlag.AlignCenter)
         self.select_source_button = builders.PrimaryButton(tr('Select Source'), slots=(self.source_selection_sub_window.show,), disabled=False)
         grid.addWidget(self.select_source_button, 2, 0, alignment=AlignFlag.AlignCenter)
         self.source_connector_line = builders.VisualConnectorLine()
@@ -92,14 +92,14 @@ class HomeTab(QWidget):
 
         self.destination_selection_sub_window = DestinationSelectionWindow()
         self.destination_selection_sub_window.windowClosing.connect(self.destination_selection_window_closer)
-        grid.addWidget(ImageIcon(MainIcon.selectDestination), 0, 2, alignment=AlignFlag.AlignCenter)
+        grid.addWidget(ImageLabel(MainIcon.selectDestination), 0, 2, alignment=AlignFlag.AlignCenter)
         self.select_destination_button = builders.PrimaryButton(tr('Select Destination'), slots=(self.destination_selection_sub_window.show,))
         grid.addWidget(self.select_destination_button, 2, 2, alignment=AlignFlag.AlignCenter)
         self.destination_connector_line = builders.VisualConnectorLine()
         grid.addWidget(self.destination_connector_line, 0, 3, alignment=AlignFlag.AlignCenter)
 
         # start copy
-        grid.addWidget(ImageIcon(MainIcon.startCopy), 0, 4, alignment=AlignFlag.AlignCenter)
+        grid.addWidget(ImageLabel(MainIcon.startCopy), 0, 4, alignment=AlignFlag.AlignCenter)
         self.start_copy_button = builders.PrimaryButton(tr('Start Copy'), slots=(self.on_start_copy_pressed,))
         grid.addWidget(self.start_copy_button, 2, 4, alignment=AlignFlag.AlignCenter)
 
@@ -154,7 +154,7 @@ class HomeTab(QWidget):
         process_manager.init_processes(source_selection, destination_selection)
         self.window().hide()
         if CustomSettings.use_gui:
-            process_manager_ui.start(app_context=app)
+            process_manager_window.start(app_context=app)
         else:
             process_manager.start_all_processes()
 
@@ -205,7 +205,7 @@ class JobTab(QWidget):
                 process_manager.init_processes(*j)
                 self.window().hide()
                 if CustomSettings.use_gui:
-                    process_manager_ui.start(app_context=app)
+                    process_manager_window.start(app_context=app)
                 else:
                     app.quit()
                     process_manager.start_all_processes()

@@ -16,9 +16,9 @@ from qfluentwidgets import (NavigationItemPosition,
 from settings_window.settings_widgets import *
 from ui_lib.icons import FluentIcon
 from ui_lib.policy import *
-from ui_lib import windows, pages, dialogs, cards
+from ui_lib import windows, dialogs, cards
 from ui_lib import Label
-from ui_components import InfoPageWidget
+from ui_components import InfoPageWidget, ListView
 from PySide6.QtGui import QFont, QColor
 from PySide6.QtWidgets import QVBoxLayout, QFileDialog, QApplication
 from qfluentwidgets import setTheme, Theme as QtTheme
@@ -112,7 +112,7 @@ class MainWindow(windows.SubFluentWindow):
 
         # Add to tabs the main settings from settings data
         self.navigationInterface.addSeparator()
-        self.tabs: dict[str, pages.TabComponent] = {}  # used to store the tab object and its route key (object name).
+        self.tabs: dict[str, ListView] = {}  # used to store the tab object and its route key (object name).
         for card in settings_file.data:
             if 'advanced' in card and not config_file.data['advanced_mode']:
                 continue
@@ -122,33 +122,32 @@ class MainWindow(windows.SubFluentWindow):
             card_note: str | None = card['note']
             card_elements: list[dict] = card['elements']
             if not self.tabs.__contains__(tab_id):
-                tab_object: pages.TabComponent = pages.TabComponent(tab_title=tr(tab_title) if tab_title else tr(card_title))
+                tab_object: ListView = ListView(tab_title=tr(tab_title) if tab_title else tr(card_title))
                 tab_object.setObjectName(tab_id)
                 tab_object.__setattr__('show_card_title', True if tab_title else False)
                 self.tabs[tab_id] = tab_object
                 self.addSubInterface(interface=tab_object, icon=tab_icons.get(tab_id, FluentIcon.REMOVE), text=tr(tab_title) if tab_title else tr(card_title))
             self.tabs[tab_id].add_widget(SettingsCard(title=card_title, note=card_note, elements=card_elements, show_card_title=self.tabs[tab_id].__getattribute__('show_card_title')))
 
-        # Add the additional user preferences from userdata
+        # Additional VisiCopy Config
         # TODO abstract lambdas
-        # TODO get rid of both export options
-        preferences: pages.TabComponent = pages.TabComponent(tr('Configuration'))
-        preferences.setObjectName('configuration')
-        self.tabs['preferences'] = preferences
-        preferences.add_widget(cards.SettingWSwitch(FluentIcon.APPLICATION, tr("Advanced Users"), tr('Enable more advanced features and controls for settings such as performance and logging. (requires restart)'), config_file.data['advanced_mode'], self.set_advanced_mode))
-        preferences.add_widget(cards.SettingWComboBox(FluentIcon.LANGUAGE, tr('Language'), tr("Change the language from your locale's default setting. (requires restart)"), ('English', 'Español (Spanish)', '简体中文 (Chinese)', 'हिंदी (Hindi)'), get_lang(), self.set_language))
-        preferences.add_widget(cards.SettingWComboBox(FluentIcon.BRUSH, tr('Theme Mode'), tr("Change the color of this application's interface."), (tr('Dark'), tr('Light'), tr('System (Auto)')), config_file.data['theme'], self.set_theme))
+        configuration: ListView = ListView(tr('Configuration'))
+        configuration.setObjectName('configuration')
+        self.tabs['configuration'] = configuration
+        configuration.add_widget(cards.SettingWSwitch(FluentIcon.APPLICATION, tr("Advanced Users"), tr('Enable more advanced features and controls for settings such as performance and logging. (requires restart)'), config_file.data['advanced_mode'], self.set_advanced_mode))
+        configuration.add_widget(cards.SettingWComboBox(FluentIcon.LANGUAGE, tr('Language'), tr("Change the language from your locale's default setting. (requires restart)"), ('English', 'Español (Spanish)', '简体中文 (Chinese)', 'हिंदी (Hindi)'), get_lang(), self.set_language))
+        configuration.add_widget(cards.SettingWComboBox(FluentIcon.BRUSH, tr('Theme Mode'), tr("Change the color of this application's interface."), (tr('Dark'), tr('Light'), tr('System (Auto)')), config_file.data['theme'], self.set_theme))
         if config_file.data['advanced_mode']:
-            preferences.add_widget(cards.SettingWSwitch(FluentIcon.CODE, tr('Automatically Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Automatically copy the command-line flags that are used to spawn robocopy processes to the clipboard when copy starts.'), config_file.data['auto_copy_flags'], lambda b: config_file.data.__setitem__('auto_copy_flags', b)))
-            preferences.add_widget(cards.SettingWPushButtons(FluentIcon.CODE, tr('Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Copy the command-line flags that are used to spawn robocopy processes to the clipboard.'), (tr('Copy to Clipboard'),), (lambda: copyToClipboard(' '.join(settings_parser.parse(settings_file.data)), app),)))
-            preferences.add_widget(cards.SettingWPushButtons(FluentIcon.SAVE_COPY, tr("Import/Export Settings"), tr('You may use import/export to move VisiCopy settings between computers. (requires restart)'), (tr("Import"), tr("Export")), (self.import_settings, self.export_settings)))
+            configuration.add_widget(cards.SettingWSwitch(FluentIcon.CODE, tr('Automatically Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Automatically copy the command-line flags that are used to spawn robocopy processes to the clipboard when copy starts.'), config_file.data['auto_copy_flags'], lambda b: config_file.data.__setitem__('auto_copy_flags', b)))
+            configuration.add_widget(cards.SettingWPushButtons(FluentIcon.CODE, tr('Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Copy the command-line flags that are used to spawn robocopy processes to the clipboard.'), (tr('Copy to Clipboard'),), (lambda: copyToClipboard(' '.join(settings_parser.parse(settings_file.data)), app),)))
+            configuration.add_widget(cards.SettingWPushButtons(FluentIcon.SAVE_COPY, tr("Import/Export Settings"), tr('You may use import/export to move VisiCopy settings between computers. (requires restart)'), (tr("Import"), tr("Export")), (self.import_settings, self.export_settings)))
         _ = cards.SettingWPushButtons(FluentIcon.HISTORY, tr('Reset Settings'), tr("Reset VisiCoy's settings back to their original defaults. (requires restart)"), (tr("Reset Settings"),), (self.reset_settings,))
         _.setButtonBorderColor(0, '#d04933')  # TODO put all styles into custom objects in UI lib!
-        preferences.add_widget(_)
-        self.addSubInterface(preferences, FluentIcon.DEVELOPER_TOOLS, tr('Configuration'), NavigationItemPosition.BOTTOM)
+        configuration.add_widget(_)
+        self.addSubInterface(configuration, FluentIcon.DEVELOPER_TOOLS, tr('Configuration'), NavigationItemPosition.BOTTOM)
 
-        # Add Info tab
-        info: pages.TabComponent = pages.TabComponent(tr('Info'))
+        # Info tab
+        info: ListView = ListView(tr('Info'))
         info.setObjectName('info')
         info.add_widget(InfoPageWidget())
         self.addSubInterface(info, FluentIcon.INFO, tr('Info'), NavigationItemPosition.BOTTOM)
