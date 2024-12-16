@@ -11,9 +11,9 @@ def format_seconds(s: int) -> str:
     >>> format_seconds(10000)
     '2h:46m:40s'
     """
-    m = s // 60
-    h = m // 60
-    return f'{h}h:{m-(h*60)}m:{s-(m*60)}s' if h> 0 else (f'{m}m:{s-(m*60)}s' if m>0 else f'{s}s')
+    m: int = s // 60
+    h: int = m // 60
+    return f'{h}h:{m-(h*60)}m:{s-(m*60)}s' if h > 0 else (f'{m}m:{s-(m*60)}s' if m>0 else f'{s}s')
 
 def format_bytes(b: int, per_second: bool = False) -> str:
     """Converts integer bytes into strings

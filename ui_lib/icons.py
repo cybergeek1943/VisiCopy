@@ -1,9 +1,11 @@
-"""This file contains the paths to all assets and resources used by the code."""
-from core import assets_rc
-logoIconPath: str = ':/assets/icon.ico'
+"""This file contains all icon resources"""
+from ui_lib import assets_rc
+from qfluentwidgets import FluentIcon  # we can call the FluentIcon to get fluent widget icons
+logoIcon: str = ':/assets/icon.ico'
 
 
-class MainIconPaths:
+class MainIcon:
+    """Contains the icons used in the main window."""
     selectSource: str = ':/assets/main/source.png'
     selectDestination: str = ':/assets/main/destination.png'
     startCopy: str = ':/assets/main/start.png'
@@ -14,7 +16,8 @@ class MainIconPaths:
     dropdownIcon: str = ':/assets/main/dropdown.png'
 
 
-class ProcessStatusIconPaths:
+class ProcessManagerIcon:
+    """Contains the icons used in the process manager window."""
     pending: str = ':/assets/process_manager/pending.png'
     complete: str = ':/assets/process_manager/complete.png'
     monitoring: str = ':/assets/process_manager/monitoring.png'
@@ -22,4 +25,5 @@ class ProcessStatusIconPaths:
     completeWithError: str = ':/assets/process_manager/complete_with_error.png'
 
 
-# pyside6-rcc assets.qrc -o ./core/assets_rc.py
+# Use this to compile the resource files into python code:
+# pyside6-rcc assets.qrc -o ./ui_lib/assets_rc.py

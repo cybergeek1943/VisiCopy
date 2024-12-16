@@ -4,12 +4,14 @@ from core.translation import tr
 
 # Import Components and Visual Tools
 from qfluentwidgets import (BodyLabel, HorizontalSeparator, LineEdit, SettingCard, PrimaryPushButton, PushButton)
-from ui_comps import AlignFlag, SizePolicy, Icons, windows
+from ui_components import ListView
+from ui_lib.policy import AlignFlag, SizePolicy
+from ui_lib.icons import FluentIcon
 from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtCore import Qt
 
 
-class CustomPathEntryTab(windows.TabComponent):
+class CustomPathEntryTab(ListView):
     def __init__(self):
         super().__init__(tab_title=None)
         self.setObjectName('custom_path_entry_tab')
@@ -59,7 +61,7 @@ class SelectedPath(SettingCard):
         `path` can take a file path or a dir path (if a file path, then the file path gets converted to a folder path and the file put in selected files.)
         `selected_files` this is the selected files in the dir. If empty, this means that the whole dir is being copied.
         """
-        super().__init__(Icons.FOLDER, os_utils.getPathTarget(path))
+        super().__init__(FluentIcon.FOLDER, os_utils.getPathTarget(path))
         self.setToolTip(path)
 
         # Internal State

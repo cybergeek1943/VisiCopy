@@ -1,6 +1,6 @@
 import os
 core_path: str = '../core'
-home_ui_path: str = '../ui_comps'
+home_ui_path: str = '../ui_components'
 main_path: str = '..'
 line_count: int = 0
 for f in os.listdir(core_path):

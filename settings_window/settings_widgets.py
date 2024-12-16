@@ -1,4 +1,4 @@
-"""Contains all the individual components like buttons and switches used specifically for the VisiCopy Settings. These switches also automatically alter the mutable __variable__ parameter so that they can make changes to settings data automatically."""
+"""Contains all the individual widgets like buttons and switches used specifically for the VisiCopy settings window. These switches also automatically update the mutable __variable__ parameter so that they can make changes to settings data automatically."""
 # Import Utility Classes
 from PySide6.QtWidgets import QWidget, QHBoxLayout
 from PySide6.QtCore import QDate
@@ -12,10 +12,9 @@ from qfluentwidgets import (CheckBox as QFCheckBox,
                             DoubleSpinBox as QFDoubleSpinBox,
                             LineEdit as QFLineEdit)
 from qfluentwidgets.components.widgets.switch_button import Indicator as QFSwitch  # we do this because the normal SwitchButton has On and Off text which is inconvenient for our purposes.
-from ui_comps import primitives
-Label: type[primitives.Label] = primitives.Label
+from ui_lib import Label
 from qfluentwidgets import setTheme, Theme
-setTheme(Theme.DARK)
+setTheme(Theme.DARK)  # TODO we may not want this here.
 
 
 # noinspection PyUnresolvedReferences
