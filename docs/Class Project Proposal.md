@@ -38,9 +38,9 @@ At its core, VisiCopy integrates advanced file copying utilities (robocopy and/o
 > - (Complete | This has significantly cleaned up the codebase) Add better support for saving settings and user data in the `AppData` folder for all platforms. Make the userdata versioned... that way different versions of VisiCopy have thier own userdata files.
 > - Overall Codebase Improvements:
 >   1. (Mostly Complete) Add docstrings for classes and methods.
-> 	 2. (Some Comments were added) Add more comments to the code where necessary.
+>   2. (Some Comments were added) Add more comments to the code where necessary.
 >   3. (Complete) Add doctests to functions where possible.
->   4. (Complete) Organize codebase and put into better catagories.
+>   4. (Complete) Organize codebase and put into better categories.
 
  
 
