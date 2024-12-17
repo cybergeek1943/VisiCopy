@@ -225,7 +225,6 @@ __default_settings: list = [
             switch(tr('Exclude files from source pool that have the same timestamps but different sizes than the files already existing in destination'), toggled=False, sub_pos=1, id='exclude_changed'),
             spacer(divider=True),
 
-            switch(tr('Exclude "lonely" files that do not exist in destination from source pool - prevents new items in destination'), toggled=False, id='exclude_lonely'),
             switch(tr('Include "tweaked" files to source pool - if any attribute of file in source is different, than overwrite file in destination'), toggled=False, id='include_tweaked'),
         ]
     },
@@ -235,6 +234,7 @@ __default_settings: list = [
         'note': None,
         'elements': [
             switch(tr('Keep the destination as a mirror of source - will delete items in destination that are no longer in source'), toggled=False, id='mirror_src_to_dst'),
+            switch(tr('Only update items that already exist in the destination - prevents any new items from being copied to the destination'), toggled=False, id='exclude_lonely'),
 
             switchNumEntry(tr('Monitor source and update destination after n changes happen'), toggled=False, entry=1, expose=True, id='sync_every_n_change'),
             switchNumEntry(tr('Wait in intervals of n minutes before updating destination'), toggled=False, entry=1, expose=True, id='sync_every_n_min', sub_pos=1),

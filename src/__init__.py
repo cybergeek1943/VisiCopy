@@ -3,28 +3,23 @@ import core.settings as settings
 from core.settings import CustomSettings
 from core.translation import tr, init_translator
 from core.os_utils import user_docs_path
-from core.config import config_file
 import core.importer_exporter as importer_exporter
+from core.jobs import job_file
 from core import process_manager
 import process_manager_window
 import settings_window
-
-# Import Components and Visual Tools
-from qfluentwidgets import BodyLabel, PrimaryPushButton, PushButton, ProgressBar, VerticalSeparator, SingleDirectionScrollArea
+from qfluentwidgets import TitleLabel, PrimaryPushButton, PushButton, ProgressBar, VerticalSeparator, SingleDirectionScrollArea, NavigationItemPosition, MessageBoxBase, SubtitleLabel, LineEdit
 from ui_lib.policy import *
 from ui_lib.icons import FluentIcon, MainIcon
 from ui_lib import windows, dialogs
 from ui_lib import ImageLabel, SpacerItem, Label
-from PySide6.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QGridLayout, QFileDialog
+from PySide6.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QGridLayout, QFileDialog, QListWidget
 from PySide6.QtCore import QTimer
-from qfluentwidgets import NavigationItemPosition
-
-# TODO verify location of these imports
-from source_selection_window import MainWindow as SourceSelectionSubWindow
-from destination_selection_window import MainWindow as DestinationSelectionWindow
+from source_sub_window import MainWindow as SourceSelectionSubWindow
+from destination_sub_window import MainWindow as DestinationSelectionWindow
 
 
-class builders:
+class builders:  # TODO abstract me!
     class VisualConnectorLine(ProgressBar):
         def __init__(self):
             super().__init__()
@@ -50,12 +45,12 @@ class builders:
 
     class Button(PushButton):
         """Inherits from PushButton and initializes a button."""
-        def __init__(self, icon: FluentIcon, label: str, tooltip: str, slots: tuple[callable] = None, disabled: bool = False):
+        def __init__(self, icon: FluentIcon | None, label: str, tooltip: str, slots: tuple[callable] = None, disabled: bool = False):
             super().__init__()
             if slots:
                 for c in slots:
                     self.clicked.connect(c)
-            self.setIcon(icon)
+            self.setIcon(icon) if icon else None
             self.setText(label)
             self.setToolTip(tooltip)
             self.setDisabled(disabled)
@@ -107,8 +102,6 @@ class HomeTab(QWidget):
         grid.addWidget(SpacerItem(0, 32), 1, 2)  # vertical space between buttons and icons.
         grid.addWidget(SpacerItem(0, 32), 3, 2)  # vertical space after buttons to shift ui up.
 
-    # TODO next four functions need to be reviewed
-
     def source_selection_window_size(self):
         """Sizes the source selection menu"""
         self.source_selection_sub_window.resize(int(self.window().size().width() * 0.9), int(self.window().size().height() * 0.9))
@@ -159,8 +152,7 @@ class HomeTab(QWidget):
             process_manager.start_all_processes()
 
 
-class AdvancedHomeTab(QWidget):
-    """Sets up the layout of the home tab."""
+class AdvancedHomeTab(QWidget):  # TODO this class is not being used yet. Implement it later to add better source and destination selection UI when advanced mode is on.
     def __init__(self):
         super().__init__()
         self.setObjectName('home_tab')
@@ -171,10 +163,30 @@ class AdvancedHomeTab(QWidget):
         grid.addWidget(Label('Source', 24, weight=FontWeight.Bold), 0, 0)
         grid.addWidget(SingleDirectionScrollArea(), 1, 0)
         grid.addWidget(builders.Button(None, 'Clear Selection', 'Clear the source selection'), 2, 0)
-
         grid.addWidget(VerticalSeparator(), 0, 1, 2, 1)
         grid.addWidget(Label('Destination', 24, weight=FontWeight.Bold), 0, 2)
         grid.addWidget(SingleDirectionScrollArea(), 1, 2)
+
+
+class TextEntryDialog(MessageBoxBase):  # TODO put this in dialogs module in UI lib as a generalised form
+    """ Dialog box with text entry """
+    def __init__(self, title: str, placeholder: str):
+        super().__init__(main_window)
+        self.titleLabel = SubtitleLabel()
+        self.titleLabel.setText(title)
+        self.urlLineEdit = LineEdit()
+        self.urlLineEdit.setPlaceholderText(placeholder)
+        self.urlLineEdit.setClearButtonEnabled(True)
+        self.viewLayout.addWidget(self.titleLabel)
+        self.viewLayout.addWidget(self.urlLineEdit)
+        self.widget.setMinimumWidth(350)
+
+
+def showJobNameDialog(title: str, placeholder: str):  # TODO put this in dialogs module in UI lib
+    w = TextEntryDialog(title, placeholder)
+    if w.exec():
+        return w.urlLineEdit.text()
+
 
 
 class JobTab(QWidget):
@@ -188,53 +200,87 @@ class JobTab(QWidget):
         self.setLayout(v_lay)
 
         # -------- UI --------
-        _ = BodyLabel()
-        _.setText(tr('<h2>Job Manager</h2>'
-                     'You may create and utilize job files to execute regularly required copy operations.<br/>'))
-        v_lay.addWidget(_)
+        v_lay.addWidget(_:=TitleLabel(tr('Job Manager')))
+
+        # Job List View
+        self.list_view = QListWidget()
+        for name in job_file.data:
+            self.list_view.addItem(name)
+        v_lay.addWidget(self.list_view)
+
+        # Buttons
         buttons_lay = QHBoxLayout()
-        buttons_lay.setAlignment(AlignFlag.AlignLeft)
+        buttons_lay.setAlignment(AlignFlag.AlignRight)
+        buttons_lay.addWidget(builders.Button(FluentIcon.SAVE_AS, tr('Create Job'), tr('Create a job from the current selection of sources, destinations, and settings.'), slots=(self.create_job,)))
+        buttons_lay.addWidget(builders.Button(FluentIcon.DELETE, tr('Delete Job'), tr('Delete the selected job.'), slots=(self.delete_job,)))
+        buttons_lay.addWidget(builders.Button(FluentIcon.EDIT, tr("Update Job's Settings"), tr("Update the selected job's settings based on the current selection of settings."), slots=(self.update_jobs_settings,)))
+        buttons_lay.addWidget(builders.Button(FluentIcon.PLAY, tr('Run Job'), tr('Run the selected job containing sources, destinations, and settings.'), slots=(self.run_job,)))
+
         v_lay.addLayout(buttons_lay)
-        buttons_lay.addWidget(builders.Button(FluentIcon.SAVE_AS, tr('Create a Job File'), tr('Create a (*.job) file from the current selection of sources, destinations, and settings.'), slots=(self.create_job_file,)))
-        buttons_lay.addWidget(builders.Button(FluentIcon.PLAY, tr('Run a Job File'), tr('Run a (*.job) file containing sources, destinations, and settings.'), slots=(self.run_job_file,)))
 
-    def run_job_file(self):
-        """Prompts selection of job file, initiates processes, and begins copy."""
-        if (path := QFileDialog.getOpenFileName(self, tr('Run a Job File'), user_docs_path, tr('Jobs (*.job)')))[0]:
-            if j := importer_exporter.import_job_file(path[0]):
-                process_manager.init_processes(*j)
-                self.window().hide()
-                if CustomSettings.use_gui:
-                    process_manager_window.start(app_context=app)
-                else:
-                    app.quit()
-                    process_manager.start_all_processes()
-            else:
-                dialogs.info(self, tr('Error'), tr('This file could not be imported because it is corrupt!'), critical=True)
+    def get_selected_job_name(self) -> str:
+        if (i:=self.list_view.currentRow()) != -1:
+            return self.list_view.item(i).text()
 
-    def create_job_file(self):
+    def run_job(self):
+        """Prompts selection of job, initiates processes, and begins copy."""
+        if not (name:=self.get_selected_job_name()):
+            dialogs.info(self, tr('Info'), tr('Please select a job first.'))
+            return
+        process_manager.init_processes(*job_file.data[name])
+        self.window().hide()
+        if CustomSettings.use_gui:
+            process_manager_window.start(app_context=app)
+        else:
+            app.quit()
+            process_manager.start_all_processes()
+
+    def update_jobs_settings(self):
+        if not (name:=self.get_selected_job_name()):
+            dialogs.info(self, tr('Info'), tr('Please select a job first.'))
+            return
+        if dialogs.response.Yes == dialogs.question(self, tr('Update Job Settings'), tr("Do you want to update this job's settings with the current settings?")):
+            job_file.data[name][-1] = settings_file.data
+            job_file.save()
+
+    def create_job(self):
         """Enables user to save new job file."""
         source_selection: list[tuple[str, dict]] = self.home_tab.source_selection_sub_window.get_source_selection()
         destination_selection: list[str] = self.home_tab.destination_selection_sub_window.get_destination_selection()
         if not source_selection or not destination_selection:
-            dialogs.info(self, tr('Cannot Create Job File'), tr('Please select both a source and destination before you create job files!'), critical=True)
+            dialogs.info(self, tr('Cannot Create Job'), tr('Please select both a source and destination before you create a job.'), critical=True)
             return
-        if (path := QFileDialog.getSaveFileName(self, tr('Create a Job File'), f'{user_docs_path}/main', tr('Jobs (*.job)')))[0]:
-            importer_exporter.export_job_file(path[0], source_selection, destination_selection)
+        if not (name:=showJobNameDialog(tr('Please enter a job name'), tr('Name'))):
+            return
+        if name in job_file.data:
+            dialogs.info(self, tr('Existing Job Warning!'), tr('There is already a job with this name.'), critical=True)
+            return
+        self.list_view.addItem(name)
+        job_file.data[name] = [source_selection, destination_selection, settings_file.data]
+        job_file.save()
+
+    def delete_job(self):
+        if not (name:=self.get_selected_job_name()):
+            dialogs.info(self, tr('Info'), tr('Please select a job first.'))
+            return
+        del job_file.data[name]
+        job_file.save()
+        self.list_view.takeItem(self.list_view.currentRow())
+
 
 
 class MainWindow(windows.FluentWindow):
     """Creates main window"""
     def __init__(self):
         super().__init__(remember_window_pos=False, menu_expand_width=150)
-        self.setWindowTitle(tr('VisiCopy') if not config_file.data['advanced_mode'] else tr('VisiCopy (Pro Mode)'))
+        self.setWindowTitle(tr('VisiCopy'))  # if not config_file.data['advanced_mode'] else tr('VisiCopy (Pro Mode)'))
         self.resize(1370, 700)
         self.navigationInterface.setCollapsible(True)
         self.navigationInterface.setReturnButtonVisible(False)
 
         # -------------------------------- Tabs --------------------------------
         # src/dst selection
-        home_tab: HomeTab | AdvancedHomeTab = AdvancedHomeTab() if config_file.data['advanced_mode'] else HomeTab()
+        home_tab: HomeTab = HomeTab()  # | AdvancedHomeTab = AdvancedHomeTab() if config_file.data['advanced_mode'] else HomeTab()
         self.addSubInterface(home_tab, FluentIcon.HOME, tr('Home'))
 
         # Job Manager

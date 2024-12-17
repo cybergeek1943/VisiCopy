@@ -13,7 +13,7 @@ from qfluentwidgets import (NavigationItemPosition,
                             SimpleCardWidget,
                             setFont, TitleLabel,
                             HorizontalSeparator)
-from settings_window.settings_widgets import *
+from settings_window.widgets import *
 from ui_lib.icons import FluentIcon
 from ui_lib.policy import *
 from ui_lib import windows, dialogs, cards
@@ -21,7 +21,7 @@ from ui_lib import Label
 from ui_components import InfoPageWidget, ListView
 from PySide6.QtGui import QFont, QColor
 from PySide6.QtWidgets import QVBoxLayout, QFileDialog, QApplication
-from qfluentwidgets import setTheme, Theme as QtTheme
+from qfluentwidgets import setTheme, Theme
 
 
 # put all icons code in ui_lib
@@ -136,13 +136,12 @@ class MainWindow(windows.SubFluentWindow):
         self.tabs['configuration'] = configuration
         configuration.add_widget(cards.SettingWSwitch(FluentIcon.APPLICATION, tr("Advanced Users"), tr('Enable more advanced features and controls for settings such as performance and logging. (requires restart)'), config_file.data['advanced_mode'], self.set_advanced_mode))
         configuration.add_widget(cards.SettingWComboBox(FluentIcon.LANGUAGE, tr('Language'), tr("Change the language from your locale's default setting. (requires restart)"), ('English', 'Español (Spanish)', '简体中文 (Chinese)', 'हिंदी (Hindi)'), get_lang(), self.set_language))
-        configuration.add_widget(cards.SettingWComboBox(FluentIcon.BRUSH, tr('Theme Mode'), tr("Change the color of this application's interface."), (tr('Dark'), tr('Light'), tr('System (Auto)')), config_file.data['theme'], self.set_theme))
         if config_file.data['advanced_mode']:
             configuration.add_widget(cards.SettingWSwitch(FluentIcon.CODE, tr('Automatically Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Automatically copy the command-line flags that are used to spawn robocopy processes to the clipboard when copy starts.'), config_file.data['auto_copy_flags'], lambda b: config_file.data.__setitem__('auto_copy_flags', b)))
             configuration.add_widget(cards.SettingWPushButtons(FluentIcon.CODE, tr('Copy Parsed Settings Flags to Clipboard (Super Users)'), tr('Copy the command-line flags that are used to spawn robocopy processes to the clipboard.'), (tr('Copy to Clipboard'),), (lambda: copyToClipboard(' '.join(settings_parser.parse(settings_file.data)), app),)))
             configuration.add_widget(cards.SettingWPushButtons(FluentIcon.SAVE_COPY, tr("Import/Export Settings"), tr('You may use import/export to move VisiCopy settings between computers. (requires restart)'), (tr("Import"), tr("Export")), (self.import_settings, self.export_settings)))
         _ = cards.SettingWPushButtons(FluentIcon.HISTORY, tr('Reset Settings'), tr("Reset VisiCoy's settings back to their original defaults. (requires restart)"), (tr("Reset Settings"),), (self.reset_settings,))
-        _.setButtonBorderColor(0, '#d04933')  # TODO put all styles into custom objects in UI lib!
+        _.setButtonBorderColor(0, '#d04933')
         configuration.add_widget(_)
         self.addSubInterface(configuration, FluentIcon.DEVELOPER_TOOLS, tr('Configuration'), NavigationItemPosition.BOTTOM)
 
@@ -162,12 +161,6 @@ class MainWindow(windows.SubFluentWindow):
     def set_language(self, index: int):
         set_lang(index)
         self.restart()
-
-    @staticmethod
-    def set_theme(index: int):
-        config_file.data['theme']: int = index
-        setTheme(theme=QtTheme.DARK if index == 0 else QtTheme.LIGHT if index == 1 else QtTheme.AUTO)
-        config_file.save()
 
     def reset_settings(self):
         r = dialogs.question(self, tr('Please Confirm Carefully!'),

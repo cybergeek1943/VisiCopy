@@ -1,8 +1,6 @@
 from core.translation import tr
 import core.os_utils as os_utils
 from core.os_utils import user_docs_path
-
-# Import Components and Visual Tools
 from qfluentwidgets import BodyLabel, HorizontalSeparator, CheckBox, PrimaryPushButton, PushButton
 from ui_lib.policy import *
 from ui_lib import HorizontalExpandSpace, ImageLabel
@@ -10,7 +8,7 @@ from ui_components import ListView
 from ui_lib import windows
 from ui_lib.icons import MainIcon, FluentIcon
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QWidget, QFileDialog
-from ui_components.selection_ui_comps import CustomPathEntryTab, SelectedPath
+from ui_components.selection_ui import CustomPathEntryTab, SelectedPath
 
 
 class SelectedFile(SelectedPath):
@@ -59,7 +57,7 @@ class SelectedFolder(SelectedFile):
         self.selected_files: list[str] | None = selected_files
 
 
-class EmptySelectionTab(QWidget):
+class EmptySelectionPage(QWidget):
     def __init__(self):
         super().__init__()
         self.setObjectName('empty_selection_tab')
@@ -72,13 +70,12 @@ class EmptySelectionTab(QWidget):
                    '{1}&nbsp;&nbsp;'
                    '<a style="text-decoration: none" href="folder">{2}</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
                    '<a style="text-decoration: none" href="file">{3}</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
-                   '<a style="text-decoration: none" href="path">{4}</a></center>').format(tr("Drag and Drop files or folders here"), tr('or'),
-                                                                                           tr("Select Folder"), tr("Select File(s)"), tr("Custom Path")))
+                   '<a style="text-decoration: none" href="path">{4}</a></center>').format(tr("Drag and Drop files or folders here"), tr('or'), tr("Select Folder"), tr("Select File(s)"), tr("Custom Path")))
         v_lay.addWidget(_, alignment=AlignFlag.AlignHCenter | AlignFlag.AlignTop)
         self.addItemsLinksClicked = _.linkActivated
 
 
-class SelectionManagerTab(ListView):
+class SelectionManagerPage(ListView):
     def __init__(self):
         super().__init__(tab_title=None)
         self.setObjectName('selection_manager_tab')
@@ -92,8 +89,7 @@ class SelectionManagerTab(ListView):
                    '{1}&nbsp;&nbsp;'
                    '<a style="text-decoration: none" href="folder">{2}</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
                    '<a style="text-decoration: none" href="file">{3}</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
-                   '<a style="text-decoration: none" href="path">{4}</a></center>').format(tr("Drag & Drop files or folders to add more"), tr('or'),
-                                                                                           tr("Add Folder"), tr("Add File(s)"), tr("Add Custom Path")))
+                   '<a style="text-decoration: none" href="path">{4}</a></center>').format(tr("Drag & Drop files or folders to add more"), tr('or'), tr("Add Folder"), tr("Add File(s)"), tr("Add Custom Path")))
         self.addItemsLinksClicked = _.linkActivated
         h_lay.addItem(HorizontalExpandSpace())
         h_lay.addWidget(_)
@@ -140,12 +136,12 @@ class MainWindow(windows.SubFluentWindow):
 
         # -------------------------------- Tabs --------------------------------
         # Empty Selection
-        self.empty_selection_tab = EmptySelectionTab()
+        self.empty_selection_tab = EmptySelectionPage()
         self.empty_selection_tab.addItemsLinksClicked.connect(self.__on_addItemsLinksClicked)
         self.addSubInterface(self.empty_selection_tab, None, 'EmptyTab')
 
         # Selection Manager
-        self.selection_manager_tab = SelectionManagerTab()
+        self.selection_manager_tab = SelectionManagerPage()
         self.selection_manager_tab.confirmButtonClicked.connect(self.hide)
         self.selection_manager_tab.clearButtonClicked.connect(lambda: (self.selection_manager_tab.clear_widgets(), self.switchTo(self.empty_selection_tab)))
         self.selection_manager_tab.addItemsLinksClicked.connect(self.__on_addItemsLinksClicked)
@@ -160,7 +156,7 @@ class MainWindow(windows.SubFluentWindow):
     def get_source_selection(self) -> list[tuple[str, dict]]:
         # TODO cleanup
         # noinspection PyUnresolvedReferences
-        return [(w.path, {'selected_files': w.selected_files, 'include_base_dir': w.include_base_dir} if isinstance(w, SelectedFolder) else {'include_base_dir': w.include_base_dir})
+        return [(w.path, {'selected_files': w.selected_files, 'include_base_dir': w.include_base_dir} if isinstance(w, SelectedFolder) else {'selected_files': None, 'include_base_dir': w.include_base_dir})
                 for w in self.selection_manager_tab.get_widgets()]
 
     def clear_source_selection(self):

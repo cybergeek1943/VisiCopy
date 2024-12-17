@@ -5,8 +5,7 @@ from core.translation import tr
 from ui_lib import ScrollView
 
 
-
-class ListView(QWidget):
+class ListView(QWidget):  # TODO add more features such as a way to turn on/off opacity of scroll area and also a centered empy list note.
     def __init__(self, tab_title: str | None):
         QWidget.__init__(self)
 
@@ -37,7 +36,6 @@ class ListView(QWidget):
 
     def widget_count(self) -> int:
         return self.scroll_container.widget_count()
-
 
 
 class InfoPageWidget(BodyLabel):

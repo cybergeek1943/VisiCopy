@@ -9,7 +9,7 @@ from ui_lib import windows
 from ui_lib import HorizontalExpandSpace
 from ui_components import ListView
 from PySide6.QtWidgets import QHBoxLayout, QFileDialog
-from ui_components.selection_ui_comps import CustomPathEntryTab, SelectedPath
+from ui_components.selection_ui import CustomPathEntryTab, SelectedPath
 
 
 class SelectionManagerTab(ListView):
@@ -22,11 +22,8 @@ class SelectionManagerTab(ListView):
         self.layout.addLayout(h_lay)
 
         _ = BodyLabel()
-        _.setText(('<center style="line-height: 0.5;"><h4 style="color: gray;">{0}</h4>'
-                   '{1}&nbsp;&nbsp;'
-                   '<a style="text-decoration: none" href="folder">{2}</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
-                   '<a style="text-decoration: none" href="path">{3}</a></center>').format(tr("Drag & Drop Folders"), tr('or'),
-                                                                                           tr("Add Folder"), tr("Add Custom Path")))
+        _.setText(('<a style="text-decoration: none" href="folder">{0}</a>&nbsp;&nbsp;/&nbsp;&nbsp;'
+                   '<a style="text-decoration: none" href="path">{1}</a></center>').format(tr("Add Folder"), tr("Add Custom Path")))
         self.addItemsLinksClicked = _.linkActivated
         h_lay.addItem(HorizontalExpandSpace())
         h_lay.addWidget(_)

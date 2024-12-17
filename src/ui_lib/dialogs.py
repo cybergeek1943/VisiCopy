@@ -4,8 +4,7 @@ from core.translation import tr
 response: type[QMessageBox.StandardButton] = QMessageBox.StandardButton
 
 
-def question(parent: QWidget, title: str, message: str,
-             show_cancel_button: bool = False) -> QMessageBox.StandardButton | int:
+def question(parent: QWidget, title: str, message: str, show_cancel_button: bool = False) -> QMessageBox.StandardButton | int:
     q = QMessageBox(parent)
     q.setIcon(q.Icon.Question)
     q.setWindowTitle(title)

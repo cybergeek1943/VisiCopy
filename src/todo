@@ -1,0 +1,1 @@
+- move the code in __init__.py to new dir called main_window. This way __init__.py would be a simpler entry point to VisiCopy

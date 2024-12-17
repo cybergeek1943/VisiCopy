@@ -2,14 +2,11 @@
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget, QApplication
-from qfluentwidgets import FluentWindow as QFluentWindow, SimpleCardWidget
-from qfluentwidgets import setTheme, Theme
+from qfluentwidgets import FluentWindow as QFluentWindow
 from core.config import config_file
 from ui_lib.icons import logoIcon
-
-# Set the theme of the application
-setTheme(Theme.DARK if config_file.data['theme'] == 0
-else Theme.LIGHT if config_file.data['theme'] == 1 else Theme.AUTO)  # CRAZY BUG! -> This bug happens when window is opened to full screen using showMaximized() and the setTheme() is called afterwards. To fix this bug simply call setTheme() before calling showMaximized().
+from qfluentwidgets import setTheme, Theme
+setTheme(Theme.DARK)
 
 
 class Window(QWidget):
@@ -23,7 +20,7 @@ class Window(QWidget):
         self.remembering_window_pos: bool = remember_window_pos
 
     def closeEvent(self, event):
-        """Override this method if one wants to close the window."""
+        """Override this method if one wants to close the window after a prompt is provided. This should still be called by using super().closeEvent(event) so that window pos gets saved."""
         if self.remembering_window_pos:
             if self.isMaximized():
                 config_file.data['win_max']: tuple = True
@@ -52,9 +49,8 @@ class SubWindow(Window):
 
 
 class FluentWindow(Window, QFluentWindow):
-    """Subclass this class to create a window with a sidebar for tabs."""
-    def __init__(self, menu_expand_width: int = 150):
-        super().__init__(self)
+    def __init__(self, remember_window_pos: bool = False, menu_expand_width: int = 150):
+        super().__init__(remember_window_pos)
         self.menu_expand_width: int = menu_expand_width
         self.navigationInterface.setExpandWidth(menu_expand_width)
 
@@ -62,13 +58,12 @@ class FluentWindow(Window, QFluentWindow):
         self.navigationInterface.setExpandWidth(self.menu_expand_width)  # must do this because of crazy bug with the menu expand width being inherited from other windows.
 
 
-class SubFluentWindow(FluentWindow):
+class SubFluentWindow(SubWindow, FluentWindow):
     pass
-
 
 
 if __name__ == '__main__':
     app = QApplication()
-    window = FluentWindow()
+    window = Window(remember_window_pos=True)
     window.show()
     app.exec()

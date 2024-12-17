@@ -24,8 +24,9 @@ from PySide6.QtCore import QTimer
 from qfluentwidgets import setFont, NavigationItemPosition
 
 
-class builders:
+class builders:  # TODO abstract me!
     """Contains basic builder components."""
+
     class StatusIcon(ImageLabel):
         def __init__(self):
             """Initializes the StatusIcon component, sets up the progress ring, and sets the initial status to 'Pending.'"""
@@ -87,7 +88,7 @@ class builders:
 
         def setProgressPercentage(self, p: float):
             """Updates the progress bar's value based on the given percentage p. The percentage is multiplied by 100 and the value is set on the progress bar."""
-            self.progress_percentage = int(p*100)
+            self.progress_percentage = int(p * 100)
             self.progress_bar.setValue(1 + self.progress_percentage)
 
         def setLeftLabel(self, text: str):
@@ -99,7 +100,7 @@ class builders:
             self.right_label.setText(text)
 
 
-class components:
+class components:  # TODO abstract me!
     """Contains larger custom UI components that will be used in the main window"""
 
     class OverallProgressPanel(QWidget):
@@ -155,17 +156,21 @@ class components:
 
             # -------------------------------- Timers --------------------------------
             speed_eta_seconds_interval: int = CustomSettings.speed_eta_seconds_interval
-            self.eta_and_speed_calculator: EtaAndSpeedCalc = EtaAndSpeedCalc(speed_eta_seconds_interval, CustomSettings.eta_progress_checkpoints)
-            self.eta_and_speed_calculation_timer: QTimer = QTimer(self)  # starts and stops when all processes start or stop
+            self.eta_and_speed_calculator: EtaAndSpeedCalc = EtaAndSpeedCalc(speed_eta_seconds_interval,
+                                                                             CustomSettings.eta_progress_checkpoints)
+            self.eta_and_speed_calculation_timer: QTimer = QTimer(
+                self)  # starts and stops when all processes start or stop
             self.eta_and_speed_calculation_timer.setInterval(speed_eta_seconds_interval * 1000)
-            self.eta_and_speed_calculation_timer.timeout.connect(lambda: self.setEtaAndSpeed(self.eta_and_speed_calculator.eta(current_progress=self.total_progress), self.eta_and_speed_calculator.speed(self.total_bytes_copied)))
+            self.eta_and_speed_calculation_timer.timeout.connect(
+                lambda: self.setEtaAndSpeed(self.eta_and_speed_calculator.eta(current_progress=self.total_progress),
+                                            self.eta_and_speed_calculator.speed(self.total_bytes_copied)))
 
             self.timers_running: bool = False
 
         # -------------------------------- Setters --------------------------------
         def setProgressBar(self, p: float):
             """Updates the value of the progress bar based on the provided percentage p."""
-            self.progress_ring.setValue(int(p*100))
+            self.progress_ring.setValue(int(p * 100))
 
         def setEtaAndSpeed(self, eta: int | None, b: int | None):
             """Updates the ETA and speed labels with the provided eta and b (speed in bytes)."""
@@ -182,7 +187,8 @@ class components:
 
         def setRunningProcesses(self, n: int):
             """Updates the running processes label with the provided number n of running processes."""
-            self.running_processes_label.setText(tr('Running Processes') + f':  {n}')  # sometimes n is negative because of process deletion. Hence, the greater than zero check!
+            self.running_processes_label.setText(
+                tr('Running Processes') + f':  {n}')  # sometimes n is negative because of process deletion. Hence, the greater than zero check!
 
         def __setDefaults(self):
             """Sets the default values for all UI elements (progress bar, ETA, elapsed time, bytes copied, running processes)."""
@@ -191,7 +197,7 @@ class components:
             self.setElapsedTime(0)
             self.setBytesCopied(0)
             self.setRunningProcesses(0)
-        
+
         def start_timers(self):
             """Starts the timers for updating progress and calculating ETA and speed if the timers are not already running."""
             if self.timers_running:
@@ -250,7 +256,9 @@ class components:
             self.finish_notes.hide()
             layout.addWidget(self.finish_notes)
             self.src_dst_label = BodyLabel()
-            self.src_dst_label.setText('{0}:  {1}\n{2}:  {3}'.format(tr('Source'), copy_process.src_path, tr('Destination'), copy_process.dst_path))
+            self.src_dst_label.setText(
+                '{0}:  {1}\n{2}:  {3}'.format(tr('Source'), copy_process.src_path, tr('Destination'),
+                                              copy_process.dst_path))
             layout.addWidget(self.src_dst_label)
 
             # Process Stats
@@ -301,10 +309,13 @@ class components:
             self.__current_file: str = ''  # used to check for change regarding when a new file is started to being copied.
 
             speed_eta_seconds_interval: int = CustomSettings.speed_eta_seconds_interval
-            self.eta_and_speed_calculator: EtaAndSpeedCalc = EtaAndSpeedCalc(speed_eta_seconds_interval, CustomSettings.eta_progress_checkpoints)
+            self.eta_and_speed_calculator: EtaAndSpeedCalc = EtaAndSpeedCalc(speed_eta_seconds_interval,
+                                                                             CustomSettings.eta_progress_checkpoints)
             self.eta_and_speed_calculation_timer: QTimer = QTimer(self)  # starts and stops with process
             self.eta_and_speed_calculation_timer.setInterval(speed_eta_seconds_interval * 1000)
-            self.eta_and_speed_calculation_timer.timeout.connect(lambda: self.setEtaAndSpeed(self.eta_and_speed_calculator.eta(current_progress=self.pr.total_progress), self.eta_and_speed_calculator.speed(self.pr.total_bytes_copied)))
+            self.eta_and_speed_calculation_timer.timeout.connect(
+                lambda: self.setEtaAndSpeed(self.eta_and_speed_calculator.eta(current_progress=self.pr.total_progress),
+                                            self.eta_and_speed_calculator.speed(self.pr.total_bytes_copied)))
 
             self.timers_running: bool = False
 
@@ -315,8 +326,10 @@ class components:
 
             # Error Window
             self.errors_window = ErrorsWindow(f'%s  •  %s {process_index + 1}' % (tr('Errors'), tr('Process')))
-            QTimer.singleShot(100, lambda: (self.errors_window.resize(int(self.window().size().width() * 0.9), int(self.window().size().height() * 0.9)),
-                                            self.errors_window.move(self.window().pos().x() + 32, self.window().pos().y() + 32)))  # we must use timer here because for some reason the window does not resize normally.
+            QTimer.singleShot(100, lambda: (self.errors_window.resize(int(self.window().size().width() * 0.9),
+                                                                      int(self.window().size().height() * 0.9)),
+                                            self.errors_window.move(self.window().pos().x() + 32,
+                                                                    self.window().pos().y() + 32)))  # we must use timer here because for some reason the window does not resize normally.
 
             # -------------------------------- Set Default Widget Values --------------------------------
             self.on_pending_started()
@@ -342,22 +355,29 @@ class components:
             """Updates the progress for the current file being copied. The percentage of progress and the current file name are updated accordingly. If the file name is None, it shows a placeholder."""
             self.current_file_progress.setProgressPercentage(percentage)
             if current_file_name:
-                self.current_file_progress.setLeftLabel(tr('Current File') + f' {self.current_file_progress.progress_percentage}%:  {current_file_name}')
+                self.current_file_progress.setLeftLabel(
+                    tr('Current File') + f' {self.current_file_progress.progress_percentage}%:  {current_file_name}')
             else:
                 self.current_file_progress.setLeftLabel(tr('Current File') + f':  ----')
 
         def setProcessProgress(self, percentage: float, amount_copied: int):
             """Sets the overall process progress percentage; progress bar; and amount copied in bytes."""
             self.process_progress.setProgressPercentage(percentage)
-            self.process_progress.setLeftLabel('{0}:  {1}\n{2}:  {3}%'.format(tr('Amount Copied'), format_bytes(amount_copied), tr('Process Progress'), self.process_progress.progress_percentage if self.pr.source_files_count else tr('calculating')))
+            self.process_progress.setLeftLabel(
+                '{0}:  {1}\n{2}:  {3}%'.format(tr('Amount Copied'), format_bytes(amount_copied), tr('Process Progress'),
+                                               self.process_progress.progress_percentage if self.pr.source_files_count else tr(
+                                                   'calculating')))
 
         def setCurrentFileSize(self, size: int | None):
             """Sets the size of the current file being copied. If no size is provided, it shows a placeholder."""
-            self.current_file_progress.setRightLabel(tr('Current File Size') + f':  {format_bytes(size) if size else '----'}')
+            self.current_file_progress.setRightLabel(
+                tr('Current File Size') + f':  {format_bytes(size) if size else '----'}')
 
         def setEtaAndSpeed(self, eta: int | None, speed: int | None):
             """Sets the estimated time of arrival (ETA) and the copying speed for the process. If either value is None, a placeholder is shown."""
-            self.process_progress.setRightLabel('{0}:  {1}\n{2}:  {3}'.format(tr('Eta'), format_seconds(eta) if eta else '----', tr('Speed'), format_bytes(speed, per_second=True) if speed else '----'))
+            self.process_progress.setRightLabel(
+                '{0}:  {1}\n{2}:  {3}'.format(tr('Eta'), format_seconds(eta) if eta else '----', tr('Speed'),
+                                              format_bytes(speed, per_second=True) if speed else '----'))
 
         def setErrorCountBadge(self, count: int):
             """Updates the error count badge on the process card. If the count is zero, the badge is hidden. Otherwise, it shows the error count."""
@@ -401,7 +421,8 @@ class components:
         @property
         def files_copied_title(self) -> str:
             """Returns a string showing the number of files copied out of the total source files, or "calculating" if the total file count is unknown."""
-            return (f'{self.pr.total_files_copied}/{self.pr.source_files_count}' if self.pr.source_files_count else tr('calculating')) + ' ' + tr('Files Copied')
+            return (f'{self.pr.total_files_copied}/{self.pr.source_files_count}' if self.pr.source_files_count else tr(
+                'calculating')) + ' ' + tr('Files Copied')
 
         @property
         def failed_copies_note(self) -> str | None:
@@ -410,9 +431,13 @@ class components:
             if not_copied_file_count < 0:
                 return None
             if not_copied_file_count == 1:
-                return tr('{0} file was not copied due to Selection Filters, Existence in Destination, Errors, or Early Termination.').format(not_copied_file_count)
+                return tr(
+                    '{0} file was not copied due to Selection Filters, Existence in Destination, Errors, or Early Termination.').format(
+                    not_copied_file_count)
             else:
-                return tr('{0} files were not copied due to Selection Filters, Existence in Destination, Errors, or Early Termination.').format(not_copied_file_count)
+                return tr(
+                    '{0} files were not copied due to Selection Filters, Existence in Destination, Errors, or Early Termination.').format(
+                    not_copied_file_count)
 
         # -------------------------------- Progress Update Slots --------------------------------
         def start_timers(self):
@@ -440,7 +465,8 @@ class components:
             if self.__current_file_progress != self.pr.current_file_progress:
                 self.__current_file_progress = self.pr.current_file_progress
                 self.setProcessProgress(self.pr.total_progress, self.pr.total_bytes_copied)
-                self.setCurrentFileProgress(self.pr.current_file_progress, self.pr.current_file_name(show_parent_dirs=True))
+                self.setCurrentFileProgress(self.pr.current_file_progress,
+                                            self.pr.current_file_name(show_parent_dirs=True))
 
         def on_copy_process_started(self):
             """Slot for when the copy process starts. Clears the error window, resets the ETA and speed variables, and starts the progress timers. Also shows the "Stop Process" button and hides the status icon."""
@@ -488,7 +514,8 @@ class components:
             self.setTitle(tr('Finished'), tr('Continuous Sync Enabled'))
             self.setNote(f'{self.files_copied_title.lower()}.',
                          self.failed_copies_note if self.pr.total_files_copied < self.pr.source_files_count else None,
-                         tr('The destination will be updated every {0} minutes only when {1} changes are detected in the source.').format(self.pr.sync_every_n_min, self.pr.sync_every_n_change))
+                         tr('The destination will be updated every {0} minutes only when {1} changes are detected in the source.').format(
+                             self.pr.sync_every_n_min, self.pr.sync_every_n_change))
             self.status_icon.set_Monitoring()
             self.status_icon.show()
             self.__set_progress_bars_defaults()
@@ -496,7 +523,8 @@ class components:
         def on_error_occurred(self):
             """Slot for when an error occurs during the process. Updates the error count badge and adds the error details to the error window."""
             self.setErrorCountBadge(self.pr.error_count)
-            self.errors_window.addError(self.pr.errors[-1][0], self.pr.errors[-1][1], self.pr.current_file, self.pr.current_file_size)
+            self.errors_window.addError(self.pr.errors[-1][0], self.pr.errors[-1][1], self.pr.current_file,
+                                        self.pr.current_file_size)
 
         def on_process_deleted(self):
             """Slot for when the process is deleted. Updates the UI to reflect the deletion by removing the process-related elements and adjusting the layout."""
@@ -515,15 +543,18 @@ class components:
         # -------------------------------- Button Slots --------------------------------
         def on_delete_clicked(self):
             """Slot for when the "Delete Process" button is clicked. Displays a confirmation dialog and deletes the process if confirmed."""
-            self.pr.delete() if dialogs.question(main_window, tr('Delete this Process?'), tr('Deleting this process will terminate it!\nAre you sure you want to continue?')) == dialogs.response.Yes else None
+            self.pr.delete() if dialogs.question(main_window, tr('Delete this Process?'),
+                                                 tr('Deleting this process will terminate it!\nAre you sure you want to continue?')) == dialogs.response.Yes else None
 
         def on_stop_clicked(self):
             """Slot for when the "Stop Process" button is clicked. Displays a confirmation dialog and stops the process if confirmed."""
-            self.pr.terminate() if dialogs.question(main_window, tr('Stop this Process?'), tr('Stopping this process will temporarily terminate it!\nAre you sure you want to continue?')) == dialogs.response.Yes else None
+            self.pr.terminate() if dialogs.question(main_window, tr('Stop this Process?'),
+                                                    tr('Stopping this process will temporarily terminate it!\nAre you sure you want to continue?')) == dialogs.response.Yes else None
 
         def on_restart_clicked(self):
             """Slot for when the "Restart Process" button is clicked. Displays a confirmation dialog and restarts the process if confirmed."""
-            if dialogs.question(main_window, tr('Restart this Process?'), tr('Restarting this process will continue the copying of files.\nAre you sure you want to continue?')) == dialogs.response.Yes:
+            if dialogs.question(main_window, tr('Restart this Process?'),
+                                tr('Restarting this process will continue the copying of files.\nAre you sure you want to continue?')) == dialogs.response.Yes:
                 self.pr.startPending()
 
         def on_view_errors_clicked(self):
@@ -558,7 +589,7 @@ class tabs:
             self.card_container.add_widget(w_)
 
     class ProcessesTab(GenericTab):
-        #Sets up the "Processes" tab in the UI with error tracking, an overall progress panel, and buttons for managing processes (viewing errors, restarting all processes, and stopping all processes). It connects process error hooks to handle errors and manages the UI layout to display relevant information and controls for the user.
+        # Sets up the "Processes" tab in the UI with error tracking, an overall progress panel, and buttons for managing processes (viewing errors, restarting all processes, and stopping all processes). It connects process error hooks to handle errors and manages the UI layout to display relevant information and controls for the user.
         def __init__(self):
             """Initializes the Processes tab widget."""
             tabs.GenericTab.__init__(self, tab_title=None)
@@ -567,8 +598,10 @@ class tabs:
 
             # Error Window
             self.all_errors_window = ErrorsWindow(tr('All Errors'))
-            QTimer.singleShot(100, lambda: (self.all_errors_window.resize(int(self.window().size().width() * 0.9), int(self.window().size().height() * 0.9)),
-                                            self.all_errors_window.move(self.window().pos().x() + 32, self.window().pos().y() + 32)))  # we must use timer here because for some reason the window does not resize normally.
+            QTimer.singleShot(100, lambda: (self.all_errors_window.resize(int(self.window().size().width() * 0.9),
+                                                                          int(self.window().size().height() * 0.9)),
+                                            self.all_errors_window.move(self.window().pos().x() + 32,
+                                                                        self.window().pos().y() + 32)))  # we must use timer here because for some reason the window does not resize normally.
             for pr in process_manager.processes:
                 pr.errorOccurredHook.connect_(Binder(self.on_error_occurred, pr))
 
@@ -614,12 +647,14 @@ class tabs:
         @staticmethod
         def on_restart_all_processes_clicked():
             """Restarts all processes."""
-            process_manager.restart_all_processes() if dialogs.question(main_window, tr('Restart All Processes?'), tr('This will restart any processes that are not currently running.\nAre you sure you want to continue?')) == dialogs.response.Yes else None
+            process_manager.restart_all_processes() if dialogs.question(main_window, tr('Restart All Processes?'),
+                                                                        tr('This will restart any processes that are not currently running.\nAre you sure you want to continue?')) == dialogs.response.Yes else None
 
         @staticmethod
         def on_stop_all_processes_clicked():
             """Stops all currently running processes."""
-            process_manager.stop_all_processes() if dialogs.question(main_window, tr('Stop all Processes?'), tr('This will stop all currently running processes!\nAre you sure you want to continue?')) == dialogs.response.Yes else None
+            process_manager.stop_all_processes() if dialogs.question(main_window, tr('Stop all Processes?'),
+                                                                     tr('This will stop all currently running processes!\nAre you sure you want to continue?')) == dialogs.response.Yes else None
 
 
 class MainWindow(windows.FluentWindow):
@@ -643,14 +678,18 @@ class MainWindow(windows.FluentWindow):
         src_tab.setObjectName('src')
         self.addSubInterface(src_tab, FluentIcon.FOLDER, tr('Sources'))
         for src_path in process_manager.source_sorted_processes:
-            src_tab.add_widget(cards.SettingWPushButtons(FluentIcon.FOLDER, f'{os_utils.getPathTarget(src_path)}', src_path, (tr('Open in Explorer'),), (Binder(os_utils.showDirInExplorer, src_path),)))
+            src_tab.add_widget(
+                cards.SettingWPushButtons(FluentIcon.FOLDER, f'{os_utils.getPathTarget(src_path)}', src_path,
+                                          (tr('Open in Explorer'),), (Binder(os_utils.showDirInExplorer, src_path),)))
 
         # Destination
         dst_tab = tabs.GenericTab(tr('Destinations'))
         dst_tab.setObjectName('dst')
         self.addSubInterface(dst_tab, FluentIcon.FLAG, tr('Destinations'))
         for dst_path in process_manager.destination_sorted_processes:
-            dst_tab.add_widget(cards.SettingWPushButtons(FluentIcon.FOLDER, f'{os_utils.getPathTarget(dst_path)}', dst_path, (tr('Open in Explorer'),), (Binder(os_utils.showDirInExplorer, dst_path),)))
+            dst_tab.add_widget(
+                cards.SettingWPushButtons(FluentIcon.FOLDER, f'{os_utils.getPathTarget(dst_path)}', dst_path,
+                                          (tr('Open in Explorer'),), (Binder(os_utils.showDirInExplorer, dst_path),)))
 
         # Information
         info = tabs.GenericTab(tr('Information'))
@@ -660,7 +699,8 @@ class MainWindow(windows.FluentWindow):
 
     def closeEvent(self, event):
         """Handles the window close event."""
-        if dialogs.question(self, tr('Close Process Manager?'), tr('Exiting the Process Manager will terminate all the currently running processes!\nAre you sure you want to continue?')) != dialogs.response.Yes:
+        if dialogs.question(self, tr('Close Process Manager?'),
+                            tr('Exiting the Process Manager will terminate all the currently running processes!\nAre you sure you want to continue?')) != dialogs.response.Yes:
             event.ignore()
             return
         super().closeEvent(event)  # must call here so that window pos and size is saved to preferences
@@ -690,7 +730,8 @@ class ErrorsWindow(windows.SubFluentWindow):
             clipboard_button.setIcon(FluentIcon.PASTE)
             clipboard_button.setText(tr('Copy to Clipboard'))
             clipboard_button.setSizePolicy(SizePolicy.Fixed, SizePolicy.Fixed)
-            clipboard_button.clicked.connect(lambda: os_utils.copyToClipboard(f'{details_label.text()}\n{message_label.text()}', app))
+            clipboard_button.clicked.connect(
+                lambda: os_utils.copyToClipboard(f'{details_label.text()}\n{message_label.text()}', app))
             v_lay.addWidget(clipboard_button)
 
     def __init__(self, title: str):
@@ -724,7 +765,9 @@ class ErrorsWindow(windows.SubFluentWindow):
 
     def resizeEvent(self, event):  # center the empty_container_label() whenever resize happens
         """Handles the window resize event."""
-        self.no_errors_label.move((self.stackedWidget.size().width() // 2) - (self.no_errors_label.size().width() // 2), (self.stackedWidget.size().height() // 2) - (self.no_errors_label.size().height() // 2))
+        self.no_errors_label.move((self.stackedWidget.size().width() // 2) - (self.no_errors_label.size().width() // 2),
+                                  (self.stackedWidget.size().height() // 2) - (
+                                              self.no_errors_label.size().height() // 2))
         super().resizeEvent(event)
 
     def show(self):
@@ -738,7 +781,11 @@ class ErrorsWindow(windows.SubFluentWindow):
         self.errors_tab.add_widget(ErrorsWindow.ErrorCard(details, message))
         if affected_file in self.affected_files:
             return
-        self.affected_files_tab.add_widget(cards.SettingWPushButtons(FluentIcon.DOCUMENT, f'{os_utils.getPathTarget(affected_file)}  •  {format_bytes(affected_file_size)}', affected_file, (tr('Open in Explorer'),), (lambda: os_utils.selectFileInExplorer(affected_file),)))
+        self.affected_files_tab.add_widget(cards.SettingWPushButtons(FluentIcon.DOCUMENT,
+                                                                     f'{os_utils.getPathTarget(affected_file)}  •  {format_bytes(affected_file_size)}',
+                                                                     affected_file, (tr('Open in Explorer'),), (
+                                                                     lambda: os_utils.selectFileInExplorer(
+                                                                         affected_file),)))
         self.affected_files.add(affected_file)
 
     def clearAllErrors(self):
@@ -751,6 +798,8 @@ class ErrorsWindow(windows.SubFluentWindow):
 main_window: MainWindow
 update_timer: QTimer
 app: QApplication
+
+
 def start(app_context: QApplication):
     """Starts the application."""
     global main_window, update_timer, app
